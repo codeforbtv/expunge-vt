@@ -15,10 +15,10 @@ Scott Friedman (PM)
 
 | Agenda Item  | Presenter |
 | --- | --- |
-| 1. Jake noted in an E-mail from Mon, 18-Feb that he would like to see the MoU between VLA and the Office of the Court Administrator. Can Mairead send C4BTV that document? | Open |
-| 2. Nick Floersch, Micah Mutrux, Jake Durell, and Scott Friedman have reviewed the MoU between C4BTV and VLA. There was some concern over the statement of the delivery time. Scott rewrote that section. Changes (and potential changes) should be discussed with Mairead. | Open |
-| 3. General status of the project. | Open |
-| 4. Any new information. | Open |
+| 1. Jake noted in an E-mail from Mon, 18-Feb that he would like to see the MoU between VLA and the Office of the Court Administrator. Can Mairead send C4BTV that document? | Mairead |
+| 2. Nick Floersch, Micah Mutrux, Jake Durell, and Scott Friedman have reviewed the MoU between C4BTV and VLA. There was some concern over the statement of the delivery time. Scott rewrote that section. Changes (and potential changes) should be discussed with Mairead. | Scott |
+| 3. General status of the project. | Scott / Mairead |
+| 4. Any new information. | Mairead |
 
 #### Discussion on Agenda Items
 1. Mairead will send the MoU between VLA and the court. This document was sent to Jake, Micah, and Scott when the meeting concluded. It has since been placed in the C4BTV Google Drive in the folder "Project / Teams -> ExpungeVT -> Memorandum of Understanding (MoU)". The file name is "MOU Office of the Court Administrator-Vermont Legal Aid 2-28-18.pdf".
