@@ -1,9 +1,5 @@
 let createPetition = document.getElementById('create-petition');
 let resetDocket = document.getElementById('reset-docket-info');
-
-
-
-
 let newElement = `'<span style="color:red">TEST</span>'`
 
 createPetition.onclick = function (element) {
@@ -34,14 +30,24 @@ window.addEventListener('load', function (evt) {
 
     // setPopUpData(storageCounts[0]);
 
-    chrome.tabs.executeScript({
-        code: 'JSON.stringify(localStorage)'
-    }, res => {
-        lsObj = JSON.parse(res[0])
-        key = "counts"
-        // ls.innerHTML = lsHtml ? lsHtml : "The active tab has nothing in localStorage";
-        setPopUpData(JSON.parse(lsObj[key]));
-    })
+
+    // chrome.tabs.executeScript({
+    //     code: 'JSON.stringify(localStorage)'
+    // }, res => {
+    //     lsObj = JSON.parse(res[0])
+    //     key = "counts"
+    //     // ls.innerHTML = lsHtml ? lsHtml : "The active tab has nothing in localStorage";
+    //     setPopUpData(JSON.parse(lsObj[key]));
+    // })
+
+
+    // chrome.storage.sync.set({key: value}, function() {
+    //     console.log('Value is set to ' + value);
+    //   });
+
+    //   chrome.storage.sync.get(['key'], function(result) {
+    //     console.log('Value currently is ' + result.key);
+    //   });
 })
 
 
@@ -59,4 +65,11 @@ function setPopUpData(counts) {
     document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
     document.getElementById('offenseStatus').innerHTML = counts[0]["offenseStatus"];
     document.getElementById('date').innerHTML = counts[0]["date"];
+
+
+    // chrome.storage.sync.set({
+    //     "counts": 4
+    // })
+
+    // chrome.storage.local.get(function(result){console.log(result)})
 }
