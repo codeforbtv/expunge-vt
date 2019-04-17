@@ -2,12 +2,18 @@ let createPetition = document.getElementById('create-petition');
 let resetDocket = document.getElementById('reset-docket-info');
 let newElement = `'<span style="color:red">TEST</span>'`
 
+let loadedMessage
+let docketInfo = document.getElementById('docketInfo');
+
 createPetition.onclick = function (element) {
     chrome.tabs.create({
         url: chrome.extension.getURL('options.html#window')
     })
 };
 
+if (typeof loadedMessage !== 'undefined') {
+docketInfo.addEventListener("load", setPopUpData(loadedMessage))
+}
 
 resetDocket.onclick = function (element) {
 
@@ -54,17 +60,23 @@ window.addEventListener('load', function (evt) {
 // Listen to messages from the payload.js script and write to popout.html
 chrome.runtime.onMessage.addListener(function (message) {
 
+    loadedMessage = message
     setPopUpData(message)
 
 });
 
 function setPopUpData(counts) {
+
+    //docket info
     document.getElementById('pagetitle').innerHTML = counts[0]["docket"];
+    //count info
+   
     document.getElementById('countNum').innerHTML = counts[0]["countNum"];
     // document.getElementById('docket').innerHTML = counts[0]["docket"];
     document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
     document.getElementById('offenseStatus').innerHTML = counts[0]["offenseStatus"];
     document.getElementById('date').innerHTML = counts[0]["date"];
+
 
 
     // chrome.storage.sync.set({

@@ -13,18 +13,20 @@
 
 <body>
     <button id="create-petition">Create Petition</button>
+    <div id="docketInfo">
+        <h3>Current Docket Info : <span id='pagetitle'>Docket counts should display here...</span></h3>
+        <hr>
+        <p><b>Count:</b> <span id='countNum'></span></p>
+        <p><b>Docket #:</b> <span id='docket'></span></p>
+        <p><b>Statute:</b> <span id='offenseStatute'></span></p>
+        <p><b>Offense Status:</b> <span id='offenseStatus'></span></p>
+        <p><b>Last Docket Entry:</b> <span id='date'></span></p>
 
-    <h3>Current Docket Info : <span id='pagetitle'>Docket counts should display here...</span></h3>
-    <hr>
-    <p><b>Count:</b> <span id='countNum'></span></p>
-    <p><b>Docket #:</b> <span id='docket'></span></p>
-    <p><b>Statute:</b> <span id='offenseStatute'></span></p>
-    <p><b>Offense Status:</b> <span id='offenseStatus'></span></p>
-    <p><b>Last Docket Entry:</b> <span id='date'></span></p>
 
+        <button id="reset-docket-info">Reset Docket Info</button>
+        <div id=ls></div>
 
-    <button id="reset-docket-info">Reset Docket Info</button>
-    <div id=ls></div>
+    </div>
     <script id='script' src="popup.js"></script>
 </body>
 
