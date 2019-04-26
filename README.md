@@ -1,23 +1,40 @@
-# expunge-vt
-A criminal record can interfere with getting a job, housing, food assistance and other aspects of life. Many records are decades old and are eligible to be removed, but the process can be difficult. Even when a person is aware that they have a record that could be expunged, often financial and logistical barriers stand in the way.
+# Expunge-VT
+
+This project attempts to help VLA clear records more quickly during their expungment clinics.
+
+A criminal record can interfere with getting a job, housing, food assistance and other aspects of life. Many records are decades old and are eligible to be removed, but the process generally requires the help of an attourney.
+
+Our partner Vermont Legal Aid holds periodic clinics where attourneys volunteer their time to help clear eligible records for vermonters, but it is a very manual process. These clinics generally have a waitlist of Vermonters who cannot be processed.
+
+This project is a chrome extension that let's attourneys generate printable forms rather than copy them from the web by hand. This could bring the time it takes to clear someone's record from ~90 min to around 20 min -
+**...potentially doubling or trippling the number of clients VLA can serve.**
 
 # The Chrome extension
 
-This project works through a chrome extension that reads an HTML docket sheet from https://secure.vermont.gov/vtcdas/user that provides key data a defendant's case. One or more samples of an HTML docket can be found in the "sampleDocketHTML" folder. When the project is complete, the extension will use the data parsed from the HTML to print petitions for expungement ready for filing.
+This project works through a chrome extension that reads an HTML docket sheet from [VT Courts Online](https://secure.vermont.gov/vtcdas/user) that provides key data a defendant's case. One or more cleaned samples of an HTML docket can be found in the "sampleDocketHTML" folder. When the project is complete, the extension will use the data parsed from the HTML to print petitions for expungement ready for filing.
 
-In order to test the extension:
+## Requirements for using this extension
 
-1. Go to chrome://extensions/ on your chrome browser. 
+- This tool is designed exclusively for VT Legal Aid.
+- Users must have an active subscription with [VT Courts Online](https://secure.vermont.gov/vtcdas/user)
+- This tool does not save or expand access to any data
 
-2. Ensure "Developer mode" is switched on in the top right of the screen. 
+## Setup for local development
 
-3. Select "Load unpacked" from the top left, and select the "extensionDirectory" folder from the project folder. 
+1. Clone the github repository to your machine
 
-4. Open an HTML file from "sampleDocketHTML" folder.
+1. Open [chrome://extensions/](chrome://extensions/) on your chrome browser.
 
-5. Click the extension to information for the first "count" listed on the docket.
+1. Ensure "Developer mode" is switched on in the top right of the screen.
 
+1. Select `Load unpacked` from the top left, and select the `extensionDirectory` folder from the project folder.
 
-MORE FUNCTIONALITY AVAILABLE SOON!
+1. Open a sample html docket from the "sampleDocketHTML" folder.
 
+1. While viewing the sample docket page, click the chrome extension icon to begin using the exention.
 
+1. Familiarlize yourself with [how chrome extensions work](./chromeExtensionOverview.md).
+
+## Usage instructions
+
+...MORE FUNCTIONALITY AVAILABLE SOON!
