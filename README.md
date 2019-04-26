@@ -33,7 +33,7 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 
 1. While viewing the sample docket page, click the chrome extension icon to begin using the exention.
 
-1. Familiarlize yourself with [how chrome extensions work](./chromeExtensionOverview.md).
+1. Familiarlize yourself with [how chrome extensions work](./README_EXTENSIONS_OVERVIEW.md).
 
 ## Usage instructions
 
