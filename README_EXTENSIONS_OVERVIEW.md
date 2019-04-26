@@ -24,7 +24,7 @@ These are scripts that respond to Chrome Extension actions and triggers. They ar
 
 This is the content that is displayed in a popup when you click on the extension icon to the right of the address bar. This is often used as kind of a navigation or dashboard to help users figure out what actions to take with the extension.
 
-## Content Scripts
+### Content Scripts
 
 These are scripts that are injected into other html pages. This is the primary way that you can add additional functionality to specific sites or types of pages.
 
