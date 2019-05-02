@@ -16,10 +16,12 @@ docketInfo.addEventListener("load", setPopUpData(loadedMessage))
 }
 
 resetDocket.onclick = function (element) {
+  chrome.extension.getBackgroundPage().console.log('docket reset!')
 
     if (window.confirm("Are you sure?")) {
         injectPayload()
     }
+    document.getElementById("iframe").contentWindow.postMessage('Hello from other side' + Math.random(), "*")
 
     function injectPayload() {
         // Inject the payload.js script into the current tab after the popout has loaded
@@ -70,7 +72,7 @@ function setPopUpData(counts) {
     //docket info
     document.getElementById('pagetitle').innerHTML = counts[0]["docket"];
     //count info
-   
+
     document.getElementById('countNum').innerHTML = counts[0]["countNum"];
     // document.getElementById('docket').innerHTML = counts[0]["docket"];
     document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
