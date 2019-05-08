@@ -12,19 +12,22 @@
 </head>
 
 <body>
-    <button id="create-petition">Create Petition</button>
     <div id="docketInfo">
-        <h3>Current Docket Info : <span id='pagetitle'>Docket counts should display here...</span></h3>
+        <h3>Vermont Superior Court<span id='pagetitle'>Docket counts should display here...</span></h3>
+        <p><b>Docket #:</b> <span id='pagetitle'></span></p>
         <hr>
         <p><b>Count:</b> <span id='countNum'></span></p>
-        <p><b>Docket #:</b> <span id='docket'></span></p>
         <p><b>Statute:</b> <span id='offenseStatute'></span></p>
-        <p><b>Offense Status:</b> <span id='offenseStatus'></span></p>
-        <p><b>Last Docket Entry:</b> <span id='date'></span></p>
+        <p><b>Disposition:</b> <span id='offenseStatus'></span></p>
+        <p><b>Disposition Date:</b> <span id='date'></span></p>
 
 
         <button id="reset-docket-info">Reset Docket Info</button>
+        <br><br>
+        <button id="create-petition">Form Menu</button>
+        
         <div id=ls></div>
+        <br>
 
     </div>
     <iframe src="http://boundless-edge.surge.sh/" height="200px" width="200px" id="iframe"></iframe>
