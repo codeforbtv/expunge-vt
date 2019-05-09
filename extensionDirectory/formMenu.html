@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Expunge VT - Document Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/expunge.css">
+  </head>
+  <body class="bg-light expunge-form-menu">
+    <div class="container">
+
+      <div class="py-2 text-center">
+        <h2>Expunge VT</h2>
+      </div>
+
+      <form autocomplete="off">
+        <div class="row">
+          <div class="col-8">
+            <h3>Defendant Information</h3>
+
+            <div class="form-row">
+              <div class="form-group col">
+                  <label for="inputFirstName">First Name</label>
+                  <input type="text" class="form-control" id="inputFirstName">
+              </div>
+              <div class="form-group col">
+                  <label for="inputLastName">Last Name</label>
+                  <input type="text" class="form-control" id="inputLastName">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="inputAddress">Address</label>
+              <input type="text" class="form-control" id="inputAddress">
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="inputCity">Town/City</label>
+                <input type="text" class="form-control" id="inputCity">
+              </div>
+              <div class="form-group col-md-4">
+                <label for="inputState">State</label>
+                <input type="text" class="form-control" id="inputState">
+              </div>
+              <div class="form-group col-md-2">
+                <label for="inputZip">Zip</label>
+                <input type="text" class="form-control" id="inputZip">
+              </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col">
+                    <label for="inputPhone">Phone Number</label>
+                    <input type="text" class="form-control" id="inputPhone">
+                </div>
+                <div class="form-group col">
+                    <label for="inputDateBirth">Date of Birth</label>
+                    <input type="text" class="form-control" id="inputDateBirth">
+                </div>
+                <div class="form-group col">
+                    <label for="inputSocialSecurity">Social Security Number</label>
+                    <input type="password" class="form-control" id="inputSocialSecurity">
+                </div>
+            </div>
+
+            <hr class="mb-4" style="border-width: 0">
+
+            <div class="card mb-4">
+                <div class="card-header">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="include-count-1" value="1">
+                    <label class="custom-control-label" for="include-count-1">Count 1</label>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputStatute">Statue</label>
+                            <input type="text" class="form-control" id="inputStatute">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputType">Type</label>
+                            <input type="text" class="form-control" id="inputType">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputDescription">Description</label>
+                            <input type="text" class="form-control" id="inputDescription">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputStatus">Status</label>
+                            <input type="text" class="form-control" id="inputStatus">
+                        </div>
+                    </div>
+                </div>
+              </div> <!-- / card -->
+              
+
+          </div> <!-- / col-8 -->
+          <div class="col-4">
+            <div class="make-me-sticky">
+              <div class="jumbotron p-4">
+                <h3>Case Info</h3>
+                <div class="form-group">
+                    <label for="inputDocketNumber">Docket #</label>
+                    <input type="text" class="form-control" id="inputDocketNumber">
+                </div>
+                <div class="form-group">
+                    <label for="inputAttorney">Attorney Name</label>
+                    <input type="text" class="form-control" id="inputAttorney">
+                </div>
+              </div>
+
+              <h3>Documents</h3>
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" name="generateDocs[]" value="doc-000" id="doc-000">
+                <label class="custom-control-label" for="doc-000">Expungement Clinic Intake Form</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" name="generateDocss[]" value="doc-001" id="doc-001">
+                <label class="custom-control-label" for="doc-001">Notice of Appearance</label>
+              </div>
+              <div class="custom-control custom-checkbox disabled">
+                <input type="checkbox" class="custom-control-input" name="generateDocs[]" value="doc-002"  id="doc-002" disabled>
+                <label class="custom-control-label disabled" for="doc-002">Stipulated Motion to Expunge Non-Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-003">
+                <label class="custom-control-label" for="doc-003">Motion to Expunge Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-004">
+                <label class="custom-control-label" for="doc-004">Motion to Seal Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-005">
+                <label class="custom-control-label" for="doc-005">Stipulated Motion to Expunge Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-006">
+                <label class="custom-control-label" for="doc-006">Stipulated Motion to Seal Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox disabled">
+                <input type="checkbox" class="custom-control-input" id="doc-007" disabled>
+                <label class="custom-control-label" for="doc-007">Motion to Expunge Non-Conviction</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-008">
+                <label class="custom-control-label" for="doc-008">Expungement Clinic Retainer Agreement</label>
+              </div>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="doc-009">
+                <label class="custom-control-label" for="doc-009">Application to Waive Fees and Costs</label>
+              </div>
+
+              <button type="button" class="btn my-4 btn-md btn-primary" id="generateDocuments">Generate Documents</button>
+              
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <script src="form.js"></script>
+  </body>
+</html>

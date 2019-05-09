@@ -1,0 +1,9 @@
+.make-me-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    padding: 0 15px;
+}
+.custom-control-input:disabled~.custom-control-label {
+    text-decoration: line-through;
+}
