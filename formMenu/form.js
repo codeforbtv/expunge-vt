@@ -16,7 +16,7 @@ generateDocumentsBtn.addEventListener('click', function() {
  * Allows an input field to toggle data display between two states:
  *  - Password (obfuscated) field when not focused.
  *  - Text (readable) input field when focused.
- * 
+ *
  * @param {string} inputFieldID The ID of the input field.
  * @return {void}
  */
@@ -35,4 +35,12 @@ function passwordOnBlur( inputFieldID ) {
             this.setAttribute( 'type', 'password' )
         }
     });
+}
+
+
+// Listen for message events, temporarily display it on the form page
+// TODO: map the incoming data to form fields
+window.onmessage = function(event) {
+  console.log('received message: ', event.data)
+  document.getElementById('destination').innerHTML = event.data;
 }

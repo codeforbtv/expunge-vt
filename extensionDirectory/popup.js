@@ -7,7 +7,7 @@ let docketInfo = document.getElementById('docketInfo');
 
 createPetition.onclick = function (element) {
     chrome.tabs.create({
-        url: chrome.extension.getURL('form.html')
+        url: 'http://localhost:3000'
     })
 };
 
