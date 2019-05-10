@@ -1,12 +1,15 @@
-const express = require('express');
-const path = require('path');
+const fs = require('fs');
+const open = require('open');
+require('log-timestamp');
 
-const app = express();
+const extensionDirectory = './extensionDirectory';
 
-app.use('/', express.static(path.resolve(__dirname, 'formMenu/')));
+console.log(`Watching for file changes in ${extensionDirectory}`);
 
-app.use('/iframe', express.static(path.resolve(__dirname, 'iframe/')));
-
-app.listen(3000);
-
-console.log('ExpungeVT form served at localhost:3000 \n ...iframe served at localhost:3000/iframe (for now)');
+fs.watch(extensionDirectory, function(event, filename) {
+  if (filename) {
+    console.log(`${filename} file changed`);
+    open('http://reload.extensions/', {app: ['google-chrome']})
+    }
+  }
+})
