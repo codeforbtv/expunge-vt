@@ -7,7 +7,7 @@
       "scripts": ["background.js"],
       "persistent": false
     },
-    "options_page": "options.html",
+    "options_page": "formMenu.html",
     "page_action": {
       "default_popup": "popup.html",
       "default_icon": {

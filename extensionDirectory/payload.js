@@ -64,6 +64,7 @@ counts = [{
 localStorage.setItem('counts', JSON.stringify(counts))
 chrome.runtime.sendMessage(counts);
 
+chrome.storage.local.set({ expungevt: counts });
 
 
 

@@ -1,8 +1,7 @@
 let createPetition = document.getElementById('create-petition');
 let resetDocket = document.getElementById('reset-docket-info');
-let newElement = `'<span style="color:red">TEST</span>'`
-
-let loadedMessage
+let newElement = `'<span style="color:red">TEST</span>'`;
+let loadedMessage;
 let docketInfo = document.getElementById('docketInfo');
 
 createPetition.onclick = function (element) {
@@ -16,18 +15,17 @@ docketInfo.addEventListener("load", setPopUpData(loadedMessage))
 }
 
 resetDocket.onclick = function (element) {
-  chrome.extension.getBackgroundPage().console.log('docket reset!')
 
     if (window.confirm("Are you sure?")) {
-        injectPayload()
+        injectPayload();
     }
-    document.getElementById("iframe").contentWindow.postMessage('Hello from other side' + Math.random(), "*")
+    chrome.storage.local.clear();
 
     function injectPayload() {
         // Inject the payload.js script into the current tab after the popout has loaded
-        chrome.extension.getBackgroundPage().chrome.tabs.executeScript(null, {
+        chrome.tabs.executeScript(null, {
             file: 'payload.js'
-        });;
+        });
     }
 };
 
