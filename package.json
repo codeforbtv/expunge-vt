@@ -4,9 +4,7 @@
   "description": "This project attempts to help Vermont Legal Aid clear records more quickly during their expungment clinics.",
   "main": "index.js",
   "scripts": {
-    "start": "npm run livereload & node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "livereload": "live-reload formMenu/ iframe/"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -19,7 +17,7 @@
   },
   "homepage": "https://github.com/codeforbtv/expunge-vt#readme",
   "devDependencies": {
-    "express": "^4.16.4",
-    "live-reload": "^1.1.0"
+    "log-timestamp": "^0.3.0",
+    "open": "^6.2.0"
   }
 }
