@@ -6,7 +6,7 @@ let docketInfo = document.getElementById('docketInfo');
 
 createPetition.onclick = function (element) {
     chrome.tabs.create({
-        url: chrome.extension.getURL('formMenu.html#window')
+        url: chrome.extension.getURL('formMenu.html')
     })
 };
 
