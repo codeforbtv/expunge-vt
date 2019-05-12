@@ -12,4 +12,4 @@ fs.watch(extensionDirectory, function(event, filename) {
     open('http://reload.extensions/', {app: ['google-chrome']})
     }
   }
-})
+);
