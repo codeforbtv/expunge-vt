@@ -67,21 +67,15 @@ chrome.runtime.onMessage.addListener(function (message) {
 
 function setPopUpData(counts) {
 
-    //docket info
-    document.getElementById('pagetitle').innerHTML = counts[0]["docket"];
-    //count info
+    //defendant info
+    document.getElementById('pagetitle').innerHTML = counts[0]["defName"];
+    document.getElementById('defendantDOB').innerHTML = counts[0]["defDOB"];
 
+    //count info
+    document.getElementById('docket').innerHTML = counts[0]["docket"];
     document.getElementById('countNum').innerHTML = counts[0]["countNum"];
-    // document.getElementById('docket').innerHTML = counts[0]["docket"];
     document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
     document.getElementById('offenseStatus').innerHTML = counts[0]["offenseStatus"];
     document.getElementById('date').innerHTML = counts[0]["date"];
 
-
-
-    // chrome.storage.sync.set({
-    //     "counts": 4
-    // })
-
-    // chrome.storage.local.get(function(result){console.log(result)})
 }
