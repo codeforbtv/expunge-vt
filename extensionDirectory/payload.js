@@ -13,10 +13,24 @@ dobLocation = nthIndex(docketBody, "DOB:", 1)+15
 dobLocationEnd = nthIndex(docketBody, "POB:", 1)-40
 defDOB = docketBody.substring(dobLocation,dobLocationEnd)
 
-infoStateLocation = nthIndex(docketBody, divider, 2) + divider.length
-infoStateLocationEnd = nthIndex(docketBody, divider, 3)
+//Determine Number of Counts
+countsStart = nthIndex(docketBody, divider, 2) + divider.length+1
+countsEnd = nthIndex(docketBody, divider, 3)
+allCountsBody = docketBody.substring(countsStart, countsEnd)
+countTotal = (allCountsBody.match(/\n/g) || []).length/2;
+allCountsArray = allCountsBody.split("\n")
 
-docketInfo = docketBody.substring(infoStateLocation, infoStateLocationEnd)
+console.log({allCountsBody})
+console.log({allCountsArray})
+for (i = 0; i <= count; i++){
+allcountArray[i]
+}
+
+//Get string for entire count
+countInfoLocation = nthIndex(docketBody, divider, 2) + divider.length
+countInfoLocationEnd = nthIndex(docketBody, divider, 3)
+
+docketInfo = docketBody.substring(countInfoLocation, countInfoLocationEnd)
 
 docketArray = docketInfo.split(" ")
 
@@ -33,7 +47,7 @@ carriage = /\n/;
 currentData = "status"
 carriageCount = 0
 
-////For Loop Processes Offense Status and Description
+////Extract Offense Status and Description
 for (let i = 8; i < docketArray.length && carriageCount < 2; i++) {
 
     if (currentData === "status") {
@@ -67,7 +81,8 @@ counts = [{
     "defName": defName,
     "defDOB": defDOB,
     "countNum": docketArray[3],
-    "docket": docketArray[1] + " " + docketArray[2],
+    "docket": docketArray[1],
+    "countyCode": docketArray[2],
     "offenseTitle": docketArray[4],
     "offenseSection": docketArray[5],
     "fmo": docketArray[6],
