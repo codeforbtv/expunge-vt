@@ -11,14 +11,14 @@ createPetition.onclick = function (element) {
 };
 
 if (typeof loadedMessage !== 'undefined') {
-docketInfo.addEventListener("load", setPopUpData(loadedMessage))
+    docketInfo.addEventListener("load", setPopUpData(loadedMessage))
 }
 
 resetDocket.onclick = function (element) {
-
-    if (window.confirm("Are you sure?")) {
-        injectPayload();
-    }
+    injectPayload();
+    // if (window.confirm("Are you sure?")) {
+    //     injectPayload();
+    // }
     chrome.storage.local.clear();
 
     function injectPayload() {
@@ -33,22 +33,49 @@ resetDocket.onclick = function (element) {
 chrome.runtime.onMessage.addListener(function (message) {
 
     loadedMessage = message
-    setPopUpData(message)
+    setPopUpData(message[0])
 
 });
 
 function setPopUpData(counts) {
-
     //defendant info
-    document.getElementById('pagetitle').innerHTML = counts[0]["defName"];
-    document.getElementById('defendantDOB').innerHTML = counts[0]["defDOB"];
+    document.getElementById('defendantName').innerHTML = counts.defName;
+    document.getElementById('defendantDOB').innerHTML = counts.defDOB;
 
-    //count info
-    document.getElementById('docket').innerHTML = counts[0]["docket"]  + " " + counts[0]["countyCode"] + " - Count #" + counts[0]["countNum"];
-    document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
-    document.getElementById('offenseClass').innerHTML = counts[0]["fmo"];
-    document.getElementById('offenseStatus').innerHTML = counts[0]["offenseStatus"];
-    document.getElementById('date').innerHTML = counts[0]["date"];
+    for (i = 0; i < counts.totalCounts; i++) {
+        console.log(i)
+        let card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = createCountCard(counts.counts[i])
+        $('#countCards').append(card);
+    }
 
-    
+
+}
+
+
+function createCountCard(count) {
+    console.log(count)
+    let cardHTML = (`
+
+    <div class="card">
+        <div class="card-header" id=${"heading" + count.countNum}>
+                <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.countNum} aria-expanded="false" aria-controls=${"collapse" + count.countNum}>
+                <div class="buttonLink">
+                <i class="fas fa-gavel"></i> ${count.docketNum.trim() + "/" + count.countNum.trim() + ": " + count.description.substring(0,14).trim()}
+                </div>
+                </button>
+                
+        </div>
+
+        <div id=${"collapse" + count.countNum} class="collapse " aria-labelledby=${"heading" + count.countNum} data-parent="#countCards">
+            <div class="card-body">
+               <p><b>${count.titleNum + " V.S.A. &sect " + count.sectionNum + "</b> - " + count.description}</p>
+
+            </div>
+        </div>
+    </div>
+    `);
+
+    return cardHTML
 }
