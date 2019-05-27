@@ -49,37 +49,69 @@ for (i = 0; i < countLines; i++) {
 //Break line one of a count into its individual fields
 function processCountLine1(countLine1) {
 
+    //Break into array and remove spaces
     countLine1Array = countLine1.split(" ")
-
     countLine1Array = countLine1Array.filter(function (el) {
         return el != "";
     });
 
-    disposition = ""
-    for (j = 8; j < countLine1Array.length; j++) {
-        if (j === 8) {
-            disposition = countLine1Array[j]
-        }
-        // if  (i === (countLine1Array.length -1)) {
-        //     disposition = disposition + s + countLine1Array[i]
-        // }
-        else {
-            disposition = disposition + " " + countLine1Array[j]
-        }
+    //find location of fel/mis
+    felMisLocation = countLine1Array.findIndex(isFelOrMisd);
+    function isFelOrMisd(element) {
+        if (element === "mis") {return element = "mis"};
+        if (element === "fel") {return element = "fel"};
 
     }
 
+    //get section string(s)
+    for (j = 5; j < felMisLocation; j++) {
+        if (j === 5) {
+            offenseSection = countLine1Array[j]
+        }
+        else {
+            offenseSection = offenseSection + " " + countLine1Array[j]
+        }
+    }
+
+    // get disposition string
+    disposition = ""
+    for (j = (felMisLocation+2); j < countLine1Array.length; j++) {
+        if (j === 8) {
+            disposition = countLine1Array[j]
+        }
+        else {
+            disposition = disposition + " " + countLine1Array[j]
+        }
+    }
+
+    //Create count object with all count line 1 items
+    balls = ["left", "right"]
     countObject = [{
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],
         "titleNum": countLine1Array[4],
-        "sectionNum": countLine1Array[5],
-        "offenseClass": countLine1Array[6],
-        "dispositionDate": countLine1Array[7],
-        "offenseDisposition": disposition,
+        "sectionNum": offenseSection,
+        "offenseClass": countLine1Array[felMisLocation],
+        "dispositionDate": countLine1Array[felMisLocation+1],
+        "offenseDisposition": disposition.trim(),
     }]
+    
+    //Get Alleged offense date:
+    offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
+    offenseDateString = offenseDateArray[countObject[0].countNum-1]
+    offenseDateLocation = offenseDateString.length
+    offenseDateLocationEnd = offenseDateLocation - 8
+    allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+    countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim() 
 
+    //Get Arrest/citation date:
+    offenseDateArray = docketBody.match(/Arrest\/Citation\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
+    offenseDateString = offenseDateArray[countObject[0].countNum-1]
+    offenseDateLocation = offenseDateString.length
+    offenseDateLocationEnd = offenseDateLocation - 8
+    arrestCitationDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+    countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
 }
 
 

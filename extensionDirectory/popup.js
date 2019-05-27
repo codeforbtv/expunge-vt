@@ -49,10 +49,7 @@ function setPopUpData(counts) {
         card.innerHTML = createCountCard(counts.counts[i])
         $('#countCards').append(card);
     }
-
-
 }
-
 
 function createCountCard(count) {
     console.log(count)
@@ -60,18 +57,37 @@ function createCountCard(count) {
 
     <div class="card">
         <div class="card-header" id=${"heading" + count.countNum}>
-                <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.countNum} aria-expanded="false" aria-controls=${"collapse" + count.countNum}>
+            <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.countNum} aria-expanded="false" aria-controls=${"collapse" + count.countNum}>
                 <div class="buttonLink">
-                <i class="fas fa-gavel"></i> ${count.docketNum.trim() + "/" + count.countNum.trim() + ": " + count.description.substring(0,14).trim()}
-                </div>
-                </button>
+                    <span><i class="fas fa-gavel">  </span></i><ul class="nav md-pills nav-justified pills-rounded pills-outline-red">
+                        <li class="nav-item pillText">
+                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${getCounty(count.docketCounty)} </a></li>
+                    </ul>
+                    </div>
+                    <p>${count.docketNum.trim() + "/" + count.countNum.trim() + ": " + count.description.substring(0,23).trim()}</p>
+            </button>
                 
         </div>
 
         <div id=${"collapse" + count.countNum} class="collapse " aria-labelledby=${"heading" + count.countNum} data-parent="#countCards">
             <div class="card-body">
-               <p><b>${count.titleNum + " V.S.A. &sect " + count.sectionNum + "</b> - " + count.description}</p>
+                <p><b>Desc: </b>${"  " + count.description.trim()}</p>
+                <p><b>Statute: </b>${"  " + count.titleNum + " V.S.A. &sect " + count.sectionNum + " (" + count.offenseClass + ")"}</p>
 
+                <table class="table">
+                    <thead class="">
+                        <th scope="col">Alleged Offense Date</th>
+                        <th scope="col">Arrest / Citation Date</th>
+                        <th scope="col">Disposition Date</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${count.allegedOffenseDate}</td>
+                            <td>${count.arrestCitationDate}</td>
+                            <td>${count.dispositionDate}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -79,3 +95,12 @@ function createCountCard(count) {
 
     return cardHTML
 }
+
+function getCounty(countyCode) {
+    code = countyCode.substring(0,2).trim()
+    console.log(code)
+    console.log(vtCounties)
+    return vtCounties[0][code] 
+}
+
+

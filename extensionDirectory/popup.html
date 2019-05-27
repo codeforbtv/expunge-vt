@@ -2,52 +2,8 @@
 <html>
 
 <head>
-    <style>
-        body {
-            width: 350px;
-        }
-        #defendantInfo p {
-            margin: 0;
-        }
-        button {
-            width: 300px;
-            outline: none;
-        }
-        .card-header {
-            word-break:break-all;
-            padding: 0 !important;
-        }
-        .countCardBtn {
-            white-space: normal; 
-            text-decoration: none !important;
-        }
-        .accordion {
-            white-space: normal; 
-            width: 290px;
-        }
-        .logos {
-            width: 50px;
-        }
-        .popTop {
-            display:flex;
-            flex-direction:row;
-            width: 100%;
-            margin: 5px;
-        }
-        #defendantInfo {
-            width: 80%;
-        }
-        #logoDiv {
-            display:flex;
-            flex-direction:column;
-            text-align: center;
-            width: 10%;
-        }
-        .buttonDiv {
-            margin: 5px;
-        }
+        <link href="popup.css" rel="stylesheet" type="text/css">
 
-    </style>
         <!-- font awesome -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
@@ -83,6 +39,8 @@
         <button id="create-petition" class="btn btn-success">Generate Petition(s)</button>
     </div>
     <script id='script' src="popup.js"></script>
+    <script id='script' src="countyCodes.js"></script>
+
 </body>
 
 </html>
