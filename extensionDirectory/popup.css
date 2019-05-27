@@ -63,12 +63,15 @@ padding: 0px;
     border: 2px solid #fff;
     color: #666;
     background-color: transparent;
-    width: 130px;
+    width: 120px;
+}
+
+.smallPill {
+    width: 50px !important;
 }
 
 .pills-outline-red .nav-item .nav-link:hover {
     border: 2px solid #eee;
-    width: 130px;
 }
 
 .pills-outline-red .nav-item .nav-link.active {

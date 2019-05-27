@@ -1,7 +1,7 @@
 {
     "name": "ExpungeVT!",
     "version": "1.0",
-    "description": "Expunge recourds found on VTCourtsOnline with ease!",
+    "description": "Expunge records found on VTCourtsOnline with ease!",
     "permissions": ["activeTab", "declarativeContent", "storage"],
     "background": {
       "scripts": ["background.js"],

@@ -21,7 +21,6 @@ addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
 for (i=0;i<addressArray.length;i++) {
     addressArray[i] = addressArray[i].trim()
 }
-console.log(addressArray)
 
 //Determine Number of Counts and create array with each line count
 countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
@@ -95,7 +94,6 @@ function processCountLine1(countLine1) {
     }
 
     //Create count object with all count line 1 items
-    balls = ["left", "right"]
     countObject = [{
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
@@ -108,7 +106,7 @@ function processCountLine1(countLine1) {
     }]
     
     //Get Alleged offense date:
-    offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
+    offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
     offenseDateString = offenseDateArray[countObject[0].countNum-1]
     offenseDateLocation = offenseDateString.length
     offenseDateLocationEnd = offenseDateLocation - 8

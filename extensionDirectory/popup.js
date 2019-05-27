@@ -10,16 +10,16 @@ createPetition.onclick = function (element) {
     })
 };
 
-// if (typeof loadedMessage !== 'undefined') {
-//     docketInfo.addEventListener("load", setPopUpData(loadedMessage))
-// }
+document.addEventListener("DOMContentLoaded", function(){ getData(); }, false);
 
-console.log(localStorage.getItem('allCounts'));
-// chrome.storage.local.get(['allCounts'], function(result) {
-//     console.log(result);
-//   });
+function getData () {
+  chrome.storage.local.get(['expungevt'], function(result) {
+    console.log(result.expungevt);
+    setPopUpData(result.expungevt[0])
+  });  
+}
 
-// document.addEventListener("DOMContentLoaded", function(){ setPopUpData(loadedMessage); }, false);
+
 
 resetDocket.onclick = function (element) {
     injectPayload();
@@ -38,29 +38,31 @@ resetDocket.onclick = function (element) {
 
 // Listen to messages from the payload.js script and write to popout.html
 chrome.runtime.onMessage.addListener(function (message) {
-
     loadedMessage = message
-    console.log(loadedMessage)
     setPopUpData(message[0])
-
 });
 
 function setPopUpData(counts) {
+
+    //Get current storage for camparison
+    chrome.storage.local.get(['expungevt'], function(result) {
+        currentStorage = result.expungevt[0]
+      });  
     //defendant info
     document.getElementById('defendantName').innerHTML = counts.defName;
     document.getElementById('defendantDOB').innerHTML = counts.defDOB;
     document.getElementById('defendantAddress').innerHTML = getAddress(counts.defAddress);
 
-    function getAddress(addArray) {
+    function getAddress(addrArray) {
         addressHTML = ""
-        for (i = 0; i < addArray.length; i++) {
-            addressHTML += "<br>" + addArray[i]
+        for (i = 0; i < addrArray.length; i++) {
+            addressHTML += "<br>" + addrArray[i]
         }
         return addressHTML
     }
 
+    $('#countCards').empty();
     for (i = 0; i < counts.totalCounts; i++) {
-        console.log(i)
         let card = document.createElement('div');
         card.classList.add('card');
         card.innerHTML = createCountCard(counts.counts[i])
@@ -69,24 +71,27 @@ function setPopUpData(counts) {
 }
 
 function createCountCard(count) {
-    console.log(count)
     let cardHTML = (`
 
     <div class="card">
-        <div class="card-header" id=${"heading" + count.countNum}>
-            <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.countNum} aria-expanded="false" aria-controls=${"collapse" + count.countNum}>
+        <div class="card-header" id=${"heading" + count.docketNum.trim() + "-" + count.countNum.trim()}>
+            <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.docketNum.trim() + "-" + count.countNum.trim()} aria-expanded="false" aria-controls=${"collapse" + count.docketNum.trim() + "-" + count.countNum.trim()}>
                 <div class="buttonLink">
                     <span><i class="fas fa-gavel">  </span></i><ul class="nav md-pills nav-justified pills-rounded pills-outline-red">
                         <li class="nav-item pillText">
                         <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${getCounty(count.docketCounty)} </a></li>
                     </ul>
+                    <ul class="nav md-pills nav-justified pills-rounded pills-outline-red smallPill" width="50" >
+                        <li class="nav-item pillText">
+                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.offenseClass} </a></li>
+                    </ul>
                     </div>
-                    <p>${count.docketNum.trim() + "/" + count.countNum.trim() + ": " + count.description.substring(0,23).trim()}</p>
+                    <p>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p>
             </button>
                 
         </div>
 
-        <div id=${"collapse" + count.countNum} class="collapse " aria-labelledby=${"heading" + count.countNum} data-parent="#countCards">
+        <div id=${"collapse" + count.docketNum.trim() + "-" + count.countNum.trim()} class="collapse " aria-labelledby=${"heading" + count.docketNum.trim() + "-" + count.countNum.trim()} data-parent="#countCards">
             <div class="card-body">
                 <p><b>Desc: </b>${"  " + count.description.trim()}</p>
                 <p><b>Statute: </b>${"  " + count.titleNum + " V.S.A. &sect " + count.sectionNum + " (" + count.offenseClass + ")"}</p>
