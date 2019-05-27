@@ -10,9 +10,16 @@ createPetition.onclick = function (element) {
     })
 };
 
-if (typeof loadedMessage !== 'undefined') {
-    docketInfo.addEventListener("load", setPopUpData(loadedMessage))
-}
+// if (typeof loadedMessage !== 'undefined') {
+//     docketInfo.addEventListener("load", setPopUpData(loadedMessage))
+// }
+
+console.log(localStorage.getItem('allCounts'));
+// chrome.storage.local.get(['allCounts'], function(result) {
+//     console.log(result);
+//   });
+
+// document.addEventListener("DOMContentLoaded", function(){ setPopUpData(loadedMessage); }, false);
 
 resetDocket.onclick = function (element) {
     injectPayload();
@@ -33,6 +40,7 @@ resetDocket.onclick = function (element) {
 chrome.runtime.onMessage.addListener(function (message) {
 
     loadedMessage = message
+    console.log(loadedMessage)
     setPopUpData(message[0])
 
 });
@@ -41,6 +49,15 @@ function setPopUpData(counts) {
     //defendant info
     document.getElementById('defendantName').innerHTML = counts.defName;
     document.getElementById('defendantDOB').innerHTML = counts.defDOB;
+    document.getElementById('defendantAddress').innerHTML = getAddress(counts.defAddress);
+
+    function getAddress(addArray) {
+        addressHTML = ""
+        for (i = 0; i < addArray.length; i++) {
+            addressHTML += "<br>" + addArray[i]
+        }
+        return addressHTML
+    }
 
     for (i = 0; i < counts.totalCounts; i++) {
         console.log(i)
@@ -97,10 +114,6 @@ function createCountCard(count) {
 }
 
 function getCounty(countyCode) {
-    code = countyCode.substring(0,2).trim()
-    console.log(code)
-    console.log(vtCounties)
-    return vtCounties[0][code] 
+    code = countyCode.substring(0, 2).trim()
+    return vtCounties[0][code]
 }
-
-

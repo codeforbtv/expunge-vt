@@ -13,6 +13,15 @@ dobLocation = nthIndex(docketBody, "DOB:", 1) + 15
 dobLocationEnd = nthIndex(docketBody, "POB:", 1) - 40
 defDOB = docketBody.substring(dobLocation, dobLocationEnd)
 
+//Get Address
+addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
+addressArray = addressString[0].split("\n")
+addressArray.pop()
+addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
+for (i=0;i<addressArray.length;i++) {
+    addressArray[i] = addressArray[i].trim()
+}
+console.log(addressArray)
 
 //Determine Number of Counts and create array with each line count
 countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
@@ -25,6 +34,7 @@ allCountsArray = allCountsBody.split("\n")
 allCountsObject = [{
     "defName": defName,
     "defDOB": defDOB,
+    "defAddress": addressArray,
     "totalCounts": countTotal,
     "counts": []
 }]
