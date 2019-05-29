@@ -95,7 +95,7 @@ function createCountCard(count) {
             <div class="card-body">
                 <p><b>Desc: </b>${"  " + count.description.trim()}</p>
                 <p><b>Statute: </b>${"  " + count.titleNum + " V.S.A. &sect " + count.sectionNum + " (" + count.offenseClass + ")"}</p>
-
+                <p><b>Disposition: </b>${"  " + count.offenseDisposition}</p>
                 <table class="table">
                     <thead class="">
                         <th scope="col">Alleged Offense Date</th>
