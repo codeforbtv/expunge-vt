@@ -9,5 +9,21 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
               JSON.stringify(storageChange.oldValue),
               JSON.stringify(storageChange.newValue));
 
-  document.getElementById('destination').innerHTML = JSON.stringify(storageChange.newValue);
+  // document.getElementById('destination').innerHTML = JSON.stringify(storageChange.newValue);
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  getData();
+}, false);
+
+function getData() {
+  chrome.storage.local.get(['expungevt'], function (result) {
+      console.log(result.expungevt[0]);
+      setFormData(result.expungevt[0])
+  });
+}
+
+
+function setFormData(allCounts){
+}

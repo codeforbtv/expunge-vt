@@ -1,4 +1,5 @@
 let createPetition = document.getElementById('create-petition');
+
 let resetDocket = document.getElementById('reset-docket-info');
 let newElement = `'<span style="color:red">TEST</span>'`;
 let loadedMessage;
@@ -10,13 +11,17 @@ createPetition.onclick = function (element) {
     })
 };
 
-document.addEventListener("DOMContentLoaded", function(){ getData(); }, false);
 
-function getData () {
-  chrome.storage.local.get(['expungevt'], function(result) {
-    console.log(result.expungevt);
-    setPopUpData(result.expungevt[0])
-  });  
+
+document.addEventListener("DOMContentLoaded", function () {
+    getData();
+}, false);
+
+function getData() {
+    chrome.storage.local.get(['expungevt'], function (result) {
+        console.log(result.expungevt);
+        setPopUpData(result.expungevt[0])
+    });
 }
 
 
@@ -45,9 +50,9 @@ chrome.runtime.onMessage.addListener(function (message) {
 function setPopUpData(counts) {
 
     //Get current storage for camparison
-    chrome.storage.local.get(['expungevt'], function(result) {
+    chrome.storage.local.get(['expungevt'], function (result) {
         currentStorage = result.expungevt[0]
-      });  
+    });
     //defendant info
     document.getElementById('defendantName').innerHTML = counts.defName;
     document.getElementById('defendantDOB').innerHTML = counts.defDOB;
@@ -67,7 +72,19 @@ function setPopUpData(counts) {
         card.classList.add('card');
         card.innerHTML = createCountCard(counts.counts[i])
         $('#countCards').append(card);
+
+
+        let expungeIT = document.getElementById('expunge-it' + [i + 1]);
+
+        expungeIT.onclick = function (element) {
+            buttonID = element.path[0].classList[3]
+            chrome.tabs.create({
+                url: chrome.extension.getURL('./forms/petitionExpunge.html?' + buttonID)
+            })
+        };
     }
+
+
 }
 
 function createCountCard(count) {
@@ -79,15 +96,16 @@ function createCountCard(count) {
                 <div class="buttonLink">
                     <span><i class="fas fa-gavel">  </span></i><ul class="nav md-pills nav-justified pills-rounded pills-outline-red">
                         <li class="nav-item pillText">
-                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${getCounty(count.docketCounty)} </a></li>
+                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.county} </a></li>
                     </ul>
                     <ul class="nav md-pills nav-justified pills-rounded pills-outline-red smallPill" width="50" >
                         <li class="nav-item pillText">
                         <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.offenseClass} </a></li>
                     </ul>
                     </div>
-                    <p>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p>
-            </button>
+                    <p><span>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p>
+                    <button id="expunge-it${count.countNum.trim()}" class="expunge-it btn btn-success ${count.docketNum.trim() + "/" + count.countNum.trim()}">EC</button></span>
+                    </button>
                 
         </div>
 
@@ -116,9 +134,4 @@ function createCountCard(count) {
     `);
 
     return cardHTML
-}
-
-function getCounty(countyCode) {
-    code = countyCode.substring(0, 2).trim()
-    return vtCounties[0][code]
 }
