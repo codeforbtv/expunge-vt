@@ -66,7 +66,7 @@ padding: 0px;
     width: 120px;
 }
 
-.smallPill {
+.smallPill, .smallPill .nav-item, .smallPill .nav-link {
     width: 50px !important;
 }
 
@@ -130,9 +130,29 @@ th, td {
 }
 
 .expunge-it {
-    width: 50px;
+    width: 75px;
     height: 30px;
     font-size: 8px;
     margin-bottom: 3px;
-    padding: 1px 1px 3px 1px;
+    margin: 10px 5px 10px 5px;
+    align-self: center;
+}
+
+.form-check {
+    width: 15px;
+    background-color: blue;
+}
+
+.form-check-input {
+    padding: 0;
+    margin: 0;
+    width: 15px;
+
+}
+
+.petition-buttons {
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
 }

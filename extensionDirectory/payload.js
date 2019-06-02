@@ -48,6 +48,8 @@ for (i = 0; i < countLines; i++) {
         processCountLine1(allCountsArray[i])
     } else { //Catch Line 2 of each count
         description = allCountsArray[i].trim()
+        description = description.replace("/"," / ")
+        description = description.replace("  "," ")
         countObject[0]["description"] = description
 
         allCountsObject[0].counts.push(countObject[0])

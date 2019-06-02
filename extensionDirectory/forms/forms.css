@@ -41,10 +41,19 @@
 
 }
 
+.docketNumHeader {
+    padding-left: 20px;
+}
+
 .docketNo {
     text-align: right;
     align-self: right;
     margin-left: auto;
+}
+
+#docketNoDiv {
+    display: flex;
+    flex-direction: row;
 }
 
 p {
@@ -64,6 +73,8 @@ p {
 
 .capNames {
     width: 45%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 
@@ -75,6 +86,53 @@ p {
 .editable {
     border: 1px solid black;
 }
+
+.convictionBox {
+    display: flex;
+    flex-direction: row;
+    margin-left:15px;
+}
+
+.labelConviction {
+    margin-right:80px !important;
+}
+.labelConvictionDate {
+    margin-right:15px !important;
+}
+
+#convictionTable {
+    width: 100%;
+}
+
+th, td {
+    padding: 2px !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 20px;
+}
+
+#sigDateBox {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+}
+
+#sigBox {
+    border-top: 1.5px solid black;
+    width: 65%;
+}
+
+#dateBox {
+    border-top: 1.5px solid black;
+    margin-left: 35px;
+    width: 25%;
+}
+#petitionerAddress p {
+    line-height: 1.2em;
+}
+
 
 @media print {
     body {
@@ -118,7 +176,7 @@ p {
         width: 10in;
     }
 
-    p, .title {
+    p, .title, td, th {
         font-size: 30px;
     }
 }

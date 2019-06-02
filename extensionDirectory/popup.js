@@ -11,7 +11,13 @@ createPetition.onclick = function (element) {
     })
 };
 
+let expungeIT = document.getElementById('expunge-it');
 
+expungeIT.onclick = function (element) {
+    chrome.tabs.create({
+        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
+    })
+};
 
 document.addEventListener("DOMContentLoaded", function () {
     getData();
@@ -28,9 +34,7 @@ function getData() {
 
 resetDocket.onclick = function (element) {
     injectPayload();
-    // if (window.confirm("Are you sure?")) {
-    //     injectPayload();
-    // }
+
     chrome.storage.local.clear();
 
     function injectPayload() {
@@ -73,18 +77,7 @@ function setPopUpData(counts) {
         card.innerHTML = createCountCard(counts.counts[i])
         $('#countCards').append(card);
 
-
-        let expungeIT = document.getElementById('expunge-it' + [i + 1]);
-
-        expungeIT.onclick = function (element) {
-            buttonID = element.path[0].classList[3]
-            chrome.tabs.create({
-                url: chrome.extension.getURL('./forms/petitionExpunge.html?' + buttonID)
-            })
-        };
     }
-
-
 }
 
 function createCountCard(count) {
@@ -102,10 +95,10 @@ function createCountCard(count) {
                         <li class="nav-item pillText">
                         <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.offenseClass} </a></li>
                     </ul>
-                    </div>
-                    <p><span>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p>
-                    <button id="expunge-it${count.countNum.trim()}" class="expunge-it btn btn-success ${count.docketNum.trim() + "/" + count.countNum.trim()}">EC</button></span>
-                    </button>
+                        <input class="form-check-input" type="checkbox" id="blankCheckbox" value="option1" aria-label="...">
+                </div>
+                <p><span>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p></span>
+             </button>
                 
         </div>
 

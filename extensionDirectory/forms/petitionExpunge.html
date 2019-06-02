@@ -26,65 +26,74 @@
 <body>
     <script id='script' src="petitionExpunge.js"></script>
 
-        <div class="container">
+    <div class="container">
 
-            <div class="header">
-                <br>
-                <div class="title">STATE OF VERMONT</div>
-                <div class="header2">
-                    <div class="courtCounty">
-                        <p>Superior Court</p>
-                        <p><span id='courtCounty'></span> Unit</p>
-                    </div>
-                    <div class="docketNo">
-                        <p>Criminal Division</p>
-                        <p>Docket No. <span id='docketNumHeader'></span></p>
-                    </div>
+        <div class="header">
+            <br>
+            <br>
+            <div class="title">STATE OF VERMONT</div>
+            <div class="header2">
+                <div class="courtCounty">
+                    <p>Superior Court</p>
+                    <p><span id='courtCounty'></span> Unit</p>
                 </div>
-                <br>
-                <div class="caption">
-                    <div class="capNames">
-                        <p>State of Vermont</p>
-                        <p>v.</p>
-                        <p><span id='petitionerName'></span></p>
-                        <p><i>Petitioner</i></p>
-                    </div>
-                    <div class="capParens">
-                        <p>)</p>
-                        <p>)</p>
-                        <p>)</p>
-                        <p>)</p>
+                <div class="docketNo">
+                    <p>Criminal Division</p>
+                    <div id = "docketNoDiv">
+                        <p>Docket No.&nbsp; </p>
+                        <div id='docketNumHeader'></div>
                     </div>
                 </div>
             </div>
-            <br>
-            <div class="petition-body">
-                <div class="title"><u>PETITION TO EXPUNGE</u></div>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Petitioner moves the Court to expunge the record of the above-captioned conviction(s) pursuant to 13 V.S.A. &sect 7602.</p>
-                <br>
-                <p>1. I was convicted of the following crime(s):</p>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp; Conviction: &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
-                    class="editablex" contenteditable="true" id='description'></span></p>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp; Date of Conviction: &nbsp; &nbsp; <span id='dispoDate' class="editablex" contenteditable="true"></span></p>
-                <br>
-                <p>2. This is/these are qualifying crime(s) pursuant to 13 V.S.A. &sect 7601(4).</p>
-                <br>
-                <p>3. Expunging all record of this/these conviction(s) is in the interest of justice because:</p>
-                &nbsp; &nbsp; <p class="editable" contenteditable="true"><b>This is a paragraph. It is editable. Try to change this text.</b></p>
-                <br>
-                <p>Respectfully requested,</p>
-                <br>
-                <p>__________________________________ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    _____________
-                </p>
-                <p>Petitioner &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                    &nbsp;
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Date</p>
-
+            <div class="caption">
+                <div class="capNames">
+                    <p>State of Vermont,</p>
+                    <p>v.</p>
+                    <p><span id='petitionerName'></span></p>
+                    <p><i>Petitioner</i></p>
+                </div>
+                <div class="capParens">
+                    <p>)</p>
+                    <p>)</p>
+                    <p>)</p>
+                    <p>)</p>
+                </div>
             </div>
         </div>
+        <br>
+        <div class="petition-body">
+            <div class="title"><u>PETITION TO EXPUNGE CONVICTION</u></div>
+            <p>&nbsp; &nbsp; &nbsp; &nbsp; <span id="introParagraph">Petitioner moves the Court to expunge the record of the above-captioned convictions pursuant to 13 V.S.A. &sect 7602.</span></p>
+            <br>
+            <p id="paragraph1">1. I was convicted of the following crimes:</p>
+            <table id="convictionTable" class="table">
+                <thead class="">
+                    <th valign="middle" scope="col">Conviction Date</th>
+                    <th valign="middle" scope="col">Offense Description</th>
+                </thead>
+                <tbody id="convictionTableBody">
+                </tbody>
+            </table>
+            <p  id="paragraph2">2. These are qualifying crimes pursuant to 13 V.S.A. &sect 7601(4).</p>
+            <br>
+            <p id="paragraph3">3. Expunging all record of these convictions is in the interest of justice because:</p>
+            &nbsp; &nbsp; <p class="editable" contenteditable="true"><b>This is a paragraph. It is editable. Try to
+                    change this text.</b></p>
+            <br>
+            <p>Respectfully requested,</p>
+            <br>
+            <br>
+            <div id="sigDateBox">
+                <div id="sigBox">
+                    <div id="petitionerAddress"></div>
+                </div>
+                <div id="dateBox">
+                    <p>Date</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 </body>
 
