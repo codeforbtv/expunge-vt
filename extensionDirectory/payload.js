@@ -3,70 +3,137 @@ docketBody = document.getElementsByTagName("pre")[0].innerHTML
 
 divider = "================================================================================"
 
+//Get Defendant Name
+nameLocation = nthIndex(docketBody, "Defendant:", 1) + 15
+nameLocationEnd = nthIndex(docketBody, "DOB:", 1) - 40
+defName = docketBody.substring(nameLocation, nameLocationEnd)
 
-infoStateLocation = nthIndex(docketBody, divider, 2) + divider.length
-infoStateLocationEnd = nthIndex(docketBody, divider, 3)
+//Get Date of Birth
+dobLocation = nthIndex(docketBody, "DOB:", 1) + 15
+dobLocationEnd = nthIndex(docketBody, "POB:", 1) - 40
+defDOB = docketBody.substring(dobLocation, dobLocationEnd)
 
-docketInfo = docketBody.substring(infoStateLocation, infoStateLocationEnd)
-
-docketArray = docketInfo.split(" ")
-
-docketArray = docketArray.filter(function (el) {
-    return el != "";
-});
-
-
-offenseStatus = ""
-offenseDesc = ""
-
-carriage = /\n/;
-
-currentData = "status"
-carriageCount = 0
-
-for (let i = 8; i < docketArray.length && carriageCount < 2; i++) {
-
-    if (currentData === "status") {
-        if (i == 7) {
-            offenseStatus = docketArray[i]
-        } else {
-            offenseStatus += " " + docketArray[i]
-        }
-    } else {
-        if (offenseDesc == "") {
-            offenseDesc = docketArray[i]
-        } else {
-            offenseDesc += " " + docketArray[i]
-        }
-    }
-
-    if (docketArray[i].match(carriage) != null) {
-        currentData = "description"
-        carriageCount +=1
-    }
-
+//Get Address
+addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
+addressArray = addressString[0].split("\n")
+addressArray.pop()
+addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
+for (i = 0; i < addressArray.length; i++) {
+    addressArray[i] = addressArray[i].trim()
 }
-offenseStatus = offenseStatus.replace(/\n/, '')
-offenseDesc = offenseDesc.replace(/\n/, '')
-counts = []
 
-counts = [{
-    "countNum": docketArray[3],
-    "docket": docketArray[1] + " " + docketArray[2],
-    "offenseTitle": docketArray[4],
-    "offenseSection": docketArray[5],
-    "fmo": docketArray[6],
-    "date": docketArray[7],
-    "offenseStatus": offenseStatus,
-    "offenseDesc": offenseDesc,
+//Determine Number of Counts and create array with each line count
+countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
+countsEnd = nthIndex(docketBody, divider, 3)
+allCountsBody = docketBody.substring(countsStart, countsEnd)
+countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
+allCountsArray = allCountsBody.split("\n")
+
+//create all counts object
+allCountsObject = [{
+    "defName": defName,
+    "defDOB": defDOB,
+    "defAddress": addressArray,
+    "totalCounts": countTotal,
+    "counts": []
 }]
 
-localStorage.setItem('counts', JSON.stringify(counts))
-chrome.runtime.sendMessage(counts);
 
-chrome.storage.local.set({ expungevt: counts });
+//Move data from count table into objects
+countLines = countTotal * 2
+for (i = 0; i < countLines; i++) {
+    //Catch Line 1 (odd lines) of each count
+    if ((i + 1) % 2 != 0) {
+        countObject = [{}];
+        processCountLine1(allCountsArray[i])
+    } else { //Catch Line 2 of each count
+        description = allCountsArray[i].trim()
+        description = description.replace("/"," / ")
+        description = description.replace("  "," ")
+        countObject[0]["description"] = description
+
+        allCountsObject[0].counts.push(countObject[0])
+    }
+}
+
+//Break line one of a count into its individual fields
+function processCountLine1(countLine1) {
+
+    //Break into array and remove spaces
+    countLine1Array = countLine1.split(" ")
+    countLine1Array = countLine1Array.filter(function (el) {
+        return el != "";
+    });
+
+    //find location of fel/mis
+    felMisLocation = countLine1Array.findIndex(isFelOrMisd);
+
+    function isFelOrMisd(element) {
+        if (element === "mis") {
+            return element = "mis"
+        };
+        if (element === "fel") {
+            return element = "fel"
+        };
+
+    }
+
+    //get section string(s)
+    for (j = 5; j < felMisLocation; j++) {
+        if (j === 5) {
+            offenseSection = countLine1Array[j]
+        } else {
+            offenseSection = offenseSection + " " + countLine1Array[j]
+        }
+    }
+
+    // get disposition string
+    disposition = ""
+    for (j = (felMisLocation + 2); j < countLine1Array.length; j++) {
+        if (j === 8) {
+            disposition = countLine1Array[j]
+        } else {
+            disposition = disposition + " " + countLine1Array[j]
+        }
+    }
+
+    //Create count object with all count line 1 items
+    countObject = [{
+        "countNum": countLine1Array[0],
+        "docketNum": countLine1Array[1],
+        "docketCounty": countLine1Array[2],
+        "county": getCounty(countLine1Array[2]),
+        "titleNum": countLine1Array[4],
+        "sectionNum": offenseSection,
+        "offenseClass": countLine1Array[felMisLocation],
+        "dispositionDate": countLine1Array[felMisLocation + 1],
+        "offenseDisposition": disposition.trim(),
+    }]
+
+    //Get Alleged offense date:
+    offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
+    offenseDateString = offenseDateArray[countObject[0].countNum - 1]
+    offenseDateLocation = offenseDateString.length
+    offenseDateLocationEnd = offenseDateLocation - 8
+    allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+    countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim()
+
+    //Get Arrest/citation date:
+    offenseDateArray = docketBody.match(/Arrest\/Citation\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
+    offenseDateString = offenseDateArray[countObject[0].countNum - 1]
+    offenseDateLocation = offenseDateString.length
+    offenseDateLocationEnd = offenseDateLocation - 8
+    arrestCitationDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+    countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
+}
 
 
+localStorage.setItem('allCounts', JSON.stringify(allCountsObject))
+chrome.runtime.sendMessage(allCountsObject);
+
+chrome.storage.local.set({
+    expungevt: allCountsObject
+});
 
 
 function nthIndex(str, subStr, n) {
@@ -77,4 +144,25 @@ function nthIndex(str, subStr, n) {
         if (i < 0) break;
     }
     return i;
+}
+
+function getCounty(countyCode) {
+    code = countyCode.substring(0, 2).trim()
+    vtCounties = [{
+        "An": "Addison",
+        "Bn": "Bennington",
+        "Ca": "Caledonia",
+        "Cn": "Chittenden",
+        "Ex": "Essex",
+        "Fr": "Franklin",
+        "Gi": "Grand Isle",
+        "Le": "Lamoille",
+        "Oe": "Orange",
+        "Os": "Orleans",
+        "Rd": "Rutland",
+        "Wn": "Washington",
+        "Wm": "Windham",
+        "Wr": "Windsor"
+    }]
+    return vtCounties[0][code]
 }

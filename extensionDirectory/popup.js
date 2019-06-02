@@ -1,4 +1,5 @@
 let createPetition = document.getElementById('create-petition');
+
 let resetDocket = document.getElementById('reset-docket-info');
 let newElement = `'<span style="color:red">TEST</span>'`;
 let loadedMessage;
@@ -10,15 +11,30 @@ createPetition.onclick = function (element) {
     })
 };
 
-if (typeof loadedMessage !== 'undefined') {
-docketInfo.addEventListener("load", setPopUpData(loadedMessage))
+let expungeIT = document.getElementById('expunge-it');
+
+expungeIT.onclick = function (element) {
+    chrome.tabs.create({
+        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
+    })
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+    getData();
+}, false);
+
+function getData() {
+    chrome.storage.local.get(['expungevt'], function (result) {
+        console.log(result.expungevt);
+        setPopUpData(result.expungevt[0])
+    });
 }
 
-resetDocket.onclick = function (element) {
 
-    if (window.confirm("Are you sure?")) {
-        injectPayload();
-    }
+
+resetDocket.onclick = function (element) {
+    injectPayload();
+
     chrome.storage.local.clear();
 
     function injectPayload() {
@@ -29,59 +45,86 @@ resetDocket.onclick = function (element) {
     }
 };
 
-window.addEventListener('load', function (evt) {
-
-    // let storageCounts = JSON.parse(localStorage.getItem('counts'))
-    // alert(storageCounts)
-
-    // setPopUpData(storageCounts[0]);
-
-
-    // chrome.tabs.executeScript({
-    //     code: 'JSON.stringify(localStorage)'
-    // }, res => {
-    //     lsObj = JSON.parse(res[0])
-    //     key = "counts"
-    //     // ls.innerHTML = lsHtml ? lsHtml : "The active tab has nothing in localStorage";
-    //     setPopUpData(JSON.parse(lsObj[key]));
-    // })
-
-
-    // chrome.storage.sync.set({key: value}, function() {
-    //     console.log('Value is set to ' + value);
-    //   });
-
-    //   chrome.storage.sync.get(['key'], function(result) {
-    //     console.log('Value currently is ' + result.key);
-    //   });
-})
-
-
 // Listen to messages from the payload.js script and write to popout.html
 chrome.runtime.onMessage.addListener(function (message) {
-
     loadedMessage = message
-    setPopUpData(message)
-
+    setPopUpData(message[0])
 });
 
 function setPopUpData(counts) {
 
-    //docket info
-    document.getElementById('pagetitle').innerHTML = counts[0]["docket"];
-    //count info
+    //Get current storage for camparison
+    chrome.storage.local.get(['expungevt'], function (result) {
+        currentStorage = result.expungevt[0]
+    });
+    //defendant info
+    document.getElementById('defendantName').innerHTML = counts.defName;
+    document.getElementById('defendantDOB').innerHTML = counts.defDOB;
+    document.getElementById('defendantAddress').innerHTML = getAddress(counts.defAddress);
 
-    document.getElementById('countNum').innerHTML = counts[0]["countNum"];
-    // document.getElementById('docket').innerHTML = counts[0]["docket"];
-    document.getElementById('offenseStatute').innerHTML = counts[0]["offenseTitle"] + " V.S.A. &sect " + counts[0]["offenseSection"] + " (" + counts[0]["offenseDesc"] + ")";
-    document.getElementById('offenseStatus').innerHTML = counts[0]["offenseStatus"];
-    document.getElementById('date').innerHTML = counts[0]["date"];
+    function getAddress(addrArray) {
+        addressHTML = ""
+        for (i = 0; i < addrArray.length; i++) {
+            addressHTML += "<br>" + addrArray[i]
+        }
+        return addressHTML
+    }
 
+    $('#countCards').empty();
+    for (i = 0; i < counts.totalCounts; i++) {
+        let card = document.createElement('div');
+        card.classList.add('card');
+        card.innerHTML = createCountCard(counts.counts[i])
+        $('#countCards').append(card);
 
+    }
+}
 
-    // chrome.storage.sync.set({
-    //     "counts": 4
-    // })
+function createCountCard(count) {
+    let cardHTML = (`
 
-    // chrome.storage.local.get(function(result){console.log(result)})
+    <div class="card">
+        <div class="card-header" id=${"heading" + count.docketNum.trim() + "-" + count.countNum.trim()}>
+            <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + count.docketNum.trim() + "-" + count.countNum.trim()} aria-expanded="false" aria-controls=${"collapse" + count.docketNum.trim() + "-" + count.countNum.trim()}>
+                <div class="buttonLink">
+                    <span><i class="fas fa-gavel">  </span></i><ul class="nav md-pills nav-justified pills-rounded pills-outline-red">
+                        <li class="nav-item pillText">
+                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.county} </a></li>
+                    </ul>
+                    <ul class="nav md-pills nav-justified pills-rounded pills-outline-red smallPill" width="50" >
+                        <li class="nav-item pillText">
+                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.offenseClass} </a></li>
+                    </ul>
+                        <input class="form-check-input" type="checkbox" id="blankCheckbox" value="option1" aria-label="...">
+                </div>
+                <p><span>${"<b>"+count.docketNum.trim() + "/" + count.countNum.trim() + ":</b> " + count.description.substring(0,23).trim()}</p></span>
+             </button>
+                
+        </div>
+
+        <div id=${"collapse" + count.docketNum.trim() + "-" + count.countNum.trim()} class="collapse " aria-labelledby=${"heading" + count.docketNum.trim() + "-" + count.countNum.trim()} data-parent="#countCards">
+            <div class="card-body">
+                <p><b>Desc: </b>${"  " + count.description.trim()}</p>
+                <p><b>Statute: </b>${"  " + count.titleNum + " V.S.A. &sect " + count.sectionNum + " (" + count.offenseClass + ")"}</p>
+                <p><b>Disposition: </b>${"  " + count.offenseDisposition}</p>
+                <table class="table">
+                    <thead class="">
+                        <th scope="col">Alleged Offense Date</th>
+                        <th scope="col">Arrest / Citation Date</th>
+                        <th scope="col">Disposition Date</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${count.allegedOffenseDate}</td>
+                            <td>${count.arrestCitationDate}</td>
+                            <td>${count.dispositionDate}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    `);
+
+    return cardHTML
 }

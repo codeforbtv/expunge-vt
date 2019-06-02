@@ -2,35 +2,55 @@
 <html>
 
 <head>
-    <style>
-        button {
-            height: 30px;
-            width: 300px;
-            outline: none;
-        }
-    </style>
+    <link href="popup.css" rel="stylesheet" type="text/css">
+
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div id="docketInfo">
-        <h3>Vermont Superior Court<span id='pagetitle'>Docket counts should display here...</span></h3>
-        <p><b>Docket #:</b> <span id='pagetitle'></span></p>
-        <hr>
-        <p><b>Count:</b> <span id='countNum'></span></p>
-        <p><b>Statute:</b> <span id='offenseStatute'></span></p>
-        <p><b>Disposition:</b> <span id='offenseStatus'></span></p>
-        <p><b>Disposition Date:</b> <span id='date'></span></p>
-
-
-        <button id="reset-docket-info">Reset Docket Info</button>
-        <br><br>
-        <button id="create-petition">Form Menu</button>
-
-        <div id=ls></div>
+    <div class="popTop">
+        <div id="defendantInfo">
+            <p><b>Petitioner:</b> <span id='defendantName'></span></p>
+            <p><b>DOB:</b> <span id='defendantDOB'></span></p>
+            <p><b>Address:</b> <span id='defendantAddress'></span></p>
+        </div>
+        <div id="logoDiv">
+            <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
+            <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
+        </div>
+    </div>
+    <hr>
+    <div id="countCards" class="accordion col-md-4 text-center"></div>
+    <hr>
+    <div class="col-md-4 text-center buttonDiv">
+        <button id="reset-docket-info" class="btn  btn-primary">Extract Docket Sheet Info</button>
         <br>
-
+        <div class="petition-buttons">
+            <button id="expunge-it" class="expunge-it btn btn-success">ExC</button>
+            <button id="expunge-it" class="expunge-it btn btn-success">ExNC</button>
+            <button id="expunge-it" class="expunge-it btn btn-success">SealC</button>
+        </div>
+        <button id="create-petition" class="btn btn-success">Petition Management</button>
+        <br>
     </div>
     <script id='script' src="popup.js"></script>
+
 </body>
 
 </html>

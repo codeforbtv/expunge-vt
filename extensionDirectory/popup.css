@@ -1,0 +1,158 @@
+body {
+    width: 350px;
+}
+
+#defendantInfo p {
+    margin: 0;
+}
+
+button {
+    width: 300px;
+    outline: none;
+}
+
+.card-header {
+    word-break: break-all;
+    padding: 0 !important;
+}
+
+.countCardBtn {
+    white-space: normal;
+    text-decoration: none !important;
+}
+
+.accordion {
+    white-space: normal;
+    width: 290px;
+}
+
+.logos {
+    width: 50px;
+}
+
+.popTop {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 5px;
+}
+
+#defendantInfo {
+    width: 80%;
+}
+
+#logoDiv {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 10%;
+}
+
+.buttonDiv {
+    margin: 5px;
+}
+
+
+.pills-rounded .nav-item .nav-link {
+border-radius: 10em;
+margin: 0px;
+padding: 0px;
+}
+
+.pills-outline-red .nav-item .nav-link {
+    border: 2px solid #fff;
+    color: #666;
+    background-color: transparent;
+    width: 120px;
+}
+
+.smallPill, .smallPill .nav-item, .smallPill .nav-link {
+    width: 50px !important;
+}
+
+.pills-outline-red .nav-item .nav-link:hover {
+    border: 2px solid #eee;
+}
+
+.pills-outline-red .nav-item .nav-link.active {
+    border: 2px solid #2FA54A;
+    color: #2FA54A;
+    
+}
+
+.pills-outline-red .nav-item .nav-link.active:hover {
+    border: 2px solid #2FA54A;
+    color: #2FA54A;
+}
+
+.dates-box {
+    display: flex;
+    flex-direction: row;
+}
+
+.single-date {
+    outline: 1px solid blue;
+    padding: 2px;
+}
+
+.buttonLink {
+    display: flex;
+    flex-direction: row;
+}
+
+.fa-gavel {
+    margin: 5px;
+}
+
+.pillText {
+    padding: 3px;
+}
+
+.card-header p {
+    margin: 1px;
+    display: flex;
+    flex-direction: row;
+}
+
+.card-body {
+    padding: 2px !important;
+    font-size: 14px;
+}
+
+.card-body p {
+    display: flex;
+    flex-direction: row;
+    margin: 1px !important;
+}
+
+th, td {
+    padding: 4px !important;
+}
+
+.expunge-it {
+    width: 75px;
+    height: 30px;
+    font-size: 8px;
+    margin-bottom: 3px;
+    margin: 10px 5px 10px 5px;
+    align-self: center;
+}
+
+.form-check {
+    width: 15px;
+    background-color: blue;
+}
+
+.form-check-input {
+    padding: 0;
+    margin: 0;
+    width: 15px;
+
+}
+
+.petition-buttons {
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}
