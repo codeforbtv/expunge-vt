@@ -13,6 +13,7 @@ createPetition.onclick = function (element) {
 
 let clearData = document.getElementById('clear-data');
 clearData.onclick = function (element) {
+    chrome.storage.local.clear();
     var myNode = document.getElementById("countCards");
     while (myNode.firstChild) {
         myNode.removeChild(myNode.firstChild);
