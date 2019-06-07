@@ -13,9 +13,16 @@ chrome.runtime.onInstalled.addListener(function () {
       }),
       new chrome.declarativeContent.PageStateMatcher({
         pageUrl: {hostContains: 'secure.vermont.gov'},
+      }),
+      new chrome.declarativeContent.PageStateMatcher({
+        pageUrl: {urlContains: 'chrome-extension://'},
       })
     ],
       actions: [new chrome.declarativeContent.ShowPageAction()]
     }]);
   });
 });
+
+chrome.runtime.onStartup.addListener(function() {
+  chrome.storage.local.clear()
+ })
