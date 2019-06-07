@@ -20,6 +20,24 @@
     text-align:left;
 
 }
+.document-meta-data {
+    position: absolute;
+    top:-60px;
+    left:0;
+    margin-bottom: -50px;
+    font-size:1rem;
+    font-family: sans-serif;
+    text-align: left;
+}
+.document-meta-data__title {
+    font-size:1.25em;
+    margin-bottom: 0;
+}
+.document-meta-data__body {
+    font-size:0.75em;
+    text-transform: uppercase;
+    font-weight: 800
+}
 table {
     width:100%;
 }
@@ -152,12 +170,16 @@ th, td {
         margin-left:auto;
         margin-right:auto;
         margin-top:8rem;
+        position: relative;
     }
     .footer,.footer-space {
         display: none;
     }
     .no-visible {
         display:none !important;
+    }
+    .page:last-of-type {
+        margin-bottom:100px;
     }
 
 }
