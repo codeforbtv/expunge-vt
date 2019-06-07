@@ -4,7 +4,7 @@
     "description": "Expunge records found on VTCourtsOnline with ease!",
     "permissions": ["activeTab", "declarativeContent", "storage","<all_urls>"],
     "background": {
-      "scripts": ["background.js", "./forms/petitionExpunge.js"],
+      "scripts": ["background.js"],
       "persistent": false
     },
     "options_page": "formMenu.html",

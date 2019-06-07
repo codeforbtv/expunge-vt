@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
-        setFormData(result.expungevt[0])
+        if (JSON.stringify(result) != "{}") {
+            setFormData(result.expungevt[0])
+        }
+
     });
 }
 
@@ -24,7 +27,7 @@ function setFormData(allCounts) {
         docketArray.push(count.docketNum)
     }
 
-    var unique = docketArray.filter((v, i, a) => a.indexOf(v) === i); 
+    var unique = docketArray.filter((v, i, a) => a.indexOf(v) === i);
 
     for (i = 0; i < unique.length; i++) {
         $('#docketNumHeader').append(`<p contenteditable="true">${unique[i]} ${allCounts.counts[0].docketCounty}<p>`);
@@ -37,7 +40,7 @@ function setFormData(allCounts) {
 
     //Adjust text to singular where there is only one count
     if (allCounts.counts.length === 1) {
-        document.getElementById('introParagraph').innerHTML = "Petitioner moves the Court to expunge the record of the above-captioned conviction pursuant to 13 V.S.A. § 7602."
+        document.getElementById('introParagraph').innerHTML = "Petitioner moves the Court to expunge the record of the above-captioned conviction pursuant to 13 V.S.A. &sect 7602."
 
         document.getElementById('paragraph1').innerHTML = "1. I was convicted of the following crime:"
 
@@ -48,7 +51,7 @@ function setFormData(allCounts) {
 
     //set petitioner name and address at signature section
     $('#petitionerAddress').append(`<p contenteditable="true">${allCounts.defName}, Petitioner<p>`);
-    for (i=0; i< allCounts.defAddress.length; i++) {
+    for (i = 0; i < allCounts.defAddress.length; i++) {
         $('#petitionerAddress').append(`<p contenteditable="true">${allCounts.defAddress[i]}<p>`);
     }
 
