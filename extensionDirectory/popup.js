@@ -20,6 +20,7 @@ clearData.onclick = function (element) {
     document.getElementById('defendantName').innerHTML = "";
     document.getElementById('defendantDOB').innerHTML = "";
     document.getElementById('defendantAddress').innerHTML = "";
+    chrome.storage.local.clear()
 };
 
 
