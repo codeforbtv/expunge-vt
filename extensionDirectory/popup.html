@@ -24,6 +24,12 @@
 </head>
 
 <body>
+    <div id="coverDiv" class="empty-state">
+        <div id="logoDivCover">
+            <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
+            <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
+        </div>
+    </div>
     <div class="popTop">
         <div id="defendantInfo">
             <p><b>Petitioner Information</b></p>
@@ -37,21 +43,17 @@
             <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
     </div>
+    <p id="countsLabel"><b>Counts</b></p>
     <hr>
     <div id="countCards" class="accordion col-md-4 text-center"></div>
     <hr>
     <div class="col-md-4 text-center buttonDiv">
         <div class="button-div">
             <button id="add-docket-info" class="btn  btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button id="create-petition" class="btn btn-success">Generate Docs <i
+            <button id="create-petition" class="btn btn-success">Generate Documents <i
                     class="fas fa-external-link-alt"></i></button>
         </div>
-        <br>
-        <div class="petition-buttons">
-            <button id="expunge-it" class="expunge-it btn btn-success">ExC</button>
-
-        </div>
-        <br>
+        <button id="expunge-it" class="expunge-it btn btn-success">ExC</button>
     </div>
     <script id='script' src="popup.js"></script>
 

@@ -1,5 +1,5 @@
 body {
-    width: 350px;
+    width: 425px;
 }
 
 #defendantInfo p {
@@ -7,7 +7,7 @@ body {
 }
 
 button {
-    width: 300px;
+    width: 375px;
     outline: none;
 }
 
@@ -26,14 +26,22 @@ button {
     width: 290px;
 }
 
-.logos {
-    width: 50px;
-}
+.empty-state {
+    width: 100%;
+    height: 290px;
+    background-color: white;
+    position:fixed;
+    padding:0;
+    margin:0;
 
+    top:0;
+    left:0;
+}
 .popTop {
     display: flex;
     flex-direction: row;
     width: 100%;
+    min-height: 200px;
     margin: 5px;
 }
 
@@ -48,15 +56,37 @@ button {
     width: 10%;
 }
 
+#logoDiv .logos {
+    width: 50px;
+}
+
+#logoDivCover {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 100px;
+}
+
+#logoDivCover .logos {
+    width: 100px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
 .buttonDiv {
     margin: 5px;
 }
 
+#countsLabel {
+    margin-left: 5px;
+}
 
 .pills-rounded .nav-item .nav-link {
-border-radius: 10em;
-margin: 0px;
-padding: 0px;
+    border-radius: 10em;
+    margin: 0px;
+    padding: 0px;
 }
 
 .pills-outline-red .nav-item .nav-link {
@@ -162,4 +192,16 @@ th, td {
     flex-direction: row;
     width: 100%;
     justify-content: center;
+}
+
+.button-div button{
+    margin: 5px;
+}
+
+#add-docket-info {
+    width: 150px;
+}
+
+#create-petition {
+    width: 2000px;
 }

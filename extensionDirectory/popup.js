@@ -4,6 +4,7 @@ let addCounts = document.getElementById('add-docket-info');
 let newElement = `'<span style="color:red">TEST</span>'`;
 let loadedMessage;
 let docketInfo = document.getElementById('docketInfo');
+let coverDiv = document.getElementById("coverDiv");
 
 createPetition.onclick = function (element) {
     chrome.tabs.create({
@@ -22,6 +23,7 @@ clearData.onclick = function (element) {
     document.getElementById('defendantAddress').innerHTML = "";
     chrome.storage.local.clear()
     alert("cleared")
+    coverDiv.style.display = "block";
 };
 
 
@@ -42,6 +44,7 @@ function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
+            $( "#coverDiv" ).toggle(false);
         }
     });
 }
@@ -69,10 +72,10 @@ addCounts.onclick = function (element) {
 chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
+    $( "#coverDiv" ).toggle(false);
 });
 
 function setPopUpData(counts) {
-    console.log(counts.totalCounts)
     //defendant info
     document.getElementById('defendantName').innerHTML = counts.defName;
     document.getElementById('defendantDOB').innerHTML = counts.defDOB;
