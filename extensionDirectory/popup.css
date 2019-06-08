@@ -156,3 +156,10 @@ th, td {
     width: 100%;
     justify-content: center;
 }
+
+.button-div {
+    display:flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+}

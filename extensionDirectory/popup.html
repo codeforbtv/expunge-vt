@@ -26,11 +26,13 @@
 <body>
     <div class="popTop">
         <div id="defendantInfo">
-            <p><b>Petitioner:</b> <span id='defendantName'></span></p>
+            <p><b>Petitioner Information</b></p>
+            <p><b>Name:</b> <span id='defendantName'></span></p>
             <p><b>DOB:</b> <span id='defendantDOB'></span></p>
             <p><b>Address:</b> <span id='defendantAddress'></span></p>
         </div>
         <div id="logoDiv">
+            <button id="clear-data" class="expunge-it btn btn-danger">Clear</button>
             <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
             <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
@@ -39,16 +41,16 @@
     <div id="countCards" class="accordion col-md-4 text-center"></div>
     <hr>
     <div class="col-md-4 text-center buttonDiv">
-        <button id="reset-docket-info" class="btn  btn-primary">Extract Docket Sheet Info</button>
+        <div class="button-div">
+            <button id="add-docket-info" class="btn  btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button id="create-petition" class="btn btn-success">Generate Docs <i
+                    class="fas fa-external-link-alt"></i></button>
+        </div>
         <br>
         <div class="petition-buttons">
             <button id="expunge-it" class="expunge-it btn btn-success">ExC</button>
-            <button id="expunge-it" class="expunge-it btn btn-success">ExNC</button>
-            <button id="expunge-it" class="expunge-it btn btn-success">SealC</button>
-            
+
         </div>
-        <button id="create-petition" class="btn btn-success">Petition Management</button>
-        <button id="clear-data" class="expunge-it btn btn-danger">Clear</button>
         <br>
     </div>
     <script id='script' src="popup.js"></script>

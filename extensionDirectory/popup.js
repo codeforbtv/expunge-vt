@@ -1,6 +1,6 @@
 let createPetition = document.getElementById('create-petition');
 
-let resetDocket = document.getElementById('reset-docket-info');
+let addCounts = document.getElementById('add-docket-info');
 let newElement = `'<span style="color:red">TEST</span>'`;
 let loadedMessage;
 let docketInfo = document.getElementById('docketInfo');
@@ -21,6 +21,7 @@ clearData.onclick = function (element) {
     document.getElementById('defendantDOB').innerHTML = "";
     document.getElementById('defendantAddress').innerHTML = "";
     chrome.storage.local.clear()
+    alert("cleared")
 };
 
 
@@ -39,38 +40,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
-        console.log(result.expungevt);
-        setPopUpData(result.expungevt[0])
+        if (JSON.stringify(result) != "{}") {
+            setPopUpData(result.expungevt[0])
+        }
     });
 }
 
 
 
-resetDocket.onclick = function (element) {
-    injectPayload();
+addCounts.onclick = function (element) {
 
-    chrome.storage.local.clear();
-
-    function injectPayload() {
-        // Inject the payload.js script into the current tab after the popout has loaded
+    chrome.storage.local.get(['expungevt'], function (result) {
+        if (JSON.stringify(result) != "{}") {
+            countString = 'var hasCounts = true;'
+        } else {
+            countString = 'var hasCounts = false;'
+        }
         chrome.tabs.executeScript(null, {
-            file: 'payload.js'
+            code: countString
+        }, function () {
+            chrome.tabs.executeScript(null, { file: 'payload.js' });
         });
-    }
+    });
+
 };
 
 // Listen to messages from the payload.js script and write to popout.html
 chrome.runtime.onMessage.addListener(function (message) {
-    loadedMessage = message
-    setPopUpData(message[0])
+    loadedMessage = message[0]
+    setPopUpData(loadedMessage)
 });
 
 function setPopUpData(counts) {
-
-    //Get current storage for camparison
-    chrome.storage.local.get(['expungevt'], function (result) {
-        currentStorage = result.expungevt[0]
-    });
+    console.log(counts.totalCounts)
     //defendant info
     document.getElementById('defendantName').innerHTML = counts.defName;
     document.getElementById('defendantDOB').innerHTML = counts.defDOB;
