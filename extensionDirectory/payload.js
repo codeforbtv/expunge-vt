@@ -23,7 +23,6 @@ else {
         chrome.storage.local.set({
             expungevt: result.expungevt
         });
-        console.log(result.expungevt)
         chrome.runtime.sendMessage(result.expungevt);
 
     });

@@ -26,19 +26,33 @@
 <body>
     <div id="coverDiv" class="empty-state">
         <div id="logoDivCover">
-            <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
-            <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
+            <img id="code4btv" src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home"
+                class="logos">
+            <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home"
+                class="logos">
         </div>
+        <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button
+            below.</p>
+            <a target="_blank" href="https://secure.vermont.gov/vtcdas/user"><p id="vtCourtsOnline"><b>VT Courts Online  <i class="fas fa-external-link-alt"></i></b></p></a>
     </div>
     <div class="popTop">
         <div id="defendantInfo">
             <p><b>Petitioner Information</b></p>
-            <p><b>Name:</b> <span id='defendantName'></span></p>
-            <p><b>DOB:</b> <span id='defendantDOB'></span></p>
-            <p><b>Address:</b> <span id='defendantAddress'></span></p>
+            <div class="petitioner-details">
+                <p class="petitioner-label">Name:</p>
+                <p id='defendantName'></p>
+            </div>
+            <div class="petitioner-details">
+                <p class="petitioner-label">DOB:</p>
+                <p id='defendantDOB'></p>
+            </div>
+            <div class="petitioner-details">
+                <p class="petitioner-label">Address:</p>
+                <p id='defendantAddress'></p>
+            </div>
         </div>
         <div id="logoDiv">
-            <button id="clear-data" class="expunge-it btn btn-danger">Clear</button>
+            <button id="clear-data" class="expunge-it btn btn-outline-secondary">Clear All</button>
             <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
             <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
@@ -47,13 +61,13 @@
     <hr>
     <div id="countCards" class="accordion col-md-4 text-center"></div>
     <hr>
-    <div class="col-md-4 text-center buttonDiv">
-        <div class="button-div">
+    <div class="col-md-4 text-center bottom-div">
+        <div class="col-md-4 text-center button-div">
             <button id="add-docket-info" class="btn  btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
             <button id="create-petition" class="btn btn-success">Generate Documents <i
                     class="fas fa-external-link-alt"></i></button>
         </div>
-        <button id="expunge-it" class="expunge-it btn btn-success">ExC</button>
+        <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid</p>
     </div>
     <script id='script' src="popup.js"></script>
 

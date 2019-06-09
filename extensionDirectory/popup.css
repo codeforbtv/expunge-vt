@@ -21,6 +21,10 @@ button {
     text-decoration: none !important;
 }
 
+#countCards {
+    margin-bottom: 15px !important;
+}
+
 .accordion {
     white-space: normal;
     width: 290px;
@@ -41,12 +45,24 @@ button {
     display: flex;
     flex-direction: row;
     width: 100%;
-    min-height: 200px;
+    min-height: 175px;
     margin: 5px;
 }
 
 #defendantInfo {
     width: 80%;
+}
+
+.petitioner-details {
+    display: flex;
+    flex-direction: row;
+    margin-top: 5px;
+}
+
+.petitioner-label {
+    width: 100px;
+    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #logoDiv {
@@ -63,24 +79,52 @@ button {
 #logoDivCover {
     display: flex;
     flex-direction: row;
+    align-content: center;
+    text-align: center;
     width: 100%;
-    margin-top: 100px;
+    margin-top: 70px;
 }
 
-#logoDivCover .logos {
-    width: 100px;
+#code4btv {
+    width: 20%;
+    height: 20%;
     display: block;
+    margin-left: 100px;
+    margin-right: auto;
+}
+
+#legal-aid {
+    width: 40%;
+    height: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: 60px;
+}
+
+
+#introText {
+    margin-top: 10px;
+    width: 70%;
+    text-align: center;
     margin-left: auto;
     margin-right: auto;
 }
 
-
-.buttonDiv {
-    margin: 5px;
+#vtCourtsOnline {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 70%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #countsLabel {
-    margin-left: 5px;
+    margin: 5px;
+}
+
+hr {
+    margin-top: 2px !important;
 }
 
 .pills-rounded .nav-item .nav-link {
@@ -147,6 +191,7 @@ button {
 .card-body {
     padding: 2px !important;
     font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .card-body p {
@@ -160,9 +205,10 @@ th, td {
 }
 
 .expunge-it {
-    width: 75px;
+    width: 100px;
     height: 30px;
     font-size: 8px;
+    font-family: Helvetica, Arial, sans-serif;
     margin-bottom: 3px;
     margin: 10px 5px 10px 5px;
     align-self: center;
@@ -192,6 +238,8 @@ th, td {
     flex-direction: row;
     width: 100%;
     justify-content: center;
+    margin: 35px 10px 5px 10px;  
+    text-align: center;
 }
 
 .button-div button{

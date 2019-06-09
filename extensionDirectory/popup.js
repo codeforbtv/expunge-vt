@@ -8,32 +8,28 @@ let coverDiv = document.getElementById("coverDiv");
 
 createPetition.onclick = function (element) {
     chrome.tabs.create({
-        url: chrome.extension.getURL('formMenu.html')
+        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
     })
 };
 
 let clearData = document.getElementById('clear-data');
 clearData.onclick = function (element) {
-    var myNode = document.getElementById("countCards");
-    while (myNode.firstChild) {
-        myNode.removeChild(myNode.firstChild);
+
+    var r = confirm("Are you sure you want to clear all data for this petitioner?");
+    if (r == true) {
+        txt = "You pressed OK!";
+
+        var myNode = document.getElementById("countCards");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        document.getElementById('defendantName').innerHTML = "";
+        document.getElementById('defendantDOB').innerHTML = "";
+        document.getElementById('defendantAddress').innerHTML = "";
+        chrome.storage.local.clear()
+        coverDiv.style.display = "block";
     }
-    document.getElementById('defendantName').innerHTML = "";
-    document.getElementById('defendantDOB').innerHTML = "";
-    document.getElementById('defendantAddress').innerHTML = "";
-    chrome.storage.local.clear()
-    alert("cleared")
-    coverDiv.style.display = "block";
-};
 
-
-
-let expungeIT = document.getElementById('expunge-it');
-
-expungeIT.onclick = function (element) {
-    chrome.tabs.create({
-        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
-    })
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -44,7 +40,7 @@ function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
-            $( "#coverDiv" ).toggle(false);
+            $("#coverDiv").toggle(false);
         }
     });
 }
@@ -72,7 +68,7 @@ addCounts.onclick = function (element) {
 chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
-    $( "#coverDiv" ).toggle(false);
+    $("#coverDiv").toggle(false);
 });
 
 function setPopUpData(counts) {
@@ -84,7 +80,7 @@ function setPopUpData(counts) {
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
-            addressHTML += "<br>" + addrArray[i]
+            addressHTML += addrArray[i] + "<br>"
         }
         return addressHTML
     }
