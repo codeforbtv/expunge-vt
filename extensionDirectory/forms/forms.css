@@ -75,7 +75,7 @@ table {
 
 #docketNoDiv {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 p {
