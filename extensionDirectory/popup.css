@@ -1,5 +1,5 @@
 body {
-    width: 425px;
+    width: 475px;
     border: 2px solid grey;
 }
 
@@ -8,26 +8,8 @@ body {
 }
 
 button {
-    width: 375px;
     outline: none;
 }
-
-.card {
-    width: 100%;
-}
-
-.card-header {
-    word-break: break-all;
-    padding: 0 !important;
-    width: 100%;
-
-}
-
-.countCardBtn {
-    white-space: normal;
-    text-decoration: none !important;
-}
-
 #countCards {
     margin-bottom: 15px !important;
 }
@@ -48,9 +30,8 @@ button {
     box-sizing: border-box;
     top:0;
     left:0;
-    border-right: 2px solid grey;
-    border-top: 2px solid grey;
-    border-left: 2px solid grey;
+    border: 2px solid grey;
+    border-bottom:0;
 
 }
 .popTop {
@@ -141,38 +122,6 @@ hr {
     margin-top: 2px !important;
 }
 
-.pills-rounded .nav-item .nav-link {
-    border-radius: 10em;
-    margin: 0px;
-    padding: 0px;
-}
-
-.pills-outline-red .nav-item .nav-link {
-    border: 2px solid #fff;
-    color: #666;
-    background-color: transparent;
-    width: 120px;
-}
-
-.smallPill, .smallPill .nav-item, .smallPill .nav-link {
-    width: 50px !important;
-}
-
-.pills-outline-red .nav-item .nav-link:hover {
-    border: 2px solid #eee;
-}
-
-.pills-outline-red .nav-item .nav-link.active {
-    border: 2px solid #2FA54A;
-    color: #2FA54A;
-    
-}
-
-.pills-outline-red .nav-item .nav-link.active:hover {
-    border: 2px solid #2FA54A;
-    color: #2FA54A;
-}
-
 .dates-box {
     display: flex;
     flex-direction: row;
@@ -183,32 +132,8 @@ hr {
     padding: 2px;
 }
 
-.buttonLink {
-    display: flex;
-    flex-direction: row;
-}
-
-#button-top {
-}
-
-#description-date {
-}
-
-#description-date p {
-}
-
-#selectionDiv {
-
-}
-
 .pillText {
     padding: 3px;
-}
-
-.card-header p {
-    margin: 1px;
-    display: flex;
-    flex-direction: row;
 }
 
 .card-body {
@@ -223,37 +148,16 @@ hr {
     margin: 1px !important;
 }
 
-th, td {
-    padding: 4px !important;
+.card-body .table th, .card-body .table td {
+    padding: 4px;
 }
 
 .expunge-it {
     width: 100px;
-    height: 30px;
-    font-size: 8px;
     font-family: Helvetica, Arial, sans-serif;
     margin-bottom: 3px;
     margin: 10px 5px 10px 5px;
     align-self: center;
-}
-
-.form-check {
-    width: 15px;
-    background-color: blue;
-}
-
-.form-check-input {
-    padding: 0;
-    margin: 0;
-    width: 15px;
-
-}
-
-.petition-buttons {
-    display:flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: center;
 }
 
 .button-div {
@@ -274,5 +178,74 @@ th, td {
 }
 
 #create-petition {
-    width: 2000px;
+    width: 250px;
+}
+
+/* Count Cards */
+
+.card .card-header {
+    padding:0.5rem;
+}
+.card-header__column {
+    position: relative;
+    display:flex;
+    flex-direction: column;
+    width:100%;
+}
+.card-header__title-row {
+    position: relative;
+    display:flex;
+    flex-direction: row;
+    align-content: stretch;
+    justify-content: space-between;
+    width:100%;
+    text-align: left;
+    margin-bottom:0.5rem;
+}
+.card-header__title-row p {
+    margin-bottom:0;
+}
+.card-header__title-row .btn {
+    white-space: normal;
+    text-align: left;
+    padding:0;
+}
+.card-header__meta-data {
+    width:65%;
+    hyphens: auto;
+}
+.card-header__select {
+    width:35%;
+    margin-left:0.5rem;
+}
+.card-header__select select {
+    width:100%;
+}
+
+.card-header__pills-row {
+    position: relative;
+    display:flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: space-between;
+}
+
+
+/* Pills */
+.pill {
+    min-width: 50px;
+    font-size:0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.pill.pill--rounded {
+    border-radius: 500px;
+    margin: 0;
+    padding: 0;
+}
+
+.pill.pill--outline-green {
+    border: 2px solid #2FA54A;
+    color: #2FA54A;
+    background-color: transparent;
 }

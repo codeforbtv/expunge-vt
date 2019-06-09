@@ -88,13 +88,13 @@ function setPopUpData(allData) {
         count = allData.counts[i]
         dockNum = count.docketNum.trim();
         ctNum = count.countNum.trim();
-        cardSelectID = "select" + dockNum + "-" + ctNum
+        cardSelectID = "#select" + dockNum + "-" + ctNum
 
         let card = document.createElement('div');
         card.classList.add('card');
         card.innerHTML = createCountCard(count)
         $('#countCards').append(card);
-        $("#cardSelectID").val(count.filingType);
+        $(cardSelectID).val(count.filingType);
     }
 
 
@@ -106,16 +106,17 @@ function createCountCard(count) {
     ctNum = count.countNum.trim();
     cardID = dockNum + "-" + ctNum
     let cardHTML = (`
-
         <div class="card-header" id=${"heading" + cardID}>
-            <button class="btn btn-link btn-sm countCardBtn" type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
-                <div class="buttonLink">
-                    <div id="button-top>
-                        <div id="description-date>
-                            <p>${count.description}</b></p>
-                            <p>${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
+                <div class="card-header__column">
+                    <div class="card-header__title-row">
+                        <div id="description-date" class="card-header__meta-data">
+                        <button class="card-header__description btn btn-link btn-sm" type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
+                            <p>${count.description}</p>
+                         </button>
+                            <p class="card-header__disposition-date">${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
+
                         </div>
-                        <div id = "selectionDiv">
+                        <div id="selectionDiv" class="card-header__select">
                             <select id=${"select" + cardID} class="petitionSelect selectpicker">
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
@@ -125,15 +126,12 @@ function createCountCard(count) {
                         </div>
                     </div>
 
-
-                    </i>
-                    <ul class="nav md-pills nav-justified pills-rounded pills-outline-red smallPill" width="50" >
-                        <li class="nav-item pillText">
-                        <a class="nav-link active pillText" data-toggle="tab" href="#panel61" role="tab">${count.offenseClass} </a></li>
-                    </ul>
+                    <div class="card-header__pills-row">
+                        <span class="pill pill--rounded pill--outline-green">
+                            ${count.offenseClass}
+                        </span>
+                    </div>
                 </div>
-             </button>
-                
         </div>
 
         <div id=${"collapse" + cardID} class="collapse " aria-labelledby=${"heading" + cardID} data-parent="#countCards">
