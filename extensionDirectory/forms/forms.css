@@ -188,7 +188,7 @@ th, td {
 @media print {
     @page { 
         size: letter portrait;
-        margin: 1.25in 1.25in 0.375in 1.25in 
+        margin: 1in 0.25in 0.375in 1.5in 
     }
     body {
         font-size:12pt;
@@ -199,6 +199,26 @@ th, td {
     
     .page {
         page-break-after: always;
+        position: relative;
+        margin-left:0.25in;
+        margin-right:0.25in;
+
+    }
+    .page.include-margin-lines:before {
+        height:100%;
+        position: fixed;
+        border-left:0.01in solid #000;
+        content: "";
+        left:0;
+        top:0;
+    }
+    .page.include-margin-lines:after {
+        height:100%;
+        position: fixed;
+        border-left:0.01in solid #000;
+        content: "";
+        right:0;
+        top:0;
     }
     .page:last-of-type {
         page-break-after: auto;
