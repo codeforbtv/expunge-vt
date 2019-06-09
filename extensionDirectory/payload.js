@@ -144,6 +144,7 @@ function processCountLine1(countLine1) {
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": countLine1Array[felMisLocation + 1],
         "offenseDisposition": disposition.trim(),
+        "filingType": "X"
     }]
 
     //Get Alleged offense date:

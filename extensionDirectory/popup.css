@@ -1,5 +1,6 @@
 body {
     width: 425px;
+    border: 2px solid grey;
 }
 
 #defendantInfo p {
@@ -11,9 +12,15 @@ button {
     outline: none;
 }
 
+.card {
+    width: 100%;
+}
+
 .card-header {
     word-break: break-all;
     padding: 0 !important;
+    width: 100%;
+
 }
 
 .countCardBtn {
@@ -27,6 +34,7 @@ button {
 
 .accordion {
     white-space: normal;
+    text-decoration: none !important;
     width: 290px;
 }
 
@@ -37,9 +45,13 @@ button {
     position:fixed;
     padding:0;
     margin:0;
-
+    box-sizing: border-box;
     top:0;
     left:0;
+    border-right: 2px solid grey;
+    border-top: 2px solid grey;
+    border-left: 2px solid grey;
+
 }
 .popTop {
     display: flex;
@@ -61,6 +73,8 @@ button {
 
 .petitioner-label {
     width: 100px;
+    padding-left: 15px;
+    font-size: 14px;
     font-weight: bold;
     font-family: Helvetica, Arial, sans-serif;
 }
@@ -174,8 +188,17 @@ hr {
     flex-direction: row;
 }
 
-.fa-gavel {
-    margin: 5px;
+#button-top {
+}
+
+#description-date {
+}
+
+#description-date p {
+}
+
+#selectionDiv {
+
 }
 
 .pillText {
