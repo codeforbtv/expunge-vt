@@ -164,6 +164,18 @@ function processCountLine1(countLine1) {
     countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
 }
 
+
+localStorage.setItem('allCounts', JSON.stringify(allCountsObject))
+chrome.runtime.sendMessage(allCountsObject);
+
+chrome.storage.local.set({
+    expungevt: allCountsObject
+});
+
+console.log("saved");
+
+
+
 function nthIndex(str, subStr, n) {
     var L = str.length,
         i = -1;
