@@ -130,7 +130,10 @@
 }
 
 .indent {
-    text-indent: 3em;
+    text-indent: 2em;
+}
+.bold {
+    font-weight: bold;
 }
 .header__title {
     text-align: center;
@@ -142,8 +145,8 @@
 
 .page input, .page textarea {
     border: 1px dotted black;
-    background-color:#ff9;
-    padding:0.5rem;
+    background-color:#ffb;
+    padding:0.25rem;
 }
 .filing-body p {
     line-height: 1.3;
@@ -152,19 +155,11 @@
 .filing-body__response textarea {
     width:100%;
 }
-.convictionBox {
-    display: flex;
-    flex-direction: row;
-    margin-left:15px;
-}
 
-.labelConviction {
-    margin-right:80px !important;
+.count-table__header {
+    border-top:1px solid #ddd;
+    border-bottom:2px solid #ddd;
 }
-.labelConvictionDate {
-    margin-right:15px !important;
-}
-
 .count-table {
     width:100%;
 }
@@ -180,6 +175,9 @@
 }
 .count-table td:first-of-type {
     width:25%;
+}
+.count-item {
+    border-bottom:1px solid #ddd;
 }
 .filing-closing {
     margin-top:4rem;

@@ -35,7 +35,7 @@ Vue.component('filing-footer', {
             <p class="filing-closing__salutation">Respectfully requested,</p>
             <div class="filing-closing__signature-area">
                 <div class="filing-closing__signature-box">
-                    <p class="filing-closing__name">{{signature.name}}</p>
+                    <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
                     <p class="filing-closing__petitioner-address">{{signature.address1}}<br>{{signature.address2}}</p>
                 </div>
                 <div class="filing-closing__date-box">
@@ -44,7 +44,7 @@ Vue.component('filing-footer', {
             </div>
 
             <div class="stipulated-closing" v-if="stipulated">
-                <p class="stipulated-closing__dates">Stipulated and agreed this ______ day of __________, 20__.</p>
+                <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this ______ day of __________, 20__.</p>
                 <div class="filing-closing__signature-box">
                     <p class="filing-closing__name">State's Attorney/Attorney General</p>
                 </div>
@@ -65,7 +65,8 @@ var app = new Vue({
     	defDOB: "",
     	counts: [],
     },
-    filings: ""
+    filings: "",
+    filingStats: "",
   },
   mounted() {
   	console.log('App mounted!');
@@ -207,6 +208,9 @@ var app = new Vue({
   		address1: this.saved.defAddress[0],
   		address2: this.saved.defAddress[1]
   	  }
+    },
+    numCountsIneligible: function () {
+      return this.saved.counts.filter(count => count.filingType == "X").length
     }
   },
   filters: {
