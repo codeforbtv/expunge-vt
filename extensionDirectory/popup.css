@@ -1,5 +1,6 @@
 body {
-    width: 350px;
+    width: 475px;
+    border: 2px solid grey;
 }
 
 #defendantInfo p {
@@ -7,38 +8,56 @@ body {
 }
 
 button {
-    width: 300px;
     outline: none;
 }
-
-.card-header {
-    word-break: break-all;
-    padding: 0 !important;
-}
-
-.countCardBtn {
-    white-space: normal;
-    text-decoration: none !important;
+#countCards {
+    margin-bottom: 15px !important;
 }
 
 .accordion {
     white-space: normal;
+    text-decoration: none !important;
     width: 290px;
 }
 
-.logos {
-    width: 50px;
-}
+.empty-state {
+    width: 100%;
+    height: 290px;
+    background-color: white;
+    position:fixed;
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+    top:0;
+    left:0;
+    border: 2px solid grey;
+    border-bottom:0;
 
+}
 .popTop {
     display: flex;
     flex-direction: row;
     width: 100%;
+    min-height: 175px;
     margin: 5px;
 }
 
 #defendantInfo {
     width: 80%;
+}
+
+.petitioner-details {
+    display: flex;
+    flex-direction: row;
+    margin-top: 5px;
+}
+
+.petitioner-label {
+    width: 100px;
+    padding-left: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 #logoDiv {
@@ -48,41 +67,59 @@ button {
     width: 10%;
 }
 
-.buttonDiv {
+#logoDiv .logos {
+    width: 50px;
+}
+
+#logoDivCover {
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    text-align: center;
+    width: 100%;
+    margin-top: 70px;
+}
+
+#code4btv {
+    width: 20%;
+    height: 20%;
+    display: block;
+    margin-left: 100px;
+    margin-right: auto;
+}
+
+#legal-aid {
+    width: 40%;
+    height: 40%;
+    display: block;
+    margin-left: auto;
+    margin-right: 60px;
+}
+
+
+#introText {
+    margin-top: 10px;
+    width: 70%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#vtCourtsOnline {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 70%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#countsLabel {
     margin: 5px;
 }
 
-
-.pills-rounded .nav-item .nav-link {
-border-radius: 10em;
-margin: 0px;
-padding: 0px;
-}
-
-.pills-outline-red .nav-item .nav-link {
-    border: 2px solid #fff;
-    color: #666;
-    background-color: transparent;
-    width: 120px;
-}
-
-.smallPill, .smallPill .nav-item, .smallPill .nav-link {
-    width: 50px !important;
-}
-
-.pills-outline-red .nav-item .nav-link:hover {
-    border: 2px solid #eee;
-}
-
-.pills-outline-red .nav-item .nav-link.active {
-    border: 2px solid #2FA54A;
-    color: #2FA54A;
-    
-}
-
-.pills-outline-red .nav-item .nav-link.active:hover {
-    border: 2px solid #2FA54A;
-    color: #2FA54A;
+hr {
+    margin-top: 2px !important;
 }
 
 .dates-box {
@@ -95,28 +132,14 @@ padding: 0px;
     padding: 2px;
 }
 
-.buttonLink {
-    display: flex;
-    flex-direction: row;
-}
-
-.fa-gavel {
-    margin: 5px;
-}
-
 .pillText {
     padding: 3px;
-}
-
-.card-header p {
-    margin: 1px;
-    display: flex;
-    flex-direction: row;
 }
 
 .card-body {
     padding: 2px !important;
     font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
 }
 
 .card-body p {
@@ -125,34 +148,104 @@ padding: 0px;
     margin: 1px !important;
 }
 
-th, td {
-    padding: 4px !important;
+.card-body .table th, .card-body .table td {
+    padding: 4px;
 }
 
 .expunge-it {
-    width: 75px;
-    height: 30px;
-    font-size: 8px;
+    width: 100px;
+    font-family: Helvetica, Arial, sans-serif;
     margin-bottom: 3px;
     margin: 10px 5px 10px 5px;
     align-self: center;
 }
 
-.form-check {
-    width: 15px;
-    background-color: blue;
-}
-
-.form-check-input {
-    padding: 0;
-    margin: 0;
-    width: 15px;
-
-}
-
-.petition-buttons {
+.button-div {
     display:flex;
     flex-direction: row;
     width: 100%;
     justify-content: center;
+    margin: 35px 10px 5px 10px;  
+    text-align: center;
+}
+
+.button-div button{
+    margin: 5px;
+}
+
+#add-docket-info {
+    width: 150px;
+}
+
+#create-petition {
+    width: 250px;
+}
+
+/* Count Cards */
+
+.card .card-header {
+    padding:0.5rem;
+}
+.card-header__column {
+    position: relative;
+    display:flex;
+    flex-direction: column;
+    width:100%;
+}
+.card-header__title-row {
+    position: relative;
+    display:flex;
+    flex-direction: row;
+    align-content: stretch;
+    justify-content: space-between;
+    width:100%;
+    text-align: left;
+    margin-bottom:0.5rem;
+}
+.card-header__title-row p {
+    margin-bottom:0;
+}
+.card-header__title-row .btn {
+    white-space: normal;
+    text-align: left;
+    padding:0;
+}
+.card-header__meta-data {
+    width:65%;
+    hyphens: auto;
+}
+.card-header__select {
+    width:35%;
+    margin-left:0.5rem;
+}
+.card-header__select select {
+    width:100%;
+}
+
+.card-header__pills-row {
+    position: relative;
+    display:flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: space-between;
+}
+
+
+/* Pills */
+.pill {
+    min-width: 50px;
+    font-size:0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.pill.pill--rounded {
+    border-radius: 500px;
+    margin: 0;
+    padding: 0;
+}
+
+.pill.pill--outline-green {
+    border: 2px solid #2FA54A;
+    color: #2FA54A;
+    background-color: transparent;
 }

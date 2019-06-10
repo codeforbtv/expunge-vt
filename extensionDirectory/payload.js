@@ -3,57 +3,93 @@ docketBody = document.getElementsByTagName("pre")[0].innerHTML
 
 divider = "================================================================================"
 
-//Get Defendant Name
-nameLocation = nthIndex(docketBody, "Defendant:", 1) + 15
-nameLocationEnd = nthIndex(docketBody, "DOB:", 1) - 40
-defName = docketBody.substring(nameLocation, nameLocationEnd)
 
-//Get Date of Birth
-dobLocation = nthIndex(docketBody, "DOB:", 1) + 15
-dobLocationEnd = nthIndex(docketBody, "POB:", 1) - 40
-defDOB = docketBody.substring(dobLocation, dobLocationEnd)
+petitionerCountObject = getPetitionerInfo();
+petitionerCountObject = getCountInfo(petitionerCountObject);
 
-//Get Address
-addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
-addressArray = addressString[0].split("\n")
-addressArray.pop()
-addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
-for (i = 0; i < addressArray.length; i++) {
-    addressArray[i] = addressArray[i].trim()
+if (hasCounts == false) {
+    chrome.storage.local.set({
+        expungevt: petitionerCountObject
+    });
+    chrome.runtime.sendMessage(petitionerCountObject);
+}
+else {
+    chrome.storage.local.get(['expungevt'], function (result) {
+
+        for (i = 0; i < petitionerCountObject[0]["counts"].length; i++) {
+            result.expungevt[0]["counts"].push(petitionerCountObject[0]["counts"][i])
+            result.expungevt[0]["totalCounts"] += 1
+        }
+        chrome.storage.local.set({
+            expungevt: result.expungevt
+        });
+        chrome.runtime.sendMessage(result.expungevt);
+
+    });
+
 }
 
-//Determine Number of Counts and create array with each line count
-countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
-countsEnd = nthIndex(docketBody, divider, 3)
-allCountsBody = docketBody.substring(countsStart, countsEnd)
-countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
-allCountsArray = allCountsBody.split("\n")
+function getPetitionerInfo() {
 
-//create all counts object
-allCountsObject = [{
-    "defName": defName,
-    "defDOB": defDOB,
-    "defAddress": addressArray,
-    "totalCounts": countTotal,
-    "counts": []
-}]
+    //Get Defendant Name
+    nameLocation = nthIndex(docketBody, "Defendant:", 1) + 15
+    nameLocationEnd = nthIndex(docketBody, "DOB:", 1) - 40
+    defName = docketBody.substring(nameLocation, nameLocationEnd)
 
+    //Get Date of Birth
+    dobLocation = nthIndex(docketBody, "DOB:", 1) + 15
+    dobLocationEnd = nthIndex(docketBody, "POB:", 1) - 40
+    defDOB = docketBody.substring(dobLocation, dobLocationEnd)
 
-//Move data from count table into objects
-countLines = countTotal * 2
-for (i = 0; i < countLines; i++) {
-    //Catch Line 1 (odd lines) of each count
-    if ((i + 1) % 2 != 0) {
-        countObject = [{}];
-        processCountLine1(allCountsArray[i])
-    } else { //Catch Line 2 of each count
-        description = allCountsArray[i].trim()
-        description = description.replace("/"," / ")
-        description = description.replace("  "," ")
-        countObject[0]["description"] = description
-
-        allCountsObject[0].counts.push(countObject[0])
+    //Get Address
+    addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
+    addressArray = addressString[0].split("\n")
+    addressArray.pop()
+    addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
+    for (i = 0; i < addressArray.length; i++) {
+        addressArray[i] = addressArray[i].trim()
     }
+
+    //create all counts object
+    tempPetitionerCountObject = [{
+        "defName": defName,
+        "defDOB": defDOB,
+        "defAddress": addressArray,
+        "counts": []
+    }]
+
+    return tempPetitionerCountObject;
+}
+
+function getCountInfo(tempPetitionerCountObject) {
+
+    //Determine Number of Counts and create array with each line count
+    countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
+    countsEnd = nthIndex(docketBody, divider, 3)
+    allCountsBody = docketBody.substring(countsStart, countsEnd)
+    countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
+    tempPetitionerCountObject[0]["totalCounts"] = countTotal;
+    allCountsArray = allCountsBody.split("\n")
+
+    //Move data from count table into objects
+    countLines = countTotal * 2
+    for (i = 0; i < countLines; i++) {
+        //Catch Line 1 (odd lines) of each count
+        if ((i + 1) % 2 != 0) {
+            countObject = [{}];
+            processCountLine1(allCountsArray[i])
+        } else { //Catch Line 2 of each count
+            description = allCountsArray[i].trim()
+            description = description.replace("/", " / ")
+            description = description.replace("  ", " ")
+            countObject[0]["description"] = description
+
+            tempPetitionerCountObject[0].counts.push(countObject[0])
+        }
+    }
+
+    return tempPetitionerCountObject
+
 }
 
 //Break line one of a count into its individual fields
@@ -108,6 +144,7 @@ function processCountLine1(countLine1) {
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": countLine1Array[felMisLocation + 1],
         "offenseDisposition": disposition.trim(),
+        "filingType": "X"
     }]
 
     //Get Alleged offense date:
@@ -134,6 +171,9 @@ chrome.runtime.sendMessage(allCountsObject);
 chrome.storage.local.set({
     expungevt: allCountsObject
 });
+
+console.log("saved");
+
 
 
 function nthIndex(str, subStr, n) {

@@ -24,7 +24,7 @@
       "128": "images/get_started128.png"
     },
     "manifest_version": 2,
-    "content_security_policy": "script-src 'self' https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
     "externally_connectable": {
       "ids": ["*"]
     }

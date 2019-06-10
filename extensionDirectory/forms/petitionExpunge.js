@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     getData();
+    initButtons();
 }, false);
 
 function getData() {
@@ -11,6 +12,30 @@ function getData() {
     });
 }
 
+function initButtons(){
+    //document.getElementById('js-make-pdf').addEventListener('click', makePDF);
+    document.getElementById('js-print').addEventListener('click', printDocument);
+
+}
+function printDocument(){
+    window.print();
+}
+function makePDF(){
+
+    var doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'in',
+        format: [8.5,11]
+        });   
+    window.html2canvas = html2canvas;
+    doc.html(document.body, {
+       callback: function (doc) {
+         doc.save();
+       }
+});
+
+
+}
 function setFormData(allCounts) {
 
     urlCount = window.location.href.split("?")[1]
