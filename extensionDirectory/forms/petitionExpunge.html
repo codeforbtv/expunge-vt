@@ -32,13 +32,15 @@
 
 <body>
     <div id="filing-app">
-        <div class="header-bar no-print">
+        <div class="header-bar-wrapper no-print">
+        <div class="header-bar">
             <h1>Filings for {{petitoner.name}}</h1>
                 <div class="header-bar__controls">
                 <button id="js-print" class="btn btn-primary no-print">Print All</button>
                 <button id="js-export" class="btn btn-primary no-print" disabled>Export to CSV</button>
             </div>
         </div>
+    </div>
         <table class="all-filings">
          <tbody>
            <tr><td>
