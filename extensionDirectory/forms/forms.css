@@ -1,25 +1,3 @@
-.footer, .footer-space {
-      height: 100px;
-    }
-.footer {
-  position: fixed;
-  bottom: 0;
-  text-align: center;
-  width:100%;
-  font-size:12pt;
-}
-.footer__company {
-    margin:0;
-}
-.footer__phone {
-    margin:0;
-}
-
-.container.form__container {
-    font-family: 'Times New Roman', Times, serif;
-    text-align:left;
-
-}
 .document-meta-data {
     position: absolute;
     top:-60px;
@@ -38,10 +16,81 @@
     text-transform: uppercase;
     font-weight: 800
 }
-table {
-    width:100%;
+
+
+.all-filings {
+    width: 100%;
 }
-.petition__title {
+.page {
+    font-family: 'Times New Roman', Times, serif;
+    text-align:left;
+    font-size: 20px;
+    margin-left:auto;
+    margin-right: auto;
+}
+.page p, .page h1 {
+    margin-bottom:0;
+}
+
+.filing-header__title {
+    text-transform: uppercase;
+    text-align: center;
+    width:100%;
+    margin-bottom:2.5rem;
+}
+.filing-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-bottom:2.5rem;
+
+}
+.filing-header__half {
+    width:50%;
+}
+.filing-header__court {
+    margin-bottom:2rem;
+}
+.filing-header__docket-number {
+    text-align: left;
+    display:inline-block;
+}
+.filing-title {
+    text-align: center;
+}
+
+.filing-header__court, .docket-number__division, .docket-number__label {
+    text-transform: uppercase;
+}
+.docket-caption {
+    display: flex;
+}
+.docket-caption__names {
+    width: 80%;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.docket-caption__label {
+    font-style: italic;
+}
+.docket-caption__party {
+    text-transform: uppercase;
+}
+
+
+
+
+.footer__company {
+    margin:0;
+}
+.footer__phone {
+    margin:0;
+}
+
+
+
+.filing-title {
     text-decoration: underline;
     text-transform: uppercase;
     font-size:20px;
@@ -57,57 +106,20 @@ table {
     text-transform: uppercase;
 
 }
-.header2 {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.docketNumHeader {
-    padding-left: 20px;
-}
-
-.docketNo {
-    text-align: right;
-    align-self: right;
-    margin-left: auto;
-}
-
-#docketNoDiv {
-    display: flex;
-    flex-direction: column;
-}
-
-p {
-    font-size: 20px;
-}
-
-.caption {
-    display: flex;
-    flex-direction: row;
-}
-
-.caption p {
-    margin: 0;
-}
-
-.capNames {
-    width: 45%;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-}
 
 
-.justiceForm {
-    /* width: 100%; */
-    height: 50px;
-}
-
-.editable {
+.page input, .page textarea {
     border: 1px dotted black;
-    background-color:#ff0;
+    background-color:#ff9;
+    padding:0.5rem;
 }
-
+.filing-body p {
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+}
+.filing-body__response textarea {
+    width:100%;
+}
 .convictionBox {
     display: flex;
     flex-direction: row;
@@ -121,37 +133,42 @@ p {
     margin-right:15px !important;
 }
 
-#convictionTable {
-    width: 100%;
+.count-table {
+    width:100%;
 }
-
-th, td {
-    padding: 2px !important;
-    vertical-align: middle !important;
-    text-align: center !important;
+.count-table input{
+    width:100%;
+}
+.count-table th, .count-table td {
+    padding: 2px ;
+    vertical-align: middle;
+    text-align: center;
     font-family: 'Times New Roman', Times, serif;
     font-size: 20px;
 }
-
-#sigDateBox {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-
+.count-table td:first-of-type {
+    width:25%;
 }
-
-#sigBox {
+.filing-closing {
+    margin-top:4rem;
+}
+.filing-closing__signature-area {
+    display: flex;
+    line-height: 1.3;
+}
+.filing-closing__signature-box {
     border-top: 1.5px solid black;
     width: 65%;
+    margin-top:2.5rem;
+    padding-top:0.25rem;
 }
 
-#dateBox {
+.filing-closing__date-box {
     border-top: 1.5px solid black;
     margin-left: 35px;
     width: 25%;
-}
-#petitionerAddress p {
-    line-height: 1.2em;
+    margin-top:2.5rem;
+    padding-top:0.25rem;
 }
 
 
@@ -188,72 +205,62 @@ th, td {
 @media print {
     @page { 
         size: letter portrait;
-        margin: 1in 0.25in 0.375in 1.5in 
+        margin: 0.75in 0.25in 0.375in 0.25in 
     }
     body {
-        font-size:12pt;
+        font-size:18pt;
         line-height: 1.3;
-        background: #fff !important;
         color: #000;
     }
     
     .page {
         page-break-after: always;
         position: relative;
-        margin-left:0.25in;
-        margin-right:0.25in;
+        padding-left:0.75in;
+        padding-right:0.75in;
+        padding-top:0.5in;
+        height: 100%;
+        overflow: visible;
 
     }
+    .page.include-margin-lines {
+        margin-left:1.25in;
+        padding-left:0.25in;
+        padding-right:0.25in;
+    }
     .page.include-margin-lines:before {
-        height:100%;
-        position: fixed;
+        height:15in;
+        position: absolute;
         border-left:0.01in solid #000;
         content: "";
         left:0;
-        top:0;
+        top:0.5in;
+
     }
     .page.include-margin-lines:after {
-        height:100%;
-        position: fixed;
+        height:15in;
+        position: absolute;
         border-left:0.01in solid #000;
         content: "";
         right:0;
-        top:0;
-    }
-    .page:last-of-type {
-        page-break-after: auto;
+        top:0.5in;
     }
     .no-print {
         display:none !important;
     }
-    .container {
-        width: 100%;
-        height: 100%;
-        box-sizing: border-box;
 
+    .footer, .footer-space {
+        height: 100px;
     }
-    .editable {
-        border:0;
-        background-color: transparent;
-    }
-
-    .header {
-        margin: 0;
-        padding: 0;
-    
-    }
-    
-    .header2 {
-        /* width: 8.5in; */
-        display: flex;
-        flex-direction: row;
-        padding: 0;
+    .footer {
+      position: fixed;
+      bottom: 0;
+      text-align: center;
+      width:100%;
+      font-size:12pt;
     }
 
-    .petition-body {
-
-    }
-    p, .petition__title, .header__title, td, th {
+    p, .filing-title, .header__title, td, th {
         font-size: 20pt;
     }
 }

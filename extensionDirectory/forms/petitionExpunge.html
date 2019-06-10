@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
+    <title>Filings for {{petitoner.name}}</title>
     <link href="forms.css" rel="stylesheet" type="text/css">
-
     <!-- font awesome -->
    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
     integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">-->
@@ -15,9 +15,9 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
     integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>-->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
     integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
     crossorigin="anonymous"></script>
@@ -32,41 +32,51 @@
 
 <body>
     <div id="filing-app">
-        <div class="header no-print">
-            <button id="js-make-pdf" class="btn btn-primary no-print">Make PDF</button>
-            <button id="js-print" class="btn btn-primary no-print">Print</button>
-            <p>{{ message }}</p>
+        <div class="header-bar no-print">
+            <h1>Filings for {{petitoner.name}}</h1>
+                <div class="header-bar__controls">
+                <button id="js-print" class="btn btn-primary no-print">Print All</button>
+                <button id="js-export" class="btn btn-primary no-print" disabled>Export to CSV</button>
+            </div>
         </div>
-        <table>
+        <table class="all-filings">
          <tbody>
            <tr><td>
 
+<section v-for="group in filings" v-bind:id="group.county">
+<article class="page include-margin-lines" v-for="filing in group.filings" v-bind:id="filing.id">
 
-<article class="page include-margin-lines">
     <div class="document-meta-data no-print">
-        <h2 class="document-meta-data__title">{{filing.title}}</h2>
-        <p class="document-meta-data__body">{{filing.courtCounty}}, {{filing.numCountsString}}</p>
+        <p class="document-meta-data__title">{{filing.title}}</p>
+        <p class="document-meta-data__body">{{group.county}}, {{filing.numCountsString}}</p>
     </div>
     <div class="filing-document">
         <div class="filing-header">
+            
             <div class="filing-header__title">State Of Vermont</div>
-            <div class="filing-header__court">
-                <p>Superior Court</p>
-                <p>{{filing.courtCounty}} Unit</p>
+            
+            <div class="filing-header__half">
+                <div class="filing-header__court">
+                    <p>Superior Court</p>
+                    <p>{{filing.county}} Unit</p>
+                </div>
+                <docket-caption v-bind:name="petitoner.name"></docket-caption>
             </div>
-            <div class="filing-header__docket-number docket-number">
-                <p class="docket-number__division">Criminal Division</p>
-                <p class="docket-number__label">Docket No.</p>
-                <p v-for="docketNum in allDocketNums"><span class="docket-number__number no-visible">{{docketNum.num}}</span><input class="no-print" v-model="docketNum.num">&nbsp;<span class="docket-number__county no-visible">{{docketNum.county}}</span><input class="no-print" v-model="docketNum.county"></p>
+            <div class="filing-header__half text-right">
+                <div class="filing-header__docket-number docket-number">
+                    <p class="docket-number__division">Criminal Division</p>
+                    <p class="docket-number__label">Docket No.</p>
+                    <p v-for="docketNum in filing.docketNums"><span class="docket-number__number no-visible">{{docketNum.num}}</span><input class="no-print" v-model="docketNum.num"></p>
                 </div>
             </div>
         </div>
-         <docket-caption v-bind:name="petitoner.name"></docket-caption>
-        </div>
-        <h1 class="filing-title">{{filing.title}}</h1>
         
-        <!-- we will have one of these for each filing type -->
-        <div class="filing-body" v-if="filing.title == 'Petition To Expunge Conviction'">
+        <h1 class="filing-title">{{filing.title}}<span v-if="filing.multipleCounts">s</span></h1>
+
+        <!-- Begin Unique Portion of Filings -->
+
+        <!-- (Stipulated) Petiton To Expunge Conviction -->
+        <div class="filing-body" v-if="filing.type == 'ExC' || filing.type == 'StipExC'">
             <p class="indent">
             Petitioner moves the Court to expunge the record of the above-captioned conviction<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect 7602.</p>
             <p>1. I was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
@@ -76,7 +86,7 @@
                     <th valign="middle" scope="col">Offense Description</th>
                 </thead>
                 <tbody class="count-table__body">
-                    <tr class="count-item" v-for="count in saved.counts">
+                    <tr class="count-item" v-for="count in filing.counts">
                         <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span><input class="no-print" v-model="count.dispositionDate"></td>
                         <td class="count-item__description"><span class="no-visible">{{count.description}}</span><input class="no-print" v-model="count.description"></td>
                     </tr>
@@ -88,8 +98,10 @@
             <p id="paragraph3">3. Expunging all record of <span v-if="filing.multipleCounts">these convictions</span><span v-else>this conviction</span> is in the interest of justice because:</p>
         </div>
 
+        <!-- (Stipulated) Petiton To Expunge Non Conviction -->
 
-        <div class="filing-body" v-if="filing.title == 'Petition To Expunge Non Conviction'">
+        <div class="filing-body" v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'">
+
             <p class="indent">
             Petitioner moves the Court to expunge the record of the above-captioned dismissal<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect 7602.</p>
             <p>1. I was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
@@ -99,7 +111,35 @@
                     <th valign="middle" scope="col">Offense Description</th>
                 </thead>
                 <tbody class="count-table__body">
-                    <tr class="count-item" v-for="count in saved.counts">
+                    <tr class="count-item" v-for="count in filing.counts">
+                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span><input class="no-print" v-model="count.dispositionDate"></td>
+                        <td class="count-item__description"><span class="no-visible">{{count.description}}</span><input class="no-print" v-model="count.description"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>2. <span v-if="filing.multipleCounts">These are</span><span v-else>This is a</span> qualifying crime<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7601(4).</p>
+
+            <p id="paragraph3">3. Expunging all record of <span v-if="filing.multipleCounts">these convictions</span><span v-else>this conviction</span> is in the interest of justice because:</p>
+        </div>
+        
+       
+
+        <!-- (Stipulated) Petiton To Seal Conviction -->
+
+
+        <div class="filing-body" v-if="filing.type == 'SC' || filing.type == 'StipSC'">
+
+            <p class="indent">
+            Petitioner moves the Court to expunge the record of the above-captioned dismissal<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect 7602.</p>
+            <p>1. I was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
+            <table class="count-table">
+                <thead class="count-table__header">
+                    <th valign="middle" scope="col">Conviction Date</th>
+                    <th valign="middle" scope="col">Offense Description</th>
+                </thead>
+                <tbody class="count-table__body">
+                    <tr class="count-item" v-for="count in filing.counts">
                         <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span><input class="no-print" v-model="count.dispositionDate"></td>
                         <td class="count-item__description"><span class="no-visible">{{count.description}}</span><input class="no-print" v-model="count.description"></td>
                     </tr>
@@ -112,125 +152,33 @@
         </div>
 
 
-        <div>
-            <p class="no-visible">{{response}}</p>
-            <textarea class="no-print" v-model="response"></textarea>
+        <!-- End Unique Portion of Filings -->
+
+        <div class="filing-body__response">
+            <p class="no-visible">{{filing.response}}</p>
+            <textarea class="no-print" v-model="filing.response" placeholder="Type here..."></textarea>
         </div>
-        <div class="filing-closing">
-            <p class="filing-closing__salutation">Respectfully requested,</p>
-            <div class="filing-closing__signature-area">
-                <div class="filing-closing__signature-box">
-                    <p class="filing-closing__name">{{petitoner.name}}</p>
-                    <p class="filing-closing__petitioner-address">{{petitoner.address1}}<br>{{petitoner.address2}}</p>
-                </div>
-                <div class="filing-closing__date-box">
-                    <p>Date</p>
-                </div>
-            </div>
 
-            <div class="stipulated-closing" v-if="filing.isStipulated">
-                <p class="stipulated-closing__dates">Stipulated and agreed this ______ day of __________, 20__.</p>
-            <div class="filing-closing__signature-box">
-                <p class="filing-closing__name">State's Attorney/Attorney General</p>
+         <filing-footer v-bind:signature="petitoner" v-bind:stipulated="filing.isStipulated"></filing-footer>
 
+
+        </div>
+    </article>
+</section>
+
+        <!-- Clinic Checkout Sheet -->
+
+<article class="page">
+
+    <div class="container form__container">
+        <div class="header">
+            <div class="header__title">Clinic Checkout Sheet</div>
+            <div class="petition-body">
+                <div class="title petition__title">Summary of Charges</div>
             </div>
         </div>
     </div>
 </article>
-
-
-
-
-
-<!--
-            <article class="page include-margin-lines">
-                <div class="document-meta-data no-print">
-                    <h2 class="document-meta-data__title">Petition To Expunge Conviction</h2>
-                    <p class="document-meta-data__body">Addison, 1 Count</p>
-                </div>
-                <div class="container form__container">
-                    <div class="header">
-                        <div class="header__title">State Of Vermont</div>
-                        <div class="header2">
-                            <div class="courtCounty">
-                                <p>Superior Court</p>
-                                <p><span id='courtCounty'></span> Unit</p>
-                            </div>
-                            <div class="docketNo">
-                                <p>Criminal Division</p>
-                                <div id = "docketNoDiv">
-                                    <p>Docket No.</p>
-                                    <div id='docketNumHeader'></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="caption">
-                            <div class="capNames">
-                                <p>State of Vermont,</p>
-                                <p>v.</p>
-                                <p><span id='petitionerName'></span></p>
-                                <p><i>Petitioner</i></p>
-                            </div>
-                            <div class="capParens">
-                                <p>)</p>
-                                <p>)</p>
-                                <p>)</p>
-                                <p>)</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="petition-body">
-                        <div class="title petition__title">Petition To Expunge Conviction</div>
-                        <p id="introParagraph" class="form__intro-paragraph indent">Petitioner moves the Court to expunge the record of the above-captioned convictions pursuant to 13 V.S.A. &sect; 7602.</p>
-                        <p id="paragraph1">1. I was convicted of the following crimes:</p>
-                        
-                        <table class="count-table">
-                            <thead class="count-table__header">
-                                <th valign="middle" scope="col">Conviction Date</th>
-                                <th valign="middle" scope="col">Offense Description</th>
-                            </thead>
-                            <tbody class="count-table__body">
-                                <tr class="count-item" v-for="count in saved.counts">
-                                    <td class="count-item__date">{{count.dispositionDate}}</td>
-                                    <td class="count-item__description">{{count.description}}<input class="no-print" v-model="count.description"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-
-
-                        <p id="paragraph2">2. These are qualifying crimes pursuant to 13 V.S.A. &sect; 7601(4).</p>
-                        <p id="paragraph3">3. Expunging all record of these convictions is in the interest of justice because:</p>
-                        <p class="editable" contenteditable="true">Type Here...</p>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis convallis orci sit amet justo porttitor, sit amet aliquet risus pellentesque. Pellentesque volutpat nulla id orci blandit imperdiet. Nunc rutrum elit et mauris mattis aliquam. Nullam scelerisque urna et viverra porttitor. Nullam non sapien vestibulum, lacinia augue sed, dignissim lorem. Nulla sollicitudin sapien metus. Morbi sed rutrum massa.
-                        </p>
-                        
-                        <div id="sigDateBox">
-                            <div id="sigBox">
-                                {{petitoner.name}}
-                                <div id="petitionerAddress">{{petitoner.address1}}<br>{{petitoner.address2}}</div>
-                            </div>
-                            <div id="dateBox">
-                                <p>Date</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </article>
--->
-
-            <article class="page no-visible">
-
-                <div class="container form__container">
-                    <div class="header">
-                        <div class="header__title">Clinic Checkout Sheet</div>
-                        <div class="petition-body">
-                            <div class="title petition__title">Summary of Charges</div>
-                        </div>
-                    </div>
-                </div>
-                </article>
 
 
 
