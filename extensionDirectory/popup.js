@@ -9,9 +9,16 @@ let coverDiv = document.getElementById("coverDiv");
 getData();
 
 createPetition.onclick = function (element) {
+
+    chrome.tabs.query({
+        active: true, currentWindow: true
+      }, tabs => {
+        let index = tabs[0].index;
     chrome.tabs.create({
-        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
+        url: chrome.extension.getURL('./forms/petitionExpunge.html?1'),
+        index: index + 1,
     })
+})
 };
 
 clearData.onclick = function (element) {
