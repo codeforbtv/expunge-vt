@@ -1,11 +1,12 @@
-let newElement = `'<span style="color:red">TEST</span>'`;
+let createPetition = document.getElementById('create-petition');
+let clearData = document.getElementById('clear-data');
+let addCounts = document.getElementById('add-docket-info');
 let loadedMessage;
 let docketInfo = document.getElementById('docketInfo');
 let coverDiv = document.getElementById("coverDiv");
 
 
 getData();
-
 
 createPetition.onclick = function (element) {
     chrome.tabs.create({
@@ -42,12 +43,7 @@ function getData() {
     });
 }
 
-function initButtons(){
 
-    let scrapeFromPageButton = document.getElementById('add-data');
-    scrapeFromPageButton.onclick = function (element) {
-        injectPayload();
-    };
 
 addCounts.onclick = function (element) {
 
@@ -79,7 +75,6 @@ function setPopUpData(allData) {
     document.getElementById('defendantDOB').innerHTML = allData.defDOB;
     document.getElementById('defendantAddress').innerHTML = getAddress(allData.defAddress);
 
-
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
@@ -104,18 +99,7 @@ function setPopUpData(allData) {
 
 
 }
-function clearSession(){
-    chrome.storage.local.clear();
-    clearPopUp();
-}
-function clearPopUp(){
 
-    document.getElementById('defendantName').innerHTML = "";
-    document.getElementById('defendantDOB').innerHTML = "";
-    document.getElementById('defendantAddress').innerHTML = "";
-    document.getElementById('countCards').innerHTML = "";
-  
-}
 function createCountCard(count) {
 
     dockNum = count.docketNum.trim();
@@ -138,6 +122,9 @@ function createCountCard(count) {
                                 <option value="ExC">Expunge Conviction</option>
                                 <option value="ExNC">Expunge Nonconviction</option>
                                 <option value="SC">Seal Conviction</option>
+                                <option value="StipExC">(Stip) Expunge Conviction</option>
+                                <option value="StipExNC">(Stip) Expunge Nonconviction</option>
+                                <option value="StipSC">(Stip) Seal Conviction</option>
                             </select>
                         </div>
                     </div>
