@@ -71,7 +71,7 @@ p.document-meta-data__body {
     text-transform: uppercase;
     text-align: center;
     width:100%;
-    margin-bottom:2.5rem;
+    margin-bottom:1rem;
 }
 .filing-header {
     display: flex;
@@ -191,7 +191,7 @@ p.document-meta-data__body {
     border-top:1px solid #999;
 }
 .filing-closing {
-    margin-top:4rem;
+    margin-top:2rem;
 }
 .filing-closing__signature-area {
     display: flex;
@@ -238,6 +238,7 @@ p.document-meta-data__body {
         margin-right:auto;
         margin-top:8rem;
         position: relative;
+        min-height:80rem;
     }
     .footer,.footer-space {
         display: none;
@@ -258,7 +259,7 @@ p.document-meta-data__body {
 @media print {
     @page { 
         size: letter portrait;
-        margin: 1in 0.25in 0.75in 0.25in;
+        margin: 1.25in 0.25in 1in 0.25in;
         
     }
 
@@ -311,7 +312,7 @@ p.document-meta-data__body {
 
     }
     .footer-space {
-        height:100px;
+        height:150px;
 
     }
     .footer {
