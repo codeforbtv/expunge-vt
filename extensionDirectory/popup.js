@@ -36,6 +36,8 @@ clearData.onclick = function (element) {
         document.getElementById('defendantAddress').innerHTML = "";
         chrome.storage.local.clear()
         coverDiv.style.display = "block";
+        $("#mainButtonDiv").css('padding-top',75);
+
     }
 
 };
@@ -45,11 +47,11 @@ function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
+            $("#mainButtonDiv").css('padding-top',0);
             $("#coverDiv").toggle(false);
         }
     });
 }
-
 
 
 addCounts.onclick = function (element) {
@@ -74,6 +76,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
     $("#coverDiv").toggle(false);
+    $("#mainButtonDiv").css('padding-top',0);
 });
 
 function setPopUpData(allData) {
