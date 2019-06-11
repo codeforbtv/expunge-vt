@@ -37,6 +37,22 @@
 .header-bar__controls button {
     margin-left:0.5rem;
 }
+
+
+.filing-nav {
+    position: fixed;
+    top:100px;
+    left:10px;
+}
+.active-parent.filing-nav__parent-link {
+    border-left:5px solid #f00;
+
+}
+.active.filing-nav__child-link {
+    border-left:5px solid #f00;
+}
+
+
 .document-meta-data {
     position: absolute;
     top:-60px;

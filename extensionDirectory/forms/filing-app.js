@@ -1,3 +1,8 @@
+var scroll = new SmoothScroll('a[href*="#"]',{
+  offset: 150,
+  durationMax: 300
+});
+
 
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
@@ -39,6 +44,8 @@ var autoExpand = function (field) {
 
 };
 
+
+
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
       <div class="docket-caption__names">
@@ -55,7 +62,33 @@ Vue.component('docket-caption', {
 
 })
 
+Vue.component('filing-nav', {
+  template: (`<div class="filing-nav" id="filing-nav"> 
+      <ol>
+        <li v-for="group in filings" class="filing-nav__parent-link">
+        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+        <ol>
+          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a></li>
+        </ol>
+        </li>
 
+        <li class="filing-nav__parent-link">
+          <a href="#extra-documents">Extra Documents</a>
+          <ol>
+            <li class="filing-nav__child-link">
+              <a href="#clinic-checkout">Clinic Summary Sheet</a>
+            </li>
+          </ol>
+        </li>
+      </ol>
+
+
+      </div>
+
+      `),
+  props: ['filings']
+
+})
 Vue.component('filing-footer', {
   template: (`<div class="filing-closing">
             <p class="filing-closing__salutation">Respectfully requested,</p>
@@ -100,7 +133,17 @@ var app = new Vue({
         var data = result.expungevt[0]
         app.saved = data
         app.filings = app.groupCountsIntoFilings(app.saved.counts)
-        app.updatePageTitle()
+        app.$nextTick(function () {
+            app.updatePageTitle()
+            //initates the scrollspy for the filing-nav module.
+            var spy = new Gumshoe('#filing-nav a',{
+                nested: true,
+                nestedClass: 'active-parent',
+                offset: 150, // how far from the top of the page to activate a content area
+                reflow: false, // if true, listen for reflows
+
+              });
+        })
     });
 
   },
