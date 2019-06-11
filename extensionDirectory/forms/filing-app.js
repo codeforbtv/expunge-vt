@@ -63,12 +63,14 @@ Vue.component('docket-caption', {
 })
 
 Vue.component('filing-nav', {
-  template: (`<div class="filing-nav" id="filing-nav"> 
+  template: (`<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
         <li v-for="group in filings" class="filing-nav__parent-link">
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a></li>
+          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
+          <p>{{filing.numCountsString}}</p>
+          </li>
         </ol>
         </li>
 
@@ -139,7 +141,7 @@ var app = new Vue({
             var spy = new Gumshoe('#filing-nav a',{
                 nested: true,
                 nestedClass: 'active-parent',
-                offset: 150, // how far from the top of the page to activate a content area
+                offset: 200, // how far from the top of the page to activate a content area
                 reflow: false, // if true, listen for reflows
 
               });
