@@ -80,6 +80,15 @@ button {
     margin-top: 70px;
 }
 
+#coverDiv {
+    height:100%;
+    border-bottom: 2px solid grey;
+}
+
+#mainButtonDiv {
+    padding-top:75px;
+}
+
 #code4btv {
     width: 20%;
     height: 20%;
