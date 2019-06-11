@@ -9,9 +9,16 @@ let coverDiv = document.getElementById("coverDiv");
 getData();
 
 createPetition.onclick = function (element) {
+
+    chrome.tabs.query({
+        active: true, currentWindow: true
+      }, tabs => {
+        let index = tabs[0].index;
     chrome.tabs.create({
-        url: chrome.extension.getURL('./forms/petitionExpunge.html?1')
+        url: chrome.extension.getURL('./forms/petitionExpunge.html?1'),
+        index: index + 1,
     })
+})
 };
 
 clearData.onclick = function (element) {
@@ -29,6 +36,8 @@ clearData.onclick = function (element) {
         document.getElementById('defendantAddress').innerHTML = "";
         chrome.storage.local.clear()
         coverDiv.style.display = "block";
+        $("#mainButtonDiv").css('padding-top',75);
+
     }
 
 };
@@ -38,11 +47,11 @@ function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
+            $("#mainButtonDiv").css('padding-top',0);
             $("#coverDiv").toggle(false);
         }
     });
 }
-
 
 
 addCounts.onclick = function (element) {
@@ -67,6 +76,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
     $("#coverDiv").toggle(false);
+    $("#mainButtonDiv").css('padding-top',0);
 });
 
 function setPopUpData(allData) {
