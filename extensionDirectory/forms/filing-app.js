@@ -183,9 +183,9 @@ var app = new Vue({
         case "ExC":
           return "Petition to Expunge Conviction"
         case "StipExNC":
-          return "Stipulated Petition to Expunge Non Conviction"
+          return "Stipulated Petition to Expunge Non-Conviction"
         case "ExNC":
-          return "Petition to Expunge Non Conviction"
+          return "Petition to Expunge Non-Conviction"
         case "StipSC":
           return "Stipulated Petition to Seal Conviction"
         case "SC":
