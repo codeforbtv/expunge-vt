@@ -1,17 +1,43 @@
 
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
+    initTextAreaAutoExpand();
 }, false);
 
 
-
+function initTextAreaAutoExpand(){
+  document.addEventListener('input', function (event) {
+  if (event.target.tagName.toLowerCase() !== 'textarea') return;
+  autoExpand(event.target);
+  }, false);
+}
 function initButtons(){
     document.getElementById('js-print').addEventListener('click', printDocument);
 
 }
+
 function printDocument(){
     window.print();
 }
+
+var autoExpand = function (field) {
+
+  // Reset field height
+  field.style.height = 'inherit';
+
+  // Get the computed styles for the element
+  var computed = window.getComputedStyle(field);
+
+  // Calculate the height
+  var height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+               + parseInt(computed.getPropertyValue('padding-top'), 10)
+               + field.scrollHeight
+               + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+               + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+  field.style.height = height + 'px';
+
+};
 
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
@@ -44,7 +70,7 @@ Vue.component('filing-footer', {
             </div>
 
             <div class="stipulated-closing" v-if="stipulated">
-                <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this ______ day of __________, 20__.</p>
+                <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
                 <div class="filing-closing__signature-box">
                     <p class="filing-closing__name">State's Attorney/Attorney General</p>
                 </div>
@@ -74,6 +100,7 @@ var app = new Vue({
         var data = result.expungevt[0]
         app.saved = data
         app.filings = app.groupCountsIntoFilings(app.saved.counts)
+        app.updatePageTitle()
     });
 
   },
@@ -197,7 +224,16 @@ var app = new Vue({
         response:""
       }
     },
-    makeAllFilings: function(counts){
+    updatePageTitle: function(){
+      var title = "Filings for "+this.petitoner.name
+      document.title = title;
+    },
+    nl2br: function(rawStr) {
+     //   var encodedStr = rawStr.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+     //       return '&#'+i.charCodeAt(0)+';';
+     //   });
+        var breakTag = '<br>';      
+        return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
     }
   },
   computed: {
