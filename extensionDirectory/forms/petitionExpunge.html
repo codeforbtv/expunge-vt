@@ -76,7 +76,7 @@
                 <div class="filing-header__docket-number docket-number">
                     <p class="docket-number__division">Criminal Division</p>
                     
-                    <p v-for="docketNum in filing.docketNums" class="docket-number__numbers"><span class="docket-number__label">Docket No. </span><span class="docket-number__number no-visible">{{docketNum.num}}</span><input class="no-print" v-model="docketNum.num"></p>
+                    <p v-for="docketNum in filing.docketNums" class="docket-number__numbers"><span class="docket-number__label">Docket No.&nbsp;</span><span class="docket-number__number no-visible">{{docketNum.num}}</span><input class="no-print" v-model="docketNum.num"></p>
                 </div>
             </div>
         </div>
@@ -211,6 +211,7 @@
                 <dl>
                     <dt>Number Of Ineligible Counts</dt><dd>{{numCountsIneligible}}</dd>
                 </dl>
+                <p>{{ineligible}}</p>
             </div>
         </div>
 </article>

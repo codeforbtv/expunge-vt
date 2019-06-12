@@ -69,7 +69,7 @@ Vue.component('filing-nav', {
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
           <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
-          <p>{{filing.numCountsString}}</p>
+          <p class="filing-nav__counts">{{filing.numCountsString}}</p>
           </li>
         </ol>
         </li>
@@ -127,7 +127,7 @@ var app = new Vue({
     	counts: [],
     },
     filings: "",
-    filingStats: "",
+    ineligible:"",
   },
   mounted() {
   	console.log('App mounted!');
@@ -135,6 +135,7 @@ var app = new Vue({
         var data = result.expungevt[0]
         app.saved = data
         app.filings = app.groupCountsIntoFilings(app.saved.counts)
+        app.ineligible = app.groupIneligibleCounts(app.saved.counts)
         app.$nextTick(function () {
             app.updatePageTitle()
             //initates the scrollspy for the filing-nav module.
@@ -171,7 +172,7 @@ var app = new Vue({
         for (var filing in filingsForThisCounty){
           var filingType = filingsForThisCounty[filing]
           if (this.isEligible(filingType)){
-            var filingObject = this.makeFilingObject(counts,countyName,filingType)
+            var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
             allFilingsForThisCountyObject.push(filingObject)
           }
         }
@@ -182,6 +183,11 @@ var app = new Vue({
         });
       }
       return groupedFilings;
+    },
+    groupIneligibleCounts: function(counts){
+      var ineligibleCounts = counts.filter(count => count.filingType == "X" || count.filingType == "" )
+      return ineligibleCounts;
+
     },
     groupByCounty: function(counts) {
 
@@ -246,12 +252,14 @@ var app = new Vue({
           return "1 Count"
         }
     },
-    makeFilingObject(counts,county,filingType){
+    filterAndMakeFilingObject(counts,county,filingType){
 
-      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType)
-
+      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType);
+      return this.makeFilingObject(countsOnThisFiling, filingType, county);
+    },
+    makeFilingObject(counts, filingType, county){
+      var countsOnThisFiling = counts;
       var numCounts = countsOnThisFiling.length
-      console.log("numcounts: "+numCounts)
       var isMultipleCounts = numCounts > 1
       
       return {

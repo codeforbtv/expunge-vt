@@ -56,7 +56,8 @@
 .filing-nav__parent-link {
     font-weight: bold;
     color:#000;
-    font-size: 1rem
+    font-size: 1rem;
+    list-style:none;
 }
 .filing-nav__parent-link a {
     color:#000;
@@ -67,12 +68,23 @@
     color:#007bff;
     font-size: 1rem
     margin-left:0;
+    padding-left:10px;
+
 }
 .filing-nav__child-link a {
        color:#007bff;
+       line-height: 0.9em;
 }
 .active.filing-nav__child-link {
     border-left:5px solid #007bff;
+}
+.filing-nav__counts {
+    color:#000;
+    text-transform: uppercase;
+    font-size:12px;
+    font-weight: bold;
+    padding-top:0.4rem;
+
 }
 
 
@@ -136,6 +148,11 @@ p.document-meta-data__body {
 
 .filing-header__court, .docket-number__division, .docket-number__label {
     text-transform: uppercase;
+}
+.docket-number input {
+    max-width:11rem;
+    width:50%;
+    min-width:9rem;
 }
 .docket-number__label {
     opacity:0;
@@ -268,8 +285,8 @@ p.document-meta-data__body {
     .page {
         max-width: 65rem;
         width:70%;
-        min-width:40rem;
-        padding: 7rem;
+        min-width:50rem;
+        padding: 6rem;
         height: 100%;
         border:2px solid #ddd;
         margin-left:15rem;
