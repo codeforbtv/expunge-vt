@@ -4,7 +4,14 @@
 
 }
 
-
+.no-filings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height:300px;
+    text-align: center;
+    padding:4rem;
+}
 .header-bar {
     position: fixed;
     display: flex;
@@ -64,7 +71,7 @@
 }
 .filing-nav__child-link {
     font-weight: normal;
-    transition:border 0.1s ease-in-out;
+    transition:box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
     color:#007bff;
     font-size: 1rem
     margin-left:0;
@@ -76,7 +83,8 @@
        line-height: 0.9em;
 }
 .active.filing-nav__child-link {
-    border-left:5px solid #007bff;
+    box-shadow: -5px 0 0 0 #007bff;
+    transform:translateX(5px);
 }
 .filing-nav__counts {
     color:#000;
@@ -293,7 +301,7 @@ p.document-meta-data__body {
         margin-right:auto;
         margin-top:8rem;
         position: relative;
-        min-height:80rem;
+        min-height:50rem;
     }
     .footer,.footer-space {
         display: none;
