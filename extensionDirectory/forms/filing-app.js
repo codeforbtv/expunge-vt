@@ -1,7 +1,9 @@
 
+
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
+    initSmoothScroll();
 }, false);
 
 
@@ -12,15 +14,27 @@ function initTextAreaAutoExpand(){
   }, false);
 }
 function initButtons(){
-    document.getElementById('js-print').addEventListener('click', printDocument);
+
+  document.addEventListener('click', function (event) {
+    if (event.target.id !== 'js-print') return;
+    printDocument();
+  }, false);
 
 }
+function initSmoothScroll(){
 
+  var scroll = new SmoothScroll('a[href*="#"]',{
+    offset: 150,
+    durationMax: 300
+  });
+
+
+}
 function printDocument(){
     window.print();
 }
 
-var autoExpand = function (field) {
+function autoExpand(field) {
 
   // Reset field height
   field.style.height = 'inherit';
@@ -39,6 +53,9 @@ var autoExpand = function (field) {
 
 };
 
+
+//Vue Components
+
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
       <div class="docket-caption__names">
@@ -52,6 +69,36 @@ Vue.component('docket-caption', {
         </div>
       </div>`),
   props: ['name']
+
+})
+
+Vue.component('filing-nav', {
+  template: (`<div class="filing-nav no-print" id="filing-nav"> 
+      <ol>
+        <li v-for="group in filings" class="filing-nav__parent-link">
+        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+        <ol>
+          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
+          <p class="filing-nav__counts">{{filing.numCountsString}}</p>
+          </li>
+        </ol>
+        </li>
+
+        <li class="filing-nav__parent-link">
+          <a href="#extra-documents">Extra Documents</a>
+          <ol>
+            <li class="filing-nav__child-link">
+              <a href="#clinic-checkout">Clinic Summary Sheet</a>
+            </li>
+          </ol>
+        </li>
+      </ol>
+
+
+      </div>
+
+      `),
+  props: ['filings']
 
 })
 
@@ -81,10 +128,11 @@ Vue.component('filing-footer', {
 })
 
 
+//vue app
+
 var app = new Vue({
   el: '#filing-app',
   data: {
-    message: 'Hello Vue!',
     saved: {
     	defName: "",
     	defAddress: ["",""],
@@ -92,27 +140,42 @@ var app = new Vue({
     	counts: [],
     },
     filings: "",
-    filingStats: "",
+    ineligible:"",
+    noAction: "",
   },
   mounted() {
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
+        //test if we have any data
+        if (result.expungevt === undefined) return;
+        
+        //load the data
         var data = result.expungevt[0]
         app.saved = data
+
+        //parse the data
         app.filings = app.groupCountsIntoFilings(app.saved.counts)
-        app.updatePageTitle()
+        app.ineligible = app.groupIneligibleCounts(app.saved.counts)
+        app.noAction = app.groupNoAction(app.saved.counts)
+
+        //
+        app.$nextTick(function () {
+            app.updatePageTitle();
+            app.activateScrollDetection();
+        })
     });
 
   },
   methods:{
     groupCountsIntoFilings: function(counts){
-
-      console.log("groupingFilings");      
+      // get all counts for the 
       var filingCounties = this.groupByCounty(counts)
 
-      console.log("there are "+filingCounties.length+" counties for " +counts.length +" counts");
+      console.log("there are "+filingCounties.length+" counties for " + counts.length +" counts");
+      
       //group into filing
       var groupedFilings = []
+      
       for (var county in filingCounties){
         var countyName = filingCounties[county]
         var allCountsForThisCounty = counts.filter(count => count.county == countyName)
@@ -126,7 +189,7 @@ var app = new Vue({
         for (var filing in filingsForThisCounty){
           var filingType = filingsForThisCounty[filing]
           if (this.isEligible(filingType)){
-            var filingObject = this.makeFilingObject(counts,countyName,filingType)
+            var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
             allFilingsForThisCountyObject.push(filingObject)
           }
         }
@@ -138,8 +201,17 @@ var app = new Vue({
       }
       return groupedFilings;
     },
-    groupByCounty: function(counts) {
+    groupIneligibleCounts: function(counts){
+      var ineligibleCounts = counts.filter(count => count.filingType == "X" )
+      return ineligibleCounts;
 
+    },
+    groupNoAction: function(counts){
+      var noActionCounts = counts.filter(count => count.filingType == "" )
+      return noActionCounts;
+
+    },
+    groupByCounty: function(counts) {
       var allCounties = counts.map(function(count) {
         return count.county
       });
@@ -164,8 +236,7 @@ var app = new Vue({
       return docketNums.map(function (docketNum){
         return {num:docketNum}
       });
-    }
-    ,
+    },
     isStipulated: function(filingType){
       return (
         filingType == "StipExC" || 
@@ -201,14 +272,15 @@ var app = new Vue({
           return "1 Count"
         }
     },
-    makeFilingObject(counts,county,filingType){
+    filterAndMakeFilingObject(counts,county,filingType){
 
-      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType)
-
+      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType);
+      return this.makeFilingObject(countsOnThisFiling, filingType, county);
+    },
+    makeFilingObject(counts, filingType, county){
+      var countsOnThisFiling = counts;
       var numCounts = countsOnThisFiling.length
-      console.log("numcounts: "+numCounts)
       var isMultipleCounts = numCounts > 1
-      
       return {
         id:filingType+county,
         type: filingType,
@@ -228,12 +300,19 @@ var app = new Vue({
       var title = "Filings for "+this.petitoner.name
       document.title = title;
     },
+    activateScrollDetection: function(){
+      //initates the scrollspy for the filing-nav module.
+      var spy = new Gumshoe('#filing-nav a',{
+          nested: true,
+          nestedClass: 'active-parent',
+          offset: 200, // how far from the top of the page to activate a content area
+          reflow: false, // if true, listen for reflows
+
+        });
+    },
     nl2br: function(rawStr) {
-     //   var encodedStr = rawStr.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
-     //       return '&#'+i.charCodeAt(0)+';';
-     //   });
-        var breakTag = '<br>';      
-        return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
+      var breakTag = '<br>';      
+      return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
     }
   },
   computed: {
@@ -246,7 +325,7 @@ var app = new Vue({
   	  }
     },
     numCountsIneligible: function () {
-      return this.saved.counts.filter(count => count.filingType == "X").length
+      return this.ineligible.length;
     }
   },
   filters: {
@@ -264,9 +343,9 @@ var app = new Vue({
 })
 
 //testing data
-  var multiCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "StipSC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
-  var singleCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
-  var singleCount = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"}]};
+//  var multiCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "StipSC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
+//  var singleCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
+//  var singleCount = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"}]};
 
 //app.saved = multiCounty
 //app.filings = app.groupCountsIntoFilings(app.saved.counts)

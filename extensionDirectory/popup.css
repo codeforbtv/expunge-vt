@@ -34,6 +34,11 @@ button {
     border-bottom:0;
 
 }
+
+#bottomText {
+    position: relative;
+    z-index: 100;
+}
 .popTop {
     display: flex;
     flex-direction: row;
@@ -82,11 +87,15 @@ button {
 
 #coverDiv {
     height:100%;
+    background-color: white;
     border-bottom: 2px solid grey;
+    z-index: 99;
 }
 
 #mainButtonDiv {
     padding-top:75px;
+    position: relative;
+    z-index: 0;
 }
 
 #code4btv {
@@ -121,6 +130,10 @@ button {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+}
+#vtCourtsOnlineA {
+    position: relative;
+    z-index: 99;
 }
 
 #countsLabel {

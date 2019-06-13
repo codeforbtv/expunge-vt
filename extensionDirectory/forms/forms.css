@@ -4,7 +4,14 @@
 
 }
 
-
+.no-filings {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height:300px;
+    text-align: center;
+    padding:4rem;
+}
 .header-bar {
     position: fixed;
     display: flex;
@@ -37,6 +44,58 @@
 .header-bar__controls button {
     margin-left:0.5rem;
 }
+
+
+.filing-nav {
+    position: fixed;
+    top:100px;
+    left:0;
+    padding:1rem;
+    padding-left:1;
+    z-index: 100;
+    background-color:#fff;
+    width:15em;
+}
+.filing-nav ol {
+    padding:0;
+    padding-left:0.25rem;
+}
+.filing-nav__parent-link {
+    font-weight: bold;
+    color:#000;
+    font-size: 1rem;
+    list-style:none;
+}
+.filing-nav__parent-link a {
+    color:#000;
+}
+.filing-nav__child-link {
+    font-weight: normal;
+    transition:box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
+    color:#007bff;
+    font-size: 1rem
+    margin-left:0;
+    padding-left:10px;
+
+}
+.filing-nav__child-link a {
+       color:#007bff;
+       line-height: 0.9em;
+}
+.active.filing-nav__child-link {
+    box-shadow: -5px 0 0 0 #007bff;
+    transform:translateX(5px);
+}
+.filing-nav__counts {
+    color:#000;
+    text-transform: uppercase;
+    font-size:12px;
+    font-weight: bold;
+    padding-top:0.4rem;
+
+}
+
+
 .document-meta-data {
     position: absolute;
     top:-60px;
@@ -97,6 +156,11 @@ p.document-meta-data__body {
 
 .filing-header__court, .docket-number__division, .docket-number__label {
     text-transform: uppercase;
+}
+.docket-number input {
+    max-width:11rem;
+    width:50%;
+    min-width:9rem;
 }
 .docket-number__label {
     opacity:0;
@@ -228,17 +292,16 @@ p.document-meta-data__body {
     }
     .page {
         max-width: 65rem;
-        width:80%;
-        min-width:40rem;
-        margin: 0;
-        padding: 7rem;
+        width:70%;
+        min-width:50rem;
+        padding: 6rem;
         height: 100%;
         border:2px solid #ddd;
-        margin-left:auto;
+        margin-left:15rem;
         margin-right:auto;
         margin-top:8rem;
         position: relative;
-        min-height:80rem;
+        min-height:50rem;
     }
     .footer,.footer-space {
         display: none;
