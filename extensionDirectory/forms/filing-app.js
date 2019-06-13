@@ -1,12 +1,9 @@
-var scroll = new SmoothScroll('a[href*="#"]',{
-  offset: 150,
-  durationMax: 300
-});
 
 
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
+    initSmoothScroll();
 }, false);
 
 
@@ -24,12 +21,20 @@ function initButtons(){
   }, false);
 
 }
+function initSmoothScroll(){
 
+  var scroll = new SmoothScroll('a[href*="#"]',{
+    offset: 150,
+    durationMax: 300
+  });
+
+
+}
 function printDocument(){
     window.print();
 }
 
-var autoExpand = function (field) {
+function autoExpand(field) {
 
   // Reset field height
   field.style.height = 'inherit';
@@ -49,6 +54,7 @@ var autoExpand = function (field) {
 };
 
 
+//Vue Components
 
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
@@ -95,6 +101,8 @@ Vue.component('filing-nav', {
   props: ['filings']
 
 })
+
+
 Vue.component('filing-footer', {
   template: (`<div class="filing-closing">
             <p class="filing-closing__salutation">Respectfully requested,</p>
@@ -120,6 +128,8 @@ Vue.component('filing-footer', {
 })
 
 
+//vue app
+
 var app = new Vue({
   el: '#filing-app',
   data: {
@@ -136,23 +146,22 @@ var app = new Vue({
   mounted() {
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
+        //test if we have any data
         if (result.expungevt === undefined) return;
+        
+        //load the data
         var data = result.expungevt[0]
         app.saved = data
+
+        //parse the data
         app.filings = app.groupCountsIntoFilings(app.saved.counts)
         app.ineligible = app.groupIneligibleCounts(app.saved.counts)
         app.noAction = app.groupNoAction(app.saved.counts)
 
+        //
         app.$nextTick(function () {
-            app.updatePageTitle()
-            //initates the scrollspy for the filing-nav module.
-            var spy = new Gumshoe('#filing-nav a',{
-                nested: true,
-                nestedClass: 'active-parent',
-                offset: 200, // how far from the top of the page to activate a content area
-                reflow: false, // if true, listen for reflows
-
-              });
+            app.updatePageTitle();
+            app.activateScrollDetection();
         })
     });
 
@@ -290,6 +299,16 @@ var app = new Vue({
     updatePageTitle: function(){
       var title = "Filings for "+this.petitoner.name
       document.title = title;
+    },
+    activateScrollDetection: function(){
+      //initates the scrollspy for the filing-nav module.
+      var spy = new Gumshoe('#filing-nav a',{
+          nested: true,
+          nestedClass: 'active-parent',
+          offset: 200, // how far from the top of the page to activate a content area
+          reflow: false, // if true, listen for reflows
+
+        });
     },
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
