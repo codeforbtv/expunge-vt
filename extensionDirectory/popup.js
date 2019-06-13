@@ -54,7 +54,9 @@ function getData() {
 }
 
 
-addCounts.onclick = function (element) {
+$(".js-add-count").click(addDocketCounts)
+
+function addDocketCounts () {
 
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
