@@ -34,10 +34,15 @@
             <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home"
                 class="logos">
         </div>
+        <div class="col-md-4 text-center button-div">
+            <button id="add-docket-info" class="btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button id="create-petition" class="btn btn-success">Generate Documents <i
+                    class="fas fa-external-link-alt"></i></button>
+        </div>
         <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts"
             button
             below.</p>
-        <a target="_blank" href="https://secure.vermont.gov/vtcdas/user">
+        <a id="vtCourtsOnlineA" target="_blank" href="https://secure.vermont.gov/vtcdas/user">
             <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
         </a>
     </div>
@@ -74,7 +79,7 @@
     <hr>
     <div id="countCards" class="accordion col-md-4 text-center"></div>
     <hr>
-    <div class="col-md-4 text-center bottom-div">
+    <div id="bottomText" class="col-md-4 text-center bottom-div">
         <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid</p>
     </div>
     <script id='script' src="popup.js"></script>

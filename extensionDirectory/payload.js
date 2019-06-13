@@ -73,11 +73,12 @@ function getCountInfo(tempPetitionerCountObject) {
 
     //Move data from count table into objects
     countLines = countTotal * 2
+
     for (i = 0; i < countLines; i++) {
         //Catch Line 1 (odd lines) of each count
         if ((i + 1) % 2 != 0) {
             countObject = [{}];
-            processCountLine1(allCountsArray[i])
+            processCountLine1(allCountsArray[i], i/2)
         } else { //Catch Line 2 of each count
             description = allCountsArray[i].trim()
             description = description.replace("/", " / ")
@@ -85,7 +86,7 @@ function getCountInfo(tempPetitionerCountObject) {
             countObject[0]["description"] = description
 
             tempPetitionerCountObject[0].counts.push(countObject[0])
-        }
+         }
     }
 
     return tempPetitionerCountObject
@@ -93,7 +94,8 @@ function getCountInfo(tempPetitionerCountObject) {
 }
 
 //Break line one of a count into its individual fields
-function processCountLine1(countLine1) {
+function processCountLine1(countLine1, countNum) {
+    console.log(countNum)
 
     //Break into array and remove spaces
     countLine1Array = countLine1.split(" ")
@@ -149,7 +151,7 @@ function processCountLine1(countLine1) {
 
     //Get Alleged offense date:
     offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
-    offenseDateString = offenseDateArray[countObject[0].countNum - 1]
+    offenseDateString = offenseDateArray[countNum]
     offenseDateLocation = offenseDateString.length
     offenseDateLocationEnd = offenseDateLocation - 8
     allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
@@ -157,20 +159,12 @@ function processCountLine1(countLine1) {
 
     //Get Arrest/citation date:
     offenseDateArray = docketBody.match(/Arrest\/Citation\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
-    offenseDateString = offenseDateArray[countObject[0].countNum - 1]
+    offenseDateString = offenseDateArray[countNum]
     offenseDateLocation = offenseDateString.length
     offenseDateLocationEnd = offenseDateLocation - 8
     arrestCitationDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
     countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
 }
-
-
-localStorage.setItem('allCounts', JSON.stringify(allCountsObject))
-chrome.runtime.sendMessage(allCountsObject);
-
-chrome.storage.local.set({
-    expungevt: allCountsObject
-});
 
 console.log("saved");
 
