@@ -421,7 +421,8 @@ p.document-meta-data__body {
     }
     .footer {
         font-size:14pt;
-        line-height: 1.1em;
+        line-height: 1.2em;
+        font-family: 'Times New Roman', Times, serif;
 
     }
 
