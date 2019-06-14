@@ -2,7 +2,14 @@ document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
     initSmoothScroll();
+    detectChangesInLocalStorage();
 }, false);
+
+function initAfterVue(){
+  //sets intital height of all text areas to show all text.
+  setInitialExpandForTextAreas();
+  initScrollDetection()
+}
 
 function initTextAreaAutoExpand(){
   document.addEventListener('input', function (event) {
@@ -13,8 +20,7 @@ function initTextAreaAutoExpand(){
 
 function initButtons(){
   document.addEventListener('click', function (event) {
-    if (event.target.id !== 'js-print') return;
-    printDocument();
+    if (event.target.id === 'js-print') printDocument();
   }, false);
 }
 
@@ -24,29 +30,64 @@ function initSmoothScroll(){
     durationMax: 300
   });
 }
+function detectChangesInLocalStorage(){
+  chrome.storage.onChanged.addListener(function(changes, namespace) {
+  var storageChange = changes['expungevt'];
+  console.log('Chrome storage (namespace "%s") had a value change on key expungevt.\n\n' +
+              'Old value:  "%s"\n\n' +
+              'New value:  "%s"\n\n',
+              namespace,
+              JSON.stringify(storageChange.oldValue),
+              JSON.stringify(storageChange.newValue));
 
-function printDocument(){
-    window.print();
+    app.saveAndParseData(storageChange.newValue[0])
+
+  });
+}
+function initScrollDetection() {
+  //initates the scrollspy for the filing-nav module.
+  var spy = new Gumshoe('#filing-nav a',{
+      nested: true,
+      nestedClass: 'active-parent',
+      offset: 200, // how far from the top of the page to activate a content area
+      reflow: false, // if true, listen for reflows
+    });
+}
+function setInitialExpandForTextAreas(){
+  //sets the default size for all text areas based on their content.
+  //call this after vue has initialized and displayed
+  var textAreas = document.getElementsByTagName("textarea");
+  for (var index in textAreas) {
+    var textArea = textAreas[index]
+    if (textArea === undefined) return;
+    autoExpand(textArea);
+  }
 }
 
 function autoExpand(field) {
-
+  if (field === undefined) return;
+  if (field.style === undefined) return;
   // Reset field height
-  field.style.height = 'inherit';
 
+  field.style.height = 'inherit';
   // Get the computed styles for the element
   var computed = window.getComputedStyle(field);
 
   // Calculate the height
-  var height = parseInt(computed.getPropertyValue('border-top-width'), 10)
-               + parseInt(computed.getPropertyValue('padding-top'), 10)
+  var height = parseInt(computed.getPropertyValue('border-top-width'), 5)
+               + parseInt(computed.getPropertyValue('padding-top'), 5)
                + field.scrollHeight
-               + parseInt(computed.getPropertyValue('padding-bottom'), 10)
-               + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+               + parseInt(computed.getPropertyValue('padding-bottom'), 5)
+               + parseInt(computed.getPropertyValue('border-bottom-width'), 5)
+               - 8;
 
   field.style.height = height + 'px';
 };
 
+
+function printDocument(){
+    window.print();
+}
 
 //Vue Components
 
@@ -139,21 +180,23 @@ var app = new Vue({
         
         //load the data
         var data = result.expungevt[0]
+        app.saveAndParseData(data) 
+    });
+  },
+  methods:{
+    saveAndParseData: function(data) {
         app.saved = data
-
         //parse the data
-        app.filings = app.groupCountsIntoFilings(app.saved.counts)
-        app.ineligible = app.groupIneligibleCounts(app.saved.counts)
-        app.noAction = app.groupNoAction(app.saved.counts)
+        app.filings = app.groupCountsIntoFilings(data.counts)
+        app.ineligible = app.groupIneligibleCounts(data.counts)
+        app.noAction = app.groupNoAction(data.counts)
 
         app.$nextTick(function () {
             app.updatePageTitle();
-            app.activateScrollDetection();
+            //call any vanilla js functions that need to run after vue is all done setting up.
+            initAfterVue();
         })
-    });
-
-  },
-  methods:{
+    },
     groupCountsIntoFilings: function(counts){
       // get all counts for the 
       var filingCounties = this.groupByCounty(counts)
@@ -281,15 +324,6 @@ var app = new Vue({
     updatePageTitle: function(){
       var title = "Filings for "+this.petitoner.name
       document.title = title;
-    },
-    activateScrollDetection: function(){
-      //initates the scrollspy for the filing-nav module.
-      var spy = new Gumshoe('#filing-nav a',{
-          nested: true,
-          nestedClass: 'active-parent',
-          offset: 200, // how far from the top of the page to activate a content area
-          reflow: false, // if true, listen for reflows
-        });
     },
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
