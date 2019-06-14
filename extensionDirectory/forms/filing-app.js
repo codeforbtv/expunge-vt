@@ -1,11 +1,8 @@
-
-
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
     initSmoothScroll();
 }, false);
-
 
 function initTextAreaAutoExpand(){
   document.addEventListener('input', function (event) {
@@ -13,23 +10,21 @@ function initTextAreaAutoExpand(){
   autoExpand(event.target);
   }, false);
 }
-function initButtons(){
 
+function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id !== 'js-print') return;
     printDocument();
   }, false);
-
 }
-function initSmoothScroll(){
 
+function initSmoothScroll(){
   var scroll = new SmoothScroll('a[href*="#"]',{
     offset: 150,
     durationMax: 300
   });
-
-
 }
+
 function printDocument(){
     window.print();
 }
@@ -50,7 +45,6 @@ function autoExpand(field) {
                + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
 
   field.style.height = height + 'px';
-
 };
 
 
@@ -69,8 +63,7 @@ Vue.component('docket-caption', {
         </div>
       </div>`),
   props: ['name']
-
-})
+});
 
 Vue.component('filing-nav', {
   template: (`<div class="filing-nav no-print" id="filing-nav"> 
@@ -83,7 +76,6 @@ Vue.component('filing-nav', {
           </li>
         </ol>
         </li>
-
         <li class="filing-nav__parent-link">
           <a href="#extra-documents">Extra Documents</a>
           <ol>
@@ -93,14 +85,10 @@ Vue.component('filing-nav', {
           </ol>
         </li>
       </ol>
-
-
       </div>
-
       `),
   props: ['filings']
-
-})
+});
 
 
 Vue.component('filing-footer', {
@@ -121,11 +109,11 @@ Vue.component('filing-footer', {
                 <div class="filing-closing__signature-box">
                     <p class="filing-closing__name">State's Attorney/Attorney General</p>
                 </div>
-        </div>            </div>
+              </div>
+          </div>
 `),
   props: ['signature','stipulated']
-
-})
+});
 
 
 //vue app
@@ -158,7 +146,6 @@ var app = new Vue({
         app.ineligible = app.groupIneligibleCounts(app.saved.counts)
         app.noAction = app.groupNoAction(app.saved.counts)
 
-        //
         app.$nextTick(function () {
             app.updatePageTitle();
             app.activateScrollDetection();
@@ -204,12 +191,10 @@ var app = new Vue({
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
       return ineligibleCounts;
-
     },
     groupNoAction: function(counts){
       var noActionCounts = counts.filter(count => count.filingType == "" )
       return noActionCounts;
-
     },
     groupByCounty: function(counts) {
       var allCounties = counts.map(function(count) {
@@ -225,14 +210,12 @@ var app = new Vue({
     },
     allDocketNums: function (counts){
         allDocketNums = counts.map(function(count) {
-              return count.docketNum + " " +count.docketCounty
-            });
-
+          return count.docketNum + " " +count.docketCounty
+        });
         return allDocketNums.filter((v, i, a) => a.indexOf(v) === i);
     },
     allDocketNumsObject: function(counts){
       var docketNums = this.allDocketNums(counts);
-
       return docketNums.map(function (docketNum){
         return {num:docketNum}
       });
@@ -273,7 +256,6 @@ var app = new Vue({
         }
     },
     filterAndMakeFilingObject(counts,county,filingType){
-
       var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType);
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
@@ -307,7 +289,6 @@ var app = new Vue({
           nestedClass: 'active-parent',
           offset: 200, // how far from the top of the page to activate a content area
           reflow: false, // if true, listen for reflows
-
         });
     },
     nl2br: function(rawStr) {

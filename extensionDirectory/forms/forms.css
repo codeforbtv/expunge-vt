@@ -157,14 +157,14 @@ p.document-meta-data__body {
     text-transform: uppercase;
     text-align: center;
     width:100%;
-    margin-bottom:0.5rem;
+    margin-bottom:0.25rem;
 }
 
 .filing-header__half {
     width:50%;
 }
 .filing-header__court {
-    margin-bottom:1rem;
+    margin-bottom:0.5rem;
 }
 
 
@@ -246,7 +246,7 @@ p.document-meta-data__body {
 
 }
 .filing-closing {
-    margin-top:2rem;
+    margin-top:1.5rem;
 }
 .filing-closing__signature-area {
     display: flex;
@@ -268,7 +268,7 @@ p.document-meta-data__body {
 }
 
 .stipulated-closing {
-    margin-top:2.5rem;
+    margin-top:1.5rem;
 }
 
 /* Use this with a span full of non-breaking spaces to give it a solid fill-in underline */
@@ -324,7 +324,7 @@ p.document-meta-data__body {
 @media print {
     @page { 
         size: letter portrait;
-        margin: 1.5in 0.25in 1in 0.25in;
+        margin: 1.375in 0.25in 1in 0.25in;
     }
     body {
         line-height: 1.3;
@@ -345,14 +345,12 @@ p.document-meta-data__body {
 
     }
     .count-table + p {
-        padding-top:1rem;
+        padding-top:0.5rem;
     }
     .spacer-page {
         height:0;
         margin-bottom:-0.25in;
     }
-
-
 
     .all-filings {
         width:93%;
@@ -368,7 +366,10 @@ p.document-meta-data__body {
     }
 
     .footer-space {
-        height:150px;
+
+    }
+    .footer-space__vertical-spacer {
+        min-height:50px;
     }
     .footer {
         position: fixed;
@@ -412,7 +413,7 @@ p.document-meta-data__body {
         font-size:19pt;
 
     }
-    .footer, .page, p, .page .filing-title, .page .header__title, td, th {
+    .page, p, .page .filing-title, .page .header__title, td, th {
         font-size: 19pt;
     }
     .page p, .page h1 {
