@@ -209,17 +209,17 @@
                                             <dt>Number Of Ineligible Counts</dt>
                                             <dd>{{numCountsIneligible}}</dd>
                                         </dl>
-
-                                        Ineligible Counts
-                                        <!--<p>{{ineligible}}</p>-->
-                                        <ul>
-                                            <li v-for="filing in ineligible">
-                                                <p>{{filing.description}}</p>
-                                                <p>Disposition Date: {{filing.dispositionDate}}</p>
-                                                <p>County: {{filing.county}}</p>
-                                                <p>Docket Number: {{filing.docketNum}}</p>
-                                            </li>
-                                        </ul>
+                                        <template v-if="ineligible.length > 0">
+                                            <p>Ineligible Counts</p>
+                                            <ul>
+                                                <li v-for="filing in ineligible">
+                                                    <p>{{filing.description}}</p>
+                                                    <p>Disposition Date: {{filing.dispositionDate}}</p>
+                                                    <p>County: {{filing.county}}</p>
+                                                    <p>Docket Number: {{filing.docketNum}}</p>
+                                                </li>
+                                            </ul>
+                                        </template>
                                     </div>
                                 </div>
                             </article>
@@ -240,9 +240,7 @@
             <p class="footer__company">Vermont Legal Aid, Inc.</p>
             <p class="footer__phone">(800) 889-2047</p>
         </div>
-
     </div>
-
     </template>
     <template v-else>
         <div class="no-filings">
