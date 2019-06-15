@@ -66,11 +66,24 @@ $("#edit-petitioner").click(function () {
             //defendant info
             result.expungevt[0].defName = $("#defendantName").html();
             result.expungevt[0].defDOB = $("#defendantDOB").html();
-            result.expungevt[0].defAddress = $("#defendantAddress").html();
+            setAddress()
 
             chrome.storage.local.set({
                 expungevt: result.expungevt
             });
+
+            function setAddress(addrHTML) {
+                addressString = $("#defendantAddress").html().replace(/<\/div>/g,"<br>")
+                addressString = addressString.replace(/<div>/g,"<br>")
+                addressHTML = addressString.split('<br>')
+                var filteredHTML = addressHTML.filter(function (el) {
+                    return el != "";
+                  });
+                for (i = 0; i < filteredHTML.length; i++) {
+                    result.expungevt[0].defAddress[i]=filteredHTML[i]
+                }
+            }
+            console.log(result.expungevt[0].defAddress)
 
         });
     }
@@ -122,10 +135,15 @@ function setPopUpData(allData) {
     document.getElementById('defendantDOB').innerHTML = allData.defDOB;
     document.getElementById('defendantAddress').innerHTML = getAddress(allData.defAddress);
 
+    console.log(allData.defAddress)
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
-            addressHTML += addrArray[i] + "<br>"
+            if (i === addrArray.length-1) {
+                addressHTML += addrArray[i]
+            } else {
+                addressHTML += addrArray[i] + "<br>"
+            }
         }
         return addressHTML
     }
