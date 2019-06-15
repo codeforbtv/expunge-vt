@@ -12,13 +12,13 @@ createPetition.onclick = function (element) {
 
     chrome.tabs.query({
         active: true, currentWindow: true
-      }, tabs => {
+    }, tabs => {
         let index = tabs[0].index;
-    chrome.tabs.create({
-        url: chrome.extension.getURL('./forms/petitionExpunge.html?1'),
-        index: index + 1,
+        chrome.tabs.create({
+            url: chrome.extension.getURL('./forms/petitionExpunge.html'),
+            index: index + 1,
+        })
     })
-})
 };
 
 clearData.onclick = function (element) {
@@ -36,18 +36,65 @@ clearData.onclick = function (element) {
         document.getElementById('defendantAddress').innerHTML = "";
         chrome.storage.local.clear()
         coverDiv.style.display = "block";
-        $("#mainButtonDiv").css('padding-top',75);
+        $("#mainButtonDiv").css('padding-top', 75);
 
     }
 
 };
 
 
+$("#edit-petitioner").click(function () {
+    var value = $('.pet-detail').attr('contenteditable');
+    if (value == 'false') {
+        $("#edit-petitioner").html("Save");
+        $('.pet-detail').attr('contenteditable', 'true');
+        $('.pet-detail').css({
+            'border': 'black solid 1px',
+            'outline': 'none'
+        })
+    }
+    else {
+        $("#edit-petitioner").html("Edit");
+        $('.pet-detail').attr('contenteditable', 'false');
+        $('.pet-detail').css({
+            'border': 'none',
+            'outline': 'none'
+        })
+
+        chrome.storage.local.get(['expungevt'], function (result) {
+
+            //defendant info
+            result.expungevt[0].defName = $("#defendantName").html();
+            result.expungevt[0].defDOB = $("#defendantDOB").html();
+            setAddress()
+
+            chrome.storage.local.set({
+                expungevt: result.expungevt
+            });
+
+            function setAddress(addrHTML) {
+                addressString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
+                addressString = addressString.replace(/<div>/g, "<br>")
+                addressHTML = addressString.split('<br>')
+                var filteredHTML = addressHTML.filter(function (el) {
+                    return el != "";
+                });
+                for (i = 0; i < filteredHTML.length; i++) {
+                    result.expungevt[0].defAddress[i] = filteredHTML[i]
+                }
+            }
+            console.log(result.expungevt[0].defAddress)
+
+        });
+    }
+});
+
+
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
-            $("#mainButtonDiv").css('padding-top',0);
+            $("#mainButtonDiv").css('padding-top', 0);
             $("#coverDiv").toggle(false);
         }
     });
@@ -56,7 +103,7 @@ function getData() {
 
 $(".js-add-count").click(addDocketCounts)
 
-function addDocketCounts () {
+function addDocketCounts() {
 
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
@@ -78,7 +125,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
     $("#coverDiv").toggle(false);
-    $("#mainButtonDiv").css('padding-top',0);
+    $("#mainButtonDiv").css('padding-top', 0);
 });
 
 function setPopUpData(allData) {
@@ -87,10 +134,15 @@ function setPopUpData(allData) {
     document.getElementById('defendantDOB').innerHTML = allData.defDOB;
     document.getElementById('defendantAddress').innerHTML = getAddress(allData.defAddress);
 
+    console.log(allData.defAddress)
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
-            addressHTML += addrArray[i] + "<br>"
+            if (i === addrArray.length - 1) {
+                addressHTML += addrArray[i]
+            } else {
+                addressHTML += addrArray[i] + "<br>"
+            }
         }
         return addressHTML
     }
@@ -104,7 +156,8 @@ function setPopUpData(allData) {
 
         let card = document.createElement('div');
         card.classList.add('card');
-        card.innerHTML = createCountCard(count)
+
+        card.innerHTML = createCountCard(count, allData.defDOB)
         $('#countCards').append(card);
         $(cardSelectID).val(count.filingType);
     }
@@ -112,24 +165,23 @@ function setPopUpData(allData) {
 
 }
 
-function createCountCard(count) {
-
+function createCountCard(count, dob) {
     dockNum = count.docketNum.trim();
     ctNum = count.countNum.trim();
     cardID = dockNum + "-" + ctNum
     let cardHTML = (`
-        <div class="card-header" id=${"heading" + cardID}>
+        <div class="card-header" id=${"heading" + cardID} type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
                 <div class="card-header__column">
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
-                        <button class="card-header__description btn btn-link btn-sm" type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
+                        <button class="card-header__description btn btn-link btn-sm" >
                             <p>${count.description}</p>
                          </button>
-                            <p class="card-header__disposition-date">${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
-
+                            <p class="card-header__disposition-date">Est. Disposition: ${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
                         </div>
                         <div id="selectionDiv" class="card-header__select">
                             <select id=${"select" + cardID} class="petitionSelect selectpicker">
+                                <option value="">No Filing</option>
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
                                 <option value="ExNC">Expunge Nonconviction</option>
@@ -142,9 +194,13 @@ function createCountCard(count) {
                     </div>
 
                     <div class="card-header__pills-row">
-                        <span class="pill pill--rounded pill--outline-green">
+                        <span class="pill pill--rounded ${offenseTypeColor()}">
                             ${count.offenseClass}
                         </span>
+                        <span class="pill pill--rounded ${dispositionColor()}">
+                            ${count.offenseDisposition}
+                        </span>
+                        ${getAgeAtDispositionHTML()}
                     </div>
                 </div>
         </div>
@@ -198,19 +254,64 @@ function createCountCard(count) {
         }
 
     }
+    function offenseTypeColor() {
+
+        if (count.offenseClass === "fel") {
+            return "pill--outline-black"
+        } else {
+            return "pill--outline-green"
+        }
+    }
+
+    function dispositionColor() {
+
+        if (count.offenseDisposition === "Dismissed by state") {
+            return "pill--outline-green"
+        } else {
+            return "pill--outline-black"
+        }
+    }
+
+    function getAgeAtDispositionHTML() {
+        // Create a span element for age at time of offense.
+        // <span class="pill pill--rounded ${dispositionColor()}">
+        //     ${count.offenseDisposition}
+        // </span>
+
+        dobArray = dob.split("/")
+        let fromTime = new Date(dobArray[2], dobArray[0]-1, dobArray[1]);
+        
+        dispoDate = count.dispositionDate
+        let toTime = moment(dispoDate, "MM/DD/YY")
+
+        ageSinceOffense = toTime.diff(fromTime, "years", true).toFixed(2);
+        console.log(ageSinceOffense);
+
+        if (ageSinceOffense < 18) {
+            spanHTML = "<span class='pill pill--rounded pill--outline-green'> under 18 </span>"
+        } else if (ageSinceOffense < 21) {
+            spanHTML = "<span class='pill pill--rounded pill--outline-green'> under 21 </span>"
+        } else {
+            spanHTML = "<span class='pill pill--rounded pill--outline-black'> adult </span>"
+        }
+
+        console.log(spanHTML)
+        return spanHTML
+
+
+    }
 
 }
 
 
 
 
-
+//Updtate chrome storage when a petition is selected
 $('body').on('change', 'select.petitionSelect', function () {
 
     selectID = this.id
     filingType = this.value
     chrome.storage.local.get(['expungevt'], function (result) {
-
         for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
             countID = "select" + result.expungevt[0]["counts"][i].docketNum.trim() + "-" + result.expungevt[0]["counts"][i].countNum.trim()
 
@@ -225,5 +326,9 @@ $('body').on('change', 'select.petitionSelect', function () {
         console.log(result.expungevt)
 
     });
+});
+
+$('body').on('click', 'select.petitionSelect', function(event){
+    event.stopPropagation();
 });
 

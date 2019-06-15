@@ -138,7 +138,7 @@ Vue.component('filing-footer', {
             <div class="filing-closing__signature-area">
                 <div class="filing-closing__signature-box">
                     <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
-                    <p class="filing-closing__petitioner-address">{{signature.address1}}<br>{{signature.address2}}</p>
+                    <p class="filing-closing__petitioner-address" v-html="signature.address"></p>
                 </div>
                 <div class="filing-closing__date-box">
                     <p>Date</p>
@@ -259,7 +259,7 @@ var app = new Vue({
         var allFilingsForThisCountyObject = []
         for (var filing in filingsForThisCounty){
           var filingType = filingsForThisCounty[filing]
-          if (this.isEligible(filingType)){
+          if (this.isSupported(filingType) && this.isEligible(filingType) && this.isFileable(filingType)){
             var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
             
             
@@ -327,6 +327,25 @@ var app = new Vue({
       return (
         filingType != "X");
     },
+    isFileable: function(filingType){
+      return (
+        filingType != "");
+    },
+    isSupported: function(filingType){
+      switch (filingType) {
+        case "StipExC":
+        case "ExC":
+        case "StipExNC":
+        case "ExNC":
+        case "StipSC":
+        case "SC":
+        case "X":
+        case "":
+          return true;
+        default:
+          return false;
+      }
+    },
     filingNameFromType: function(filingType){
       switch (filingType) {
         case "StipExC":
@@ -384,6 +403,19 @@ var app = new Vue({
     },
     clearAll: function(){
       document.location.reload()
+    },
+    linesBreaksFromArray: function(array) {
+      var string = "";
+      var delimiter = "\r\n";
+      var i;
+      for (i = 0; i < array.length; i++) { 
+        if (i > 0 ) 
+          {
+            string += delimiter;
+          }
+        string += array[i];
+      }
+      return string;
     }
   },
   computed: {
@@ -391,8 +423,7 @@ var app = new Vue({
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
-  		address1: this.saved.defAddress[0],
-  		address2: this.saved.defAddress[1]
+  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress))
   	  }
     },
     numCountsIneligible: function () {
