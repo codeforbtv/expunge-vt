@@ -7,6 +7,15 @@ body {
     margin: 0;
 }
 
+#edit-petitioner{
+    margin-left: 15px;
+    height: 30px;
+}
+
+.pet-detail {
+    padding: 0px 5px 0px 5px;
+}
+
 button {
     outline: none;
 }

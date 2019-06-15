@@ -12,13 +12,13 @@ createPetition.onclick = function (element) {
 
     chrome.tabs.query({
         active: true, currentWindow: true
-      }, tabs => {
+    }, tabs => {
         let index = tabs[0].index;
-    chrome.tabs.create({
-        url: chrome.extension.getURL('./forms/petitionExpunge.html?1'),
-        index: index + 1,
+        chrome.tabs.create({
+            url: chrome.extension.getURL('./forms/petitionExpunge.html'),
+            index: index + 1,
+        })
     })
-})
 };
 
 clearData.onclick = function (element) {
@@ -36,18 +36,53 @@ clearData.onclick = function (element) {
         document.getElementById('defendantAddress').innerHTML = "";
         chrome.storage.local.clear()
         coverDiv.style.display = "block";
-        $("#mainButtonDiv").css('padding-top',75);
+        $("#mainButtonDiv").css('padding-top', 75);
 
     }
 
 };
 
 
+$("#edit-petitioner").click(function () {
+    var value = $('.pet-detail').attr('contenteditable');
+    if (value == 'false') {
+        $("#edit-petitioner").html("Save");
+        $('.pet-detail').attr('contenteditable', 'true');
+        $('.pet-detail').css({
+            'border': 'black solid 1px',
+            'outline': 'none'
+        })
+    }
+    else {
+        $("#edit-petitioner").html("Edit");
+        $('.pet-detail').attr('contenteditable', 'false');
+        $('.pet-detail').css({
+            'border': 'none',
+            'outline': 'none'
+        })
+
+        chrome.storage.local.get(['expungevt'], function (result) {
+
+            //defendant info
+            result.expungevt[0].defName = $("#defendantName").html();
+            result.expungevt[0].defDOB = $("#defendantDOB").html();
+            result.expungevt[0].defAddress = $("#defendantAddress").html();
+
+            chrome.storage.local.set({
+                expungevt: result.expungevt
+            });
+
+        });
+    }
+});
+
+
+
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
-            $("#mainButtonDiv").css('padding-top',0);
+            $("#mainButtonDiv").css('padding-top', 0);
             $("#coverDiv").toggle(false);
         }
     });
@@ -56,7 +91,7 @@ function getData() {
 
 $(".js-add-count").click(addDocketCounts)
 
-function addDocketCounts () {
+function addDocketCounts() {
 
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
@@ -78,7 +113,7 @@ chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
     setPopUpData(loadedMessage)
     $("#coverDiv").toggle(false);
-    $("#mainButtonDiv").css('padding-top',0);
+    $("#mainButtonDiv").css('padding-top', 0);
 });
 
 function setPopUpData(allData) {
