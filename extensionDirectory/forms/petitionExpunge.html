@@ -172,8 +172,8 @@
                                     <!-- End Unique Portion of Filings -->
 
                                     <div class="filing-body__response">
-                                        <p class="no-visible" v-html="nl2br(filing.response)"></p>
-                                        <textarea class="no-print" v-model="filing.response" placeholder="Type here..."></textarea>
+                                        <p class="no-visible" v-html="nl2br(responses[filing.id])"></p>
+                                        <textarea class="no-print" v-model="responses[filing.id]" placeholder="Type here..."></textarea>
                                     </div>
 
                                     <filing-footer v-bind:signature="petitoner" v-bind:stipulated="filing.isStipulated"></filing-footer>

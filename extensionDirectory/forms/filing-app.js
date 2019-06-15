@@ -33,14 +33,14 @@ function initSmoothScroll(){
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
   var storageChange = changes['expungevt'];
-  console.log('Chrome storage (namespace "%s") had a value change on key expungevt.\n\n' +
-              'Old value:  "%s"\n\n' +
-              'New value:  "%s"\n\n',
-              namespace,
-              JSON.stringify(storageChange.oldValue),
-              JSON.stringify(storageChange.newValue));
+  if (storageChange === undefined) return;
 
-    app.saveAndParseData(storageChange.newValue[0])
+  if (storageChange.newValue === undefined) {
+      app.clearAll();
+      return
+  };
+
+  app.saveAndParseData(storageChange.newValue[0])
 
   });
 }
@@ -171,31 +171,72 @@ var app = new Vue({
     filings: "",
     ineligible:"",
     noAction: "",
+    responses: {}
+  },
+  watch: {
+    'responses': {
+     handler(){
+      console.log("save responses")
+       app.saveResponses()
+     },
+     deep: true
+   }
   },
   mounted() {
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
         //test if we have any data
         if (result.expungevt === undefined) return;
-        
         //load the data
+        
         var data = result.expungevt[0]
-        app.saveAndParseData(data) 
+        
+        var loadResponsesCallback = (function(){ 
+          app.saveAndParseData(data) 
+        });
+        
+        app.loadResponses(loadResponsesCallback);
+
     });
   },
   methods:{
     saveAndParseData: function(data) {
+                console.log("save and parse");
+
         app.saved = data
         //parse the data
         app.filings = app.groupCountsIntoFilings(data.counts)
         app.ineligible = app.groupIneligibleCounts(data.counts)
         app.noAction = app.groupNoAction(data.counts)
-
         app.$nextTick(function () {
             app.updatePageTitle();
             //call any vanilla js functions that need to run after vue is all done setting up.
             initAfterVue();
         })
+    },
+    saveResponses: function(){
+      var responses = app.responses
+      console.log("save responses")
+      chrome.storage.local.set({
+        expungevtResponses: responses
+      });
+    },
+    loadResponses: function(callback){
+      console.log("load responses")
+
+      chrome.storage.local.get('expungevtResponses', function (result) {
+        //test if we have any data
+
+        if (result.expungevtResponses !== undefined) {
+          //load the data
+          var responses = result.expungevtResponses
+          app.responses = responses; 
+        } else {
+          app.responses = {};
+        }
+
+        callback();
+    });
     },
     groupCountsIntoFilings: function(counts){
       // get all counts for the 
@@ -220,7 +261,12 @@ var app = new Vue({
           var filingType = filingsForThisCounty[filing]
           if (this.isEligible(filingType)){
             var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
-            allFilingsForThisCountyObject.push(filingObject)
+            
+            
+            allFilingsForThisCountyObject.push(filingObject);
+
+            this.createResponseObjectForFiling(filingObject.id)
+
           }
         }
 
@@ -230,6 +276,14 @@ var app = new Vue({
         });
       }
       return groupedFilings;
+    },
+    createResponseObjectForFiling: function(id){
+      console.log("testing for "+id);
+      if (app.responses[id] === undefined) {
+        console.log("creating default for "+id);
+
+        Vue.set(app.responses, id, "")
+      }
     },
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
@@ -304,8 +358,8 @@ var app = new Vue({
     },
     makeFilingObject(counts, filingType, county){
       var countsOnThisFiling = counts;
-      var numCounts = countsOnThisFiling.length
-      var isMultipleCounts = numCounts > 1
+      var numCounts = countsOnThisFiling.length;
+      var isMultipleCounts = numCounts > 1;
       return {
         id:filingType+county,
         type: filingType,
@@ -318,7 +372,6 @@ var app = new Vue({
         isEligible: this.isEligible(filingType),
         docketNums: this.allDocketNumsObject(countsOnThisFiling),
         counts:countsOnThisFiling,
-        response:""
       }
     },
     updatePageTitle: function(){
@@ -328,6 +381,9 @@ var app = new Vue({
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
       return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
+    },
+    clearAll: function(){
+      document.location.reload()
     }
   },
   computed: {
