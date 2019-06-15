@@ -132,6 +132,10 @@ button {
     margin-right: auto;
 }
 
+.card-header__disposition-date {
+    white-space: nowrap;
+}
+
 #vtCourtsOnline {
     margin-top: 10px;
     margin-bottom: 20px;
@@ -258,9 +262,17 @@ hr {
     display:flex;
     flex-direction: row;
     align-content: flex-start;
-    justify-content: space-between;
 }
 
+.card-header__description {
+    text-decoration: none !important;
+    color:black !important;
+}
+
+.card-header__description.btn-link:hover {
+    text-decoration: none !important;
+    color:black !important;
+}
 
 /* Pills */
 .pill {
@@ -273,10 +285,19 @@ hr {
     border-radius: 500px;
     margin: 0;
     padding: 0;
+    margin-right: 5px;
+    padding: 0px 5px 0px 5px;
 }
 
 .pill.pill--outline-green {
     border: 2px solid #2FA54A;
     color: #2FA54A;
+    background-color: transparent;
+}
+
+
+.pill.pill--outline-black {
+    border: 2px solid #555;
+    color: #555;
     background-color: transparent;
 }

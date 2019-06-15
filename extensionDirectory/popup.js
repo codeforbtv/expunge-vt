@@ -73,14 +73,14 @@ $("#edit-petitioner").click(function () {
             });
 
             function setAddress(addrHTML) {
-                addressString = $("#defendantAddress").html().replace(/<\/div>/g,"<br>")
-                addressString = addressString.replace(/<div>/g,"<br>")
+                addressString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
+                addressString = addressString.replace(/<div>/g, "<br>")
                 addressHTML = addressString.split('<br>')
                 var filteredHTML = addressHTML.filter(function (el) {
                     return el != "";
-                  });
+                });
                 for (i = 0; i < filteredHTML.length; i++) {
-                    result.expungevt[0].defAddress[i]=filteredHTML[i]
+                    result.expungevt[0].defAddress[i] = filteredHTML[i]
                 }
             }
             console.log(result.expungevt[0].defAddress)
@@ -88,7 +88,6 @@ $("#edit-petitioner").click(function () {
         });
     }
 });
-
 
 
 function getData() {
@@ -139,7 +138,7 @@ function setPopUpData(allData) {
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
-            if (i === addrArray.length-1) {
+            if (i === addrArray.length - 1) {
                 addressHTML += addrArray[i]
             } else {
                 addressHTML += addrArray[i] + "<br>"
@@ -157,7 +156,8 @@ function setPopUpData(allData) {
 
         let card = document.createElement('div');
         card.classList.add('card');
-        card.innerHTML = createCountCard(count)
+
+        card.innerHTML = createCountCard(count, allData.defDOB)
         $('#countCards').append(card);
         $(cardSelectID).val(count.filingType);
     }
@@ -165,24 +165,23 @@ function setPopUpData(allData) {
 
 }
 
-function createCountCard(count) {
-
+function createCountCard(count, dob) {
     dockNum = count.docketNum.trim();
     ctNum = count.countNum.trim();
     cardID = dockNum + "-" + ctNum
     let cardHTML = (`
-        <div class="card-header" id=${"heading" + cardID}>
+        <div class="card-header" id=${"heading" + cardID} type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
                 <div class="card-header__column">
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
-                        <button class="card-header__description btn btn-link btn-sm" type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
+                        <button class="card-header__description btn btn-link btn-sm" >
                             <p>${count.description}</p>
                          </button>
-                            <p class="card-header__disposition-date">${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
-
+                            <p class="card-header__disposition-date">Est. Disposition: ${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
                         </div>
                         <div id="selectionDiv" class="card-header__select">
                             <select id=${"select" + cardID} class="petitionSelect selectpicker">
+                                <option value="">No Filing</option>
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
                                 <option value="ExNC">Expunge Nonconviction</option>
@@ -195,9 +194,13 @@ function createCountCard(count) {
                     </div>
 
                     <div class="card-header__pills-row">
-                        <span class="pill pill--rounded pill--outline-green">
+                        <span class="pill pill--rounded ${offenseTypeColor()}">
                             ${count.offenseClass}
                         </span>
+                        <span class="pill pill--rounded ${dispositionColor()}">
+                            ${count.offenseDisposition}
+                        </span>
+                        ${getAgeAtDispositionHTML()}
                     </div>
                 </div>
         </div>
@@ -251,19 +254,64 @@ function createCountCard(count) {
         }
 
     }
+    function offenseTypeColor() {
+
+        if (count.offenseClass === "fel") {
+            return "pill--outline-black"
+        } else {
+            return "pill--outline-green"
+        }
+    }
+
+    function dispositionColor() {
+
+        if (count.offenseDisposition === "Dismissed by state") {
+            return "pill--outline-green"
+        } else {
+            return "pill--outline-black"
+        }
+    }
+
+    function getAgeAtDispositionHTML() {
+        // Create a span element for age at time of offense.
+        // <span class="pill pill--rounded ${dispositionColor()}">
+        //     ${count.offenseDisposition}
+        // </span>
+
+        dobArray = dob.split("/")
+        let fromTime = new Date(dobArray[2], dobArray[0]-1, dobArray[1]);
+        
+        dispoDate = count.dispositionDate
+        let toTime = moment(dispoDate, "MM/DD/YY")
+
+        ageSinceOffense = toTime.diff(fromTime, "years", true).toFixed(2);
+        console.log(ageSinceOffense);
+
+        if (ageSinceOffense < 18) {
+            spanHTML = "<span class='pill pill--rounded pill--outline-green'> under 18 </span>"
+        } else if (ageSinceOffense < 21) {
+            spanHTML = "<span class='pill pill--rounded pill--outline-green'> under 21 </span>"
+        } else {
+            spanHTML = "<span class='pill pill--rounded pill--outline-black'> adult </span>"
+        }
+
+        console.log(spanHTML)
+        return spanHTML
+
+
+    }
 
 }
 
 
 
 
-
+//Updtate chrome storage when a petition is selected
 $('body').on('change', 'select.petitionSelect', function () {
 
     selectID = this.id
     filingType = this.value
     chrome.storage.local.get(['expungevt'], function (result) {
-
         for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
             countID = "select" + result.expungevt[0]["counts"][i].docketNum.trim() + "-" + result.expungevt[0]["counts"][i].countNum.trim()
 
@@ -278,5 +326,9 @@ $('body').on('change', 'select.petitionSelect', function () {
         console.log(result.expungevt)
 
     });
+});
+
+$('body').on('click', 'select.petitionSelect', function(event){
+    event.stopPropagation();
 });
 
