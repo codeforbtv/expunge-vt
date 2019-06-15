@@ -259,7 +259,7 @@ var app = new Vue({
         var allFilingsForThisCountyObject = []
         for (var filing in filingsForThisCounty){
           var filingType = filingsForThisCounty[filing]
-          if (this.isEligible(filingType)){
+          if (this.isSupported(filingType) && this.isEligible(filingType) && this.isFileable(filingType)){
             var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
             
             
@@ -326,6 +326,25 @@ var app = new Vue({
     isEligible: function(filingType){
       return (
         filingType != "X");
+    },
+    isFileable: function(filingType){
+      return (
+        filingType != "");
+    },
+    isSupported: function(filingType){
+      switch (filingType) {
+        case "StipExC":
+        case "ExC":
+        case "StipExNC":
+        case "ExNC":
+        case "StipSC":
+        case "SC":
+        case "X":
+        case "":
+          return true;
+        default:
+          return false;
+      }
     },
     filingNameFromType: function(filingType){
       switch (filingType) {
