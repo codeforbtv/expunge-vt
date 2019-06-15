@@ -11,9 +11,12 @@ body {
     margin-left: 15px;
     height: 30px;
 }
-
+.petitioner-details .btn {
+    padding:0 1rem;
+}
 .pet-detail {
     padding: 0px 5px 0px 5px;
+    word-break: break-all;
 }
 
 button {
@@ -57,7 +60,7 @@ button {
 }
 
 #defendantInfo {
-    width: 80%;
+    width: 70%;
 }
 
 .petitioner-details {
@@ -78,7 +81,9 @@ button {
     display: flex;
     flex-direction: column;
     text-align: center;
-    width: 10%;
+    justify-content: flex-start;
+    align-items: center;
+    width: 25%;
 }
 
 #logoDiv .logos {
