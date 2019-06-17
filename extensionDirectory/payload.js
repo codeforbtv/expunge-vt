@@ -145,9 +145,18 @@ function processCountLine1(countLine1, countNum) {
         "sectionNum": offenseSection,
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": countLine1Array[felMisLocation + 1],
-        "offenseDisposition": disposition.trim(),
+        "offenseDisposition": checkDisposition(disposition),
         "filingType": "X"
     }]
+
+    function checkDisposition(){
+        disposition = disposition.trim()
+        if (disposition == "") {
+            return "undisposed"
+        } else {
+            return disposition
+        }
+    }
 
     //Get Alleged offense date:
     offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
@@ -158,11 +167,11 @@ function processCountLine1(countLine1, countNum) {
     countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim()
 
     //Get Arrest/citation date:
-    offenseDateArray = docketBody.match(/Arrest\/Citation\s+date:\s(\d\d\/\d\d\/\d\d)/gi)
-    offenseDateString = offenseDateArray[countNum]
-    offenseDateLocation = offenseDateString.length
-    offenseDateLocationEnd = offenseDateLocation - 8
-    arrestCitationDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+    arrestDateArray = docketBody.match(/Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
+    arrestDateString = arrestDateArray[countNum]
+    arrestDateLocation = arrestDateString.length
+    arrestDateLocationEnd = arrestDateLocation - 8
+    arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd)
     countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
 }
 
