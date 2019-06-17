@@ -241,7 +241,7 @@ function createCountCard(count, dob) {
     function checkDispositionDetail() {
         dispDate = count.dispositionDate
         if (dispDate == "" || dispDate == null) {
-            return "undisposed"
+            return "pending"
         } else {
             return dispDate
         }

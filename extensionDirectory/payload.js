@@ -150,7 +150,7 @@ function processCountLine1(countLine1, countNum) {
     function checkDisposition(){
         disposition = disposition.trim()
         if (disposition == "") {
-            return "undisposed"
+            return "pending"
         } else {
             return disposition
         }
