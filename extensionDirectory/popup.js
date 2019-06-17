@@ -176,8 +176,7 @@ function createCountCard(count, dob) {
                         <div id="description-date" class="card-header__meta-data">
                         <button class="card-header__description btn btn-link btn-sm" >
                             <p>${count.description}</p>
-                         </button>
-                            <p class="card-header__disposition-date">Est. Disposition: ${count.dispositionDate + "  (" + getRelativeDate(count.dispositionDate) + " ago)"}</p>
+                         </button> ${checkDisposition()}
                         </div>
                         <div id="selectionDiv" class="card-header__select">
                             <select id=${"select" + cardID} class="petitionSelect selectpicker">
@@ -229,6 +228,15 @@ function createCountCard(count, dob) {
     `);
 
     return cardHTML
+
+    function checkDisposition() {
+        dispDate = count.dispositionDate
+        if (dispDate = "" || dispDate == null) {
+            return ""
+        } else {
+        return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
+        }
+    }
 
     function getRelativeDate(date) {
 
