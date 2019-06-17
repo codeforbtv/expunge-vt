@@ -362,7 +362,6 @@ var app = new Vue({
         case "StipSC":
         case "SC":
         case "X":
-        case "":
           return true;
         default:
           return false;
