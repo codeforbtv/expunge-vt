@@ -134,29 +134,34 @@ Vue.component('filing-nav', {
 
 Vue.component('filing-footer', {
   template: (`<div class="filing-closing">
-            <p class="filing-closing__salutation">Respectfully requested,</p>
-            <div class="filing-closing__signature-area">
-                <div class="filing-closing__signature-box">
-                    <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
-                    <p class="filing-closing__petitioner-address" v-html="signature.address"></p>
-                </div>
-                <div class="filing-closing__date-box">
-                    <p>Date</p>
-                </div>
-            </div>
+              <p class="filing-closing__salutation">Respectfully requested,</p>
+              <div class="filing-closing__signature-area">
+                  <div class="filing-closing__signature-box">
+                      <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
+                      <p class="filing-closing__petitioner-address" v-html="signature.address"></p>
+                  </div>
+                  <div class="filing-closing__date-box">
+                      <p>Date</p>
+                  </div>
+              </div>
 
-            <div class="stipulated-closing" v-if="stipulated">
-                <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
-                <div class="filing-closing__signature-box">
-                    <p class="filing-closing__name">State's Attorney/Attorney General</p>
-                </div>
+              <div class="stipulated-closing" v-if="stipulated">
+                  <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
+                  <div class="filing-closing__signature-box">
+                      <p class="filing-closing__name">State's Attorney/Attorney General</p>
+                  </div>
               </div>
           </div>
+
 `),
-  props: ['signature','stipulated']
+  props: ['type','signature','stipulated']
 });
 
-
+Vue.component('filing-dated-city', {
+  template: (`
+    <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
+  `)
+});
 //vue app
 
 var app = new Vue({
@@ -239,42 +244,56 @@ var app = new Vue({
     });
     },
     groupCountsIntoFilings: function(counts){
-      // get all counts for the 
+      
+      // get all counties that have counts associated with them 
       var filingCounties = this.groupByCounty(counts)
 
       console.log("there are "+filingCounties.length+" counties for " + counts.length +" counts");
       
-      //group into filing
+      //create an array to hold all county filing objects
       var groupedFilings = []
       
+      //iterate through all counties and create the filings
       for (var county in filingCounties){
         var countyName = filingCounties[county]
-        var allCountsForThisCounty = counts.filter(count => count.county == countyName)
-        var filingsForThisCounty = this.groupByFilingType(allCountsForThisCounty)
+        
+        //filter all counts to the ones only needed for this county
+        var allEligibleCountsForThisCounty = counts.filter(count => count.county == countyName && this.isFileable(count.filingType))
+        
+        //figure out the filing types needed for this county.
+        var filingsForThisCounty = this.groupByFilingType(allEligibleCountsForThisCounty)
 
-
-        console.log("there are "+filingsForThisCounty.length+" different filings needed in "+countyName)
+        console.log("there are "+filingsForThisCounty.length +" different filings needed in "+ countyName)
         console.log(filingsForThisCounty)
 
+        //if there are no filings needed for this county, move along to the next one.
+        if (filingsForThisCounty.length == 0) continue;
+
+        //create an array to hold all of the filing objects for this county
         var allFilingsForThisCountyObject = []
+
+        //add the notice of appearance filing to this county because we have petitions to file
+        var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(countyName, allEligibleCountsForThisCounty)
+        allFilingsForThisCountyObject.push(noticeOfAppearanceObject)
+
+        //iterate through the filing types needed for this county and push them into the array
         for (var filing in filingsForThisCounty){
           var filingType = filingsForThisCounty[filing]
-          if (this.isSupported(filingType) && this.isEligible(filingType) && this.isFileable(filingType)){
+          
+          if (this.isFileable(filingType)){
             var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
-            
-            
             allFilingsForThisCountyObject.push(filingObject);
-
             this.createResponseObjectForFiling(filingObject.id)
-
           }
         }
-
+        //add all filings for this county to the returned filing object.
         groupedFilings.push(
           {county:countyName,
           filings:allFilingsForThisCountyObject
         });
       }
+      
+
       return groupedFilings;
     },
     createResponseObjectForFiling: function(id){
@@ -284,6 +303,9 @@ var app = new Vue({
 
         Vue.set(app.responses, id, "")
       }
+    },
+    createNoticeOfAppearanceFiling: function(county, counts){
+        return this.makeFilingObject(counts, 'PSNoA', county);
     },
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
@@ -328,11 +350,11 @@ var app = new Vue({
         filingType != "X");
     },
     isFileable: function(filingType){
-      return (
-        filingType != "");
+      return (this.isSupported(filingType) && this.isEligible(filingType));
     },
     isSupported: function(filingType){
       switch (filingType) {
+        case "PSNoA": //Pro Se Notice of Appearance 
         case "StipExC":
         case "ExC":
         case "StipExNC":
@@ -348,6 +370,8 @@ var app = new Vue({
     },
     filingNameFromType: function(filingType){
       switch (filingType) {
+        case "PSNoA":
+          return "Notice of Appearance"
         case "StipExC":
           return "Stipulated Petition to Expunge Conviction"
         case "ExC":
@@ -394,7 +418,7 @@ var app = new Vue({
       }
     },
     updatePageTitle: function(){
-      var title = "Filings for "+this.petitoner.name
+      var title = "Filings for "+this.petitioner.name
       document.title = title;
     },
     nl2br: function(rawStr) {
@@ -419,7 +443,7 @@ var app = new Vue({
     }
   },
   computed: {
-  	petitoner: function () {
+  	petitioner: function () {
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,

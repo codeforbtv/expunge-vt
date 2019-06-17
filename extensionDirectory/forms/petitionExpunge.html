@@ -27,9 +27,9 @@
     <div id="filing-app">
         
         <template v-if="filings || ineligible">
-        <div v-if="petitoner.name" class="header-bar-wrapper no-print">
+        <div v-if="petitioner.name" class="header-bar-wrapper no-print">
             <div class="header-bar">
-                <h1>Filings for {{petitoner.name}}</h1>
+                <h1>Filings for {{petitioner.name}}</h1>
                 <div class="header-bar__controls">
                     <button id="js-print" class="btn btn-primary no-print">Print All</button>
                     <button id="js-export" class="btn btn-primary no-print" disabled>Export to CSV</button>
@@ -43,7 +43,6 @@
             <tbody>
                 <tr>
                     <td>
-
                         <section v-for="group in filings" v-bind:id="group.county">
                             <article class="page" v-for="filing in group.filings" v-bind:id="filing.id">
 
@@ -61,7 +60,7 @@
                                                 <p>Superior Court</p>
                                                 <p>{{filing.county}} Unit</p>
                                             </div>
-                                            <docket-caption v-bind:name="petitoner.name"></docket-caption>
+                                            <docket-caption v-bind:name="petitioner.name"></docket-caption>
                                         </div>
                                         <div class="filing-header__half text-right">
                                             <div class="filing-header__docket-number docket-number">
@@ -77,6 +76,14 @@
                                     <h1 class="filing-title">{{filing.title}}</h1>
 
                                     <!-- Begin Unique Portion of Filings -->
+
+
+                                    <div class="filing-body" v-if="filing.type == 'PSNoA'">
+                                    <p class="indent">
+                                            Please note the <span class="italic">pro se</span> appearance of {{petitioner.name}}, (Date of Birth: {{petitioner.dob}}) in the above captioned action.</p>
+
+                                    </div>
+
 
                                     <!-- (Stipulated) Petiton To Expunge Conviction -->
                                     <div class="filing-body" v-if="filing.type == 'ExC' || filing.type == 'StipExC'">
@@ -171,12 +178,36 @@
 
                                     <!-- End Unique Portion of Filings -->
 
+
+                                    <template v-if="filing.type != 'PSNoA'">
                                     <div class="filing-body__response">
                                         <p class="no-visible" v-html="nl2br(responses[filing.id])"></p>
                                         <textarea class="no-print" v-model="responses[filing.id]" placeholder="Type here..."></textarea>
                                     </div>
 
-                                    <filing-footer v-bind:signature="petitoner" v-bind:stipulated="filing.isStipulated"></filing-footer>
+                                    <filing-footer v-bind:type="filing.type" v-bind:signature="petitioner" v-bind:stipulated="filing.isStipulated"></filing-footer>
+                                    </template>
+
+
+
+                                    <template v-else>
+            <filing-dated-city></filing-dated-city>
+            <div class="filing-closing">
+            <div class="filing-closing__signature-area filing-closing--align-right">
+                <div class="filing-closing__signature-box">
+                    <p class="filing-closing__name">{{petitioner.name}}, Petitioner</p>
+                    <div class="filing-closing__contact-box">
+                        <p class="filing-closing__contact-box-title bold">Petitioner's Address &amp; Phone Number:</p>
+                        <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
+                        <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span><input v-model="responses['phone']" placeholder="Phone Number"></p>
+                    </div>
+                    
+                </div>
+            </div>
+          </template>
+
+
+
 
                                 </div>
                             </article>
