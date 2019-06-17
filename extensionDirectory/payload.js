@@ -95,8 +95,6 @@ function getCountInfo(tempPetitionerCountObject) {
 
 //Break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum) {
-    console.log(countNum)
-
     //Break into array and remove spaces
     countLine1Array = countLine1.split(" ")
     countLine1Array = countLine1Array.filter(function (el) {
@@ -152,7 +150,7 @@ function processCountLine1(countLine1, countNum) {
     function checkDisposition(){
         disposition = disposition.trim()
         if (disposition == "") {
-            return "undisposed"
+            return "pending"
         } else {
             return disposition
         }
@@ -174,10 +172,6 @@ function processCountLine1(countLine1, countNum) {
     arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd)
     countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
 }
-
-console.log("saved");
-
-
 
 function nthIndex(str, subStr, n) {
     var L = str.length,

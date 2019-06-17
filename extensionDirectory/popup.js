@@ -219,7 +219,7 @@ function createCountCard(count, dob) {
                         <tr>
                             <td>${count.allegedOffenseDate}</td>
                             <td>${count.arrestCitationDate}</td>
-                            <td>${count.dispositionDate}</td>
+                            <td>${checkDispositionDetail()}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -231,10 +231,19 @@ function createCountCard(count, dob) {
 
     function checkDisposition() {
         dispDate = count.dispositionDate
-        if (dispDate = "" || dispDate == null) {
+        if (dispDate == "" || dispDate == null) {
             return ""
         } else {
         return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
+        }
+    }
+
+    function checkDispositionDetail() {
+        dispDate = count.dispositionDate
+        if (dispDate == "" || dispDate == null) {
+            return "pending"
+        } else {
+            return dispDate
         }
     }
 
@@ -281,10 +290,6 @@ function createCountCard(count, dob) {
     }
 
     function getAgeAtDispositionHTML() {
-        // Create a span element for age at time of offense.
-        // <span class="pill pill--rounded ${dispositionColor()}">
-        //     ${count.offenseDisposition}
-        // </span>
 
         dobArray = dob.split("/")
         let fromTime = new Date(dobArray[2], dobArray[0]-1, dobArray[1]);
@@ -293,7 +298,6 @@ function createCountCard(count, dob) {
         let toTime = moment(dispoDate, "MM/DD/YY")
 
         ageSinceOffense = toTime.diff(fromTime, "years", true).toFixed(2);
-        console.log(ageSinceOffense);
 
         if (ageSinceOffense < 18) {
             spanHTML = "<span class='pill pill--rounded pill--outline-green'> under 18 </span>"
@@ -303,7 +307,6 @@ function createCountCard(count, dob) {
             spanHTML = "<span class='pill pill--rounded pill--outline-black'> adult </span>"
         }
 
-        console.log(spanHTML)
         return spanHTML
 
 
