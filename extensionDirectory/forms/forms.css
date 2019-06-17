@@ -345,7 +345,7 @@ p.document-meta-data__body {
 @media print {
     @page { 
         size: letter portrait;
-        margin: 1.375in 0.25in 1in 0.25in;
+        margin: 1in 0.25in 0.75in 0.25in;
     }
     body {
         line-height: 1.3;
