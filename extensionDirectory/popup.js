@@ -219,7 +219,7 @@ function createCountCard(count, dob) {
                         <tr>
                             <td>${count.allegedOffenseDate}</td>
                             <td>${count.arrestCitationDate}</td>
-                            <td>${count.dispositionDate}</td>
+                            <td>${checkDispositionDetail()}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -235,6 +235,15 @@ function createCountCard(count, dob) {
             return ""
         } else {
         return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
+        }
+    }
+
+    function checkDispositionDetail() {
+        dispDate = count.dispositionDate
+        if (dispDate == "" || dispDate == null) {
+            return "undisposed"
+        } else {
+            return dispDate
         }
     }
 
