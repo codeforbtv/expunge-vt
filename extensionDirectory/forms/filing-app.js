@@ -451,6 +451,18 @@ var app = new Vue({
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
+    },
+    countsExpungedNC: function (data) {
+      const excCounts = data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
+      return excCounts;
+    },
+    countsExpungedC: function (data) {
+      const excCounts = data.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
+      return excCounts;
+    },
+    countsSealC: function (data) {
+      const excCounts = data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
+      return excCounts;
     }
   },
   filters: {
