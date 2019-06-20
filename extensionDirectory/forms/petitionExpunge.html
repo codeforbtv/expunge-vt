@@ -101,7 +101,7 @@
                                                         <input class="no-print" v-model="count.dispositionDate">
                                                     </td>
                                                     <td class="count-item__description"><span class="no-visible">{{count.description}}</span>
-                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
+                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -110,10 +110,10 @@
                                         </table>
 
                                         <p>2. <span v-if="filing.multipleCounts">These are</span><span v-else>This is a</span> qualifying crime<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7601(4).</p>
-                                        <p>3. I completed the terms and conditions of my sentence over 5 years ago, and I paid all restitution owed.</p>
-                                        <p>4. Expunging all record of <span v-if="filing.multipleCounts">these convictions</span><span v-else>this conviction</span> is in the interest of justice because:</p>
+                                        <p><span v-if="!filing.isStipulated">3. I completed the terms and conditions of my sentence over 5 years ago, and I paid all restitution owed.</span></p>
+                                        <p><span v-if="!filing.isStipulated">4.</span><span v-else>3. </span> Expunging all record of <span v-if="filing.multipleCounts">these convictions</span><span v-else>this conviction</span> is in the interest of justice because:</p>
                                     </div>
-
+                                    
                                     <!-- (Stipulated) Petiton To Expunge Non Conviction -->
 
                                     <div class="filing-body" v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'">
