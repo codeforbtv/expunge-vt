@@ -132,7 +132,7 @@
                                                         <input class="no-print" v-model="count.dispositionDate">
                                                     </td>
                                                     <td class="count-item__description"><span class="no-visible">{{count.description}}</span>
-                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
+                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -163,7 +163,7 @@
                                                         <input class="no-print" v-model="count.dispositionDate">
                                                     </td>
                                                     <td class="count-item__description"><span class="no-visible">{{count.description}}</span>
-                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
+                                                        <textarea rows="1" class="no-print count-item__textarea" v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
                                                     </td>
                                                 </tr>
                                             </tbody>
