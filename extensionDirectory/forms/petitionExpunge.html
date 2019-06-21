@@ -24,7 +24,7 @@
 
     <!-- font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
-    integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
 </head>
 
@@ -298,42 +298,68 @@
                                     <div class="filing-document">
                                         <div class="filing__title">Clinic Checkout Sheet</div>
                                         <div class="filing-body">
-                                            <div class="title petition__title">Summary of Charges</div>
+                                            <div class="title petition__title"></div>
+                                            <h1>Filings for {{petitioner.name}} (DOB: {{petitioner.dob}})</h1>
+                                                    <p class="filing-closing__petitioner-address"
+                                                        v-html="petitioner.address">
+                                                    <p class="filing-closing__phone">Phone: <span
+                                                            class="no-visible">{{responses['phone']}}</span><input
+                                                            class="no-print" v-model="responses['phone']"
+                                                            placeholder="Phone Number"></p>
                                             <dl>
-                                                <table class="table">
+                                                <table class="table summary-table">
+                                                    <col width="300">
                                                     <thead class="">
                                                         <th scope="col">Desc.</th>
                                                         <th scope="col" Colspan="2">Disposition</th>
                                                         <th scope="col">Docket Number</th>
                                                     </thead>
                                                     <tbody>
-                                                        <th scope="col" Colspan="3">CONVICTION petitions drafted...</th>
+                                                        <th scope="col" Colspan="3" v-if="countsExpungedC.length > 0">
+                                                            CONVICTION petitions drafted...
+                                                        </th>
                                                         <tr v-for="filing in countsExpungedC">
-                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                            </td>
                                                             <td>{{filing.dispositionDate}}</td>
                                                             <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                            </td>
                                                         </tr>
-                                                        <th scope="col" Colspan="3">NON-CONVICTION petitions drafted...</th>
+                                                        <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
+                                                            NON-CONVICTION petitions drafted...
+                                                        </th>
                                                         <tr v-for="filing in countsExpungedNC">
-                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                            </td>
                                                             <td>{{filing.dispositionDate}}</td>
                                                             <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                            </td>
                                                         </tr>
-                                                        <th scope="col" Colspan="3">SEALED petitions drafted...</th>
+                                                        <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED
+                                                            petitions drafted...</th>
                                                         <tr v-for="filing in countsSealC">
-                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                            </td>
                                                             <td>{{filing.dispositionDate}}</td>
                                                             <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                            </td>
                                                         </tr>
-                                                        <th scope="col" Colspan="3">INELIGIBLE counts...</th>
+                                                        <th scope="col" Colspan="3" v-if="ineligible.length > 0">
+                                                            INELIGIBLE counts...</th>
                                                         <tr v-for="filing in ineligible">
-                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                            </td>
                                                             <td>{{filing.dispositionDate}}</td>
                                                             <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                            </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
