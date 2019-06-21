@@ -160,7 +160,8 @@ p.document-meta-data__body {
     text-transform: uppercase;
     text-align: center;
     width:100%;
-    margin-bottom:0.25rem;
+    margin-top:0.25rem;
+    margin-bottom:0.20rem;
 }
 
 .filing-header__half {
@@ -206,7 +207,7 @@ p.document-meta-data__body {
     min-width:9rem;
 }
 
-.page .filing-title {
+.page .filing-title, .page .filing__title, .page .petition__title {
     text-decoration: underline;
     text-transform: uppercase;
     text-align:center;

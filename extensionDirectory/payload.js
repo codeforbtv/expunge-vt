@@ -81,8 +81,8 @@ function getCountInfo(tempPetitionerCountObject) {
             processCountLine1(allCountsArray[i], i/2)
         } else { //Catch Line 2 of each count
             description = allCountsArray[i].trim()
-            description = description.replace("/", " / ")
-            description = description.replace("  ", " ")
+            description = description.replace(/\//g, " / ")
+            description = description.replace(/\s\s/g, " ")
             countObject[0]["description"] = description
 
             tempPetitionerCountObject[0].counts.push(countObject[0])
