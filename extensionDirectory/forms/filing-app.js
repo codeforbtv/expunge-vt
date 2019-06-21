@@ -454,6 +454,7 @@ var app = new Vue({
     },
     countsExpungedNC: function (data) {
       const excCounts = data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
+      console.log(excCounts)
       return excCounts;
     },
     countsExpungedC: function (data) {

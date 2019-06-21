@@ -22,6 +22,10 @@
     <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15/dist/smooth-scroll.polyfills.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@4/dist/gumshoe.polyfills.min.js"></script>
 
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+    integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
 </head>
 
 <body>
@@ -299,32 +303,37 @@
                                                 <table class="table">
                                                     <thead class="">
                                                         <th scope="col">Desc.</th>
-                                                        <th scope="col">Disposition</th>
-                                                        <th scope="col">County</th>
+                                                        <th scope="col" Colspan="2">Disposition</th>
                                                         <th scope="col">Docket Number</th>
                                                     </thead>
-                                                    <dt>CONVICTION petitions drafted...</dt>
                                                     <tbody>
                                                         <th scope="col" Colspan="3">CONVICTION petitions drafted...</th>
                                                         <tr v-for="filing in countsExpungedC">
-                                                            <td>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
                                                             <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.county}}</td>
-                                                            <td>{{filing.docketNum}}</td>
+                                                            <td>{{filing.offenseDisposition}}</td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
                                                         </tr>
                                                         <th scope="col" Colspan="3">NON-CONVICTION petitions drafted...</th>
                                                         <tr v-for="filing in countsExpungedNC">
-                                                            <td>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
                                                             <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.county}}</td>
-                                                            <td>{{filing.docketNum}}</td>
+                                                            <td>{{filing.offenseDisposition}}</td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
+                                                        </tr>
+                                                        <th scope="col" Colspan="3">SEALED petitions drafted...</th>
+                                                        <tr v-for="filing in countsSealC">
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
+                                                            <td>{{filing.dispositionDate}}</td>
+                                                            <td>{{filing.offenseDisposition}}</td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
                                                         </tr>
                                                         <th scope="col" Colspan="3">INELIGIBLE counts...</th>
                                                         <tr v-for="filing in ineligible">
-                                                            <td>{{filing.description}}</td>
+                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}</td>
                                                             <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.county}}</td>
-                                                            <td>{{filing.docketNum}}</td>
+                                                            <td>{{filing.offenseDisposition}}</td>
+                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty"></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
