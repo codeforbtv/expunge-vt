@@ -39,6 +39,7 @@
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
+                        <label>Group Counts from Multiple Dockets <input type="checkbox" v-model="groupCounts"></label>
                         <button id="js-print" class="btn btn-primary no-print">Print All</button>
                         <button id="js-export" class="btn btn-primary no-print" disabled>Export to CSV</button>
                     </div>
@@ -78,8 +79,8 @@
                                                     <p v-for="docketNum in filing.docketNums"
                                                         class="docket-number__numbers"><span
                                                             class="docket-number__label">Docket No.&nbsp;</span><span
-                                                            class="docket-number__number no-visible">{{docketNum.num}}</span>
-                                                        <input class="no-print" v-model="docketNum.num">
+                                                            class="docket-number__number no-visible">{{docketNum.string}}</span>
+                                                        <input class="no-print" v-model="docketNum.string">
                                                     </p>
                                                 </div>
                                             </div>

@@ -10,6 +10,9 @@ function initAfterVue(){
   setInitialExpandForTextAreas();
   initScrollDetection()
 }
+function initAfterFilingRefresh(){
+  setInitialExpandForTextAreas()
+}
 
 function initTextAreaAutoExpand(){
   document.addEventListener('input', function (event) {
@@ -167,6 +170,7 @@ Vue.component('filing-dated-city', {
 var app = new Vue({
   el: '#filing-app',
   data: {
+    groupCounts: true,
     saved: {
     	defName: "",
     	defAddress: ["",""],
@@ -181,12 +185,21 @@ var app = new Vue({
   watch: {
     'responses': {
      handler(){
-      console.log("save responses")
        app.saveResponses()
      },
      deep: true
-   }
+   },
+    'groupCounts': {
+      handler(){
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts);
+        app.$nextTick(function () {
+        //call any vanilla js functions after update.
+          initAfterFilingRefresh();
+        })
+      }
+    }
   },
+
   mounted() {
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
@@ -210,7 +223,7 @@ var app = new Vue({
 
         app.saved = data
         //parse the data
-        app.filings = app.groupCountsIntoFilings(data.counts)
+        app.filings = app.groupCountsIntoFilings(data.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
         app.ineligible = app.groupIneligibleCounts(data.counts)
         app.noAction = app.groupNoAction(data.counts)
         app.$nextTick(function () {
@@ -243,7 +256,7 @@ var app = new Vue({
         callback();
     });
     },
-    groupCountsIntoFilings: function(counts){
+    groupCountsIntoFilings: function(counts, groupDockets = true){
       
       // get all counties that have counts associated with them 
       var filingCounties = this.groupByCounty(counts)
@@ -277,15 +290,34 @@ var app = new Vue({
         allFilingsForThisCountyObject.push(noticeOfAppearanceObject)
 
         //iterate through the filing types needed for this county and push them into the array
-        for (var filing in filingsForThisCounty){
-          var filingType = filingsForThisCounty[filing]
+        for (var filingIndex in filingsForThisCounty){
+          console.log(filingIndex)
+          var filingType = filingsForThisCounty[filingIndex]
+
+          //if the filing is not one we're going to need a petition for, let's skip to the next filing type
+          if (!this.isFileable(filingType)) continue;
+            console.log("is fileable")
+
+          //create the filing object that will be added to the array for this county
+          var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
+
+          //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
+          if (groupDockets || filingObject.numDockets == 1) {
+              allFilingsForThisCountyObject.push(filingObject);
+              this.createResponseObjectForFiling(filingObject.id)
           
-          if (this.isFileable(filingType)){
-            var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
-            allFilingsForThisCountyObject.push(filingObject);
-            this.createResponseObjectForFiling(filingObject.id)
+          } else {
+            //break the filing object into multiple petitions
+            for (var docketNumIndex in filingObject.docketNums) {
+              var docketNumUnique = filingObject.docketNums[docketNumIndex].num;
+              var brokenOutFilingObject = this.filterAndMakeFilingObject(filingObject.counts,countyName,filingType,docketNumUnique)
+              allFilingsForThisCountyObject.push(brokenOutFilingObject);
+              this.createResponseObjectForFiling(brokenOutFilingObject.id)
+
+            }
           }
         }
+
         //add all filings for this county to the returned filing object.
         groupedFilings.push(
           {county:countyName,
@@ -297,10 +329,9 @@ var app = new Vue({
       return groupedFilings;
     },
     createResponseObjectForFiling: function(id){
-      console.log("testing for "+id);
+      console.log("testing for " + id);
       if (app.responses[id] === undefined) {
-        console.log("creating default for "+id);
-
+        console.log("creating default for " + id);
         Vue.set(app.responses, id, "")
       }
     },
@@ -327,17 +358,19 @@ var app = new Vue({
         });
         return allCounts.filter((v, i, a) => a.indexOf(v) === i)
     },
-    allDocketNums: function (counts){
+    allDocketNumsObject: function (counts){
+
         allDocketNums = counts.map(function(count) {
-          return count.docketNum + " " +count.docketCounty
+          return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
         });
-        return allDocketNums.filter((v, i, a) => a.indexOf(v) === i);
-    },
-    allDocketNumsObject: function(counts){
-      var docketNums = this.allDocketNums(counts);
-      return docketNums.map(function (docketNum){
-        return {num:docketNum}
-      });
+
+        //filter the docket number object array to make it unique
+        var result = allDocketNums.filter((e, i) => {
+          return allDocketNums.findIndex((x) => {
+          return x.num == e.num && x.county == e.county;}) == i;
+        });
+
+        return result;
     },
     isStipulated: function(filingType){
       return (
@@ -401,18 +434,18 @@ var app = new Vue({
           return "1 Docket"
         }
     },
-    filterAndMakeFilingObject: function(counts,county,filingType){
-      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType);
-      return this.makeFilingObject(countsOnThisFiling, filingType, county);
-    },
     addDocketNumberToDescriptions: function(counts){
-
       var allCountsWithUpdatedDescriptions = counts.map(function(count) {
-          count["descriptionFull"] = count.description + " (" + count.docketNum + " " + count.county +")";
+          count["descriptionFull"] = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
           return count
         });
       return allCountsWithUpdatedDescriptions
 
+    },
+    filterAndMakeFilingObject: function(counts,county,filingType,docketNum=""){
+      console.log("in filter" + docketNum)
+      var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType && (docketNum =="" ||  docketNum == count.docketNum));
+      return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
     makeFilingObject: function(counts, filingType, county){
       var countsOnThisFiling = this.addDocketNumberToDescriptions(counts);
@@ -420,9 +453,10 @@ var app = new Vue({
       var docketNums = this.allDocketNumsObject(countsOnThisFiling)
       var numDockets = docketNums.length;
       var isMultipleCounts = numCounts > 1;
+      var filingId = filingType+"-"+county+"-"+docketNums[0].num;
 
       return {
-        id:filingType+county,
+        id:filingId,
         type: filingType,
         title: this.filingNameFromType(filingType),
         county: county,
