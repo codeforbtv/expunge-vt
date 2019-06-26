@@ -113,7 +113,7 @@ Vue.component('filing-nav', {
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
           <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
-          <p class="filing-nav__counts">{{filing.numCountsString}}</p>
+          <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
           </li>
         </ol>
         </li>
@@ -394,25 +394,46 @@ var app = new Vue({
           return "1 Count"
         }
     },
-    filterAndMakeFilingObject(counts,county,filingType){
+    makeNumDocketsString: function(num){
+      if (num > 1) {
+          return num+" Dockets"
+        } else {
+          return "1 Docket"
+        }
+    },
+    filterAndMakeFilingObject: function(counts,county,filingType){
       var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType);
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
-    makeFilingObject(counts, filingType, county){
-      var countsOnThisFiling = counts;
+    addDocketNumberToDescriptions: function(counts){
+
+      var allCountsWithUpdatedDescriptions = counts.map(function(count) {
+          count["descriptionFull"] = count.description + " (" + count.docketNum + " " + count.county +")";
+          return count
+        });
+      return allCountsWithUpdatedDescriptions
+
+    },
+    makeFilingObject: function(counts, filingType, county){
+      var countsOnThisFiling = this.addDocketNumberToDescriptions(counts);
       var numCounts = countsOnThisFiling.length;
+      var docketNums = this.allDocketNumsObject(countsOnThisFiling)
+      var numDockets = docketNums.length;
       var isMultipleCounts = numCounts > 1;
+
       return {
         id:filingType+county,
         type: filingType,
         title: this.filingNameFromType(filingType),
         county: county,
         numCounts: numCounts,
+        numDockets: numDockets,
         multipleCounts: isMultipleCounts,
         numCountsString: this.makeNumCountsString(numCounts),
+        numDocketsString: this.makeNumDocketsString(numDockets),
         isStipulated: this.isStipulated(filingType),
         isEligible: this.isEligible(filingType),
-        docketNums: this.allDocketNumsObject(countsOnThisFiling),
+        docketNums: docketNums,
         counts:countsOnThisFiling,
       }
     },

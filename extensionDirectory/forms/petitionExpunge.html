@@ -56,7 +56,7 @@
 
                                     <div class="document-meta-data no-print">
                                         <p class="document-meta-data__title">{{filing.title}}</p>
-                                        <p class="document-meta-data__body">{{group.county}}, {{filing.numCountsString}}
+                                        <p class="document-meta-data__body">{{group.county}}, {{filing.numCountsString}}, {{filing.numDocketsString}}
                                         </p>
                                     </div>
                                     <div class="filing-document">
@@ -120,14 +120,12 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
-
                                             </table>
 
                                             <p>2. <span v-if="filing.multipleCounts">These are</span><span v-else>This
@@ -167,14 +165,12 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
-
                                             </table>
 
                                             <p>2. All dismissed charges are eligible for expungement pursuant to 13
@@ -207,9 +203,9 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
