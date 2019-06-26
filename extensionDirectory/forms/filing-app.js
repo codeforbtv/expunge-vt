@@ -519,6 +519,13 @@ var app = new Vue({
     countsSealC: function (data) {
       const excCounts = data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
       return excCounts;
+    },
+    numDockets: function(){
+        var numDockets = app.saved.counts.filter((e, i) => {
+          return app.saved.counts.findIndex((x) => {
+          return x.docketNum == e.docketNum && x.county == e.county;}) == i;
+        });
+        return numDockets.length
     }
   },
   filters: {
