@@ -51,7 +51,7 @@ function getPetitionerInfo() {
     }
 
     //get docket Num
-    docketSheetNum = docketBody.match(/(?<=\|  Docket No.  ).*(?=\s\s)/gm)[0].trim()
+    docketSheetNum = docketBody.match(/([Docket No.\s+])(\d.*?cr)/)[0].trim()
 
     //create all counts object
     tempPetitionerCountObject = [{
