@@ -58,6 +58,10 @@
     flex-grow: 0;
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
+}
+.header-bar__controls label {
+    margin:0;
 }
 .header-bar__controls button {
     margin-left:0.5rem;
