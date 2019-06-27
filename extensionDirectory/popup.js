@@ -123,6 +123,7 @@ function addDocketCounts() {
 // Listen to messages from the payload.js script and write to popout.html
 chrome.runtime.onMessage.addListener(function (message) {
     loadedMessage = message[0]
+    console.log(loadedMessage)
     setPopUpData(loadedMessage)
     $("#coverDiv").toggle(false);
     $("#mainButtonDiv").css('padding-top', 0);

@@ -50,12 +50,15 @@ function getPetitionerInfo() {
         addressArray[i] = addressArray[i].trim()
     }
 
+    //get docket Num
+    docketSheetNum = docketBody.match(/([Docket No.\s+])(\d.*?cr)/)[0].trim()
+
     //create all counts object
     tempPetitionerCountObject = [{
         "defName": defName,
         "defDOB": defDOB,
         "defAddress": addressArray,
-        "counts": []
+        "counts": [],
     }]
 
     return tempPetitionerCountObject;
@@ -144,7 +147,8 @@ function processCountLine1(countLine1, countNum) {
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": countLine1Array[felMisLocation + 1],
         "offenseDisposition": checkDisposition(disposition),
-        "filingType": "X"
+        "filingType": "X",
+        "docketSheetNum": docketSheetNum,
     }]
 
     function checkDisposition(){
