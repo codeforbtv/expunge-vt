@@ -81,7 +81,7 @@ function getCountInfo(tempPetitionerCountObject) {
         //Catch Line 1 (odd lines) of each count
         if ((i + 1) % 2 != 0) {
             countObject = [{}];
-            processCountLine1(allCountsArray[i], i/2)
+            processCountLine1(allCountsArray[i], i / 2)
         } else { //Catch Line 2 of each count
             description = allCountsArray[i].trim()
             description = description.replace(/\//g, " / ")
@@ -89,7 +89,7 @@ function getCountInfo(tempPetitionerCountObject) {
             countObject[0]["description"] = description
 
             tempPetitionerCountObject[0].counts.push(countObject[0])
-         }
+        }
     }
 
     return tempPetitionerCountObject
@@ -151,7 +151,7 @@ function processCountLine1(countLine1, countNum) {
         "docketSheetNum": docketSheetNum,
     }]
 
-    function checkDisposition(){
+    function checkDisposition() {
         disposition = disposition.trim()
         if (disposition == "") {
             return "pending"
@@ -161,20 +161,32 @@ function processCountLine1(countLine1, countNum) {
     }
 
     //Get Alleged offense date:
-    offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
-    offenseDateString = offenseDateArray[countNum]
-    offenseDateLocation = offenseDateString.length
-    offenseDateLocationEnd = offenseDateLocation - 8
-    allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
-    countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim()
+    try {
+        offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
+        offenseDateString = offenseDateArray[countNum]
+        offenseDateLocation = offenseDateString.length
+        offenseDateLocationEnd = offenseDateLocation - 8
+        allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
+        countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim()
+    }
+    catch (err) {
+        countObject[0]["allegedOffenseDate"] = "Check Docket"
+        console.log("Error:" + err)
+    }
 
     //Get Arrest/citation date:
-    arrestDateArray = docketBody.match(/Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
-    arrestDateString = arrestDateArray[countNum]
-    arrestDateLocation = arrestDateString.length
-    arrestDateLocationEnd = arrestDateLocation - 8
-    arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd)
-    countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
+    try {
+        arrestDateArray = docketBody.match(/Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
+        arrestDateString = arrestDateArray[countNum]
+        arrestDateLocation = arrestDateString.length
+        arrestDateLocationEnd = arrestDateLocation - 8
+        arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd)
+        countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
+    }
+    catch (err) {
+        countObject[0]["arrestCitationDate"] = "Check Docket"
+        console.log("Error:" + err)
+    }
 }
 
 function nthIndex(str, subStr, n) {

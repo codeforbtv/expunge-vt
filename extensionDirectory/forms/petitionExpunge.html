@@ -39,6 +39,7 @@
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
+                        <label v-if="numDockets > 1">Group Counts from Multiple Docket Sheets <input type="checkbox" v-model="groupCounts"></label>
                         <button id="js-print" class="btn btn-primary no-print">Print All</button>
                         <button id="js-export" class="btn btn-primary no-print" disabled>Export to CSV</button>
                     </div>
@@ -56,7 +57,7 @@
 
                                     <div class="document-meta-data no-print">
                                         <p class="document-meta-data__title">{{filing.title}}</p>
-                                        <p class="document-meta-data__body">{{group.county}}, {{filing.numCountsString}}
+                                        <p class="document-meta-data__body">{{group.county}}, {{filing.numCountsString}}, {{filing.numDocketsString}}
                                         </p>
                                     </div>
                                     <div class="filing-document">
@@ -78,8 +79,8 @@
                                                     <p v-for="docketNum in filing.docketNums"
                                                         class="docket-number__numbers"><span
                                                             class="docket-number__label">Docket No.&nbsp;</span><span
-                                                            class="docket-number__number no-visible">{{docketNum.num}}</span>
-                                                        <input class="no-print" v-model="docketNum.num">
+                                                            class="docket-number__number no-visible">{{docketNum.string}}</span>
+                                                        <input class="no-print" v-model="docketNum.string">
                                                     </p>
                                                 </div>
                                             </div>
@@ -120,14 +121,12 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
-
                                             </table>
 
                                             <p>2. <span v-if="filing.multipleCounts">These are</span><span v-else>This
@@ -167,14 +166,12 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
-
                                             </table>
 
                                             <p>2. All dismissed charges are eligible for expungement pursuant to 13
@@ -207,9 +204,9 @@
                                                             <input class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span
-                                                                class="no-visible">{{count.description}}</span>
+                                                                class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea"
-                                                                v-model="count.description + ' (' + count.docketNum + ' ' + count.docketCounty+')'"></textarea>
+                                                                v-model="count.descriptionFull"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>

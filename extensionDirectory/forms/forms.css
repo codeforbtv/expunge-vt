@@ -58,6 +58,10 @@
     flex-grow: 0;
     display: flex;
     flex-wrap: nowrap;
+    align-items: center;
+}
+.header-bar__controls label {
+    margin:0;
 }
 .header-bar__controls button {
     margin-left:0.5rem;
@@ -182,7 +186,7 @@ p.document-meta-data__body {
     display: flex;
 }
 .docket-caption__names {
-    width: 80%;
+    width: 90%;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
