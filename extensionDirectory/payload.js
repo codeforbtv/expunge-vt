@@ -147,8 +147,8 @@ function processCountLine1(countLine1, countNum) {
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": countLine1Array[felMisLocation + 1],
         "offenseDisposition": checkDisposition(disposition),
-        "filingType": "X",
-        "docketSheetNum": docketSheetNum,
+        "filingType": "",
+        "docketSheetNum": docketSheetNum
     }]
 
     function checkDisposition() {
