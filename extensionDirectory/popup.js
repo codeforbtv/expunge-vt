@@ -15,7 +15,7 @@ createPetition.onclick = function (element) {
     }, tabs => {
         let index = tabs[0].index;
         chrome.tabs.create({
-            url: chrome.extension.getURL('./forms/petitionExpunge.html'),
+            url: chrome.extension.getURL('./filings.html'),
             index: index + 1,
         })
     })
