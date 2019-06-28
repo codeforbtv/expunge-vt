@@ -10,6 +10,7 @@ function initAfterVue(){
   setInitialExpandForTextAreas();
   initScrollDetection()
 }
+
 function initAfterFilingRefresh(){
   setInitialExpandForTextAreas()
 }
@@ -33,6 +34,7 @@ function initSmoothScroll(){
     durationMax: 300
   });
 }
+
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
   var storageChange = changes['expungevt'];
@@ -47,6 +49,7 @@ function detectChangesInLocalStorage(){
 
   });
 }
+
 function initScrollDetection() {
   //initates the scrollspy for the filing-nav module.
   var spy = new Gumshoe('#filing-nav a',{
@@ -56,6 +59,7 @@ function initScrollDetection() {
       reflow: false, // if true, listen for reflows
     });
 }
+
 function setInitialExpandForTextAreas(){
   //sets the default size for all text areas based on their content.
   //call this after vue has initialized and displayed
@@ -86,7 +90,6 @@ function autoExpand(field) {
 
   field.style.height = height + 'px';
 };
-
 
 function printDocument(){
     window.print();
@@ -135,7 +138,6 @@ Vue.component('filing-nav', {
   props: ['filings']
 });
 
-
 Vue.component('filing-footer', {
   template: (`<div class="filing-closing">
               <p class="filing-closing__salutation">Respectfully requested,</p>
@@ -160,16 +162,13 @@ Vue.component('filing-footer', {
   props: ['type','signature','stipulated']
 });
 
-
 Vue.component('filing-dated-city', {
   template: (`
     <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
   `)
 });
 
-
-//vue app
-
+//Vue app
 var app = new Vue({
   el: '#filing-app',
   data: {

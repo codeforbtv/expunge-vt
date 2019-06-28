@@ -1,91 +1,81 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-        <link href="popup.css" rel="stylesheet" type="text/css">
+    <link href="popup.css" rel="stylesheet" type="text/css">
 
     <!-- font awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
-        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js"
-        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-        crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <!-- Moment -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-   
+
 </head>
 
-<body>
+<body class="">
     <div id="coverDiv" class="empty-state">
         <div id="logoDivCover">
-            <img id="code4btv" src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home"
-                class="logos">
-            <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home"
-                class="logos">
+            <img id="code4btv" src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
+            <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
-        <div class="col-md-4 text-center button-div">
-            <button id="add-docket-info" class="js-add-count btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button id="" class="btn btn-success" disabled>Generate Documents <i
-                    class="fas fa-external-link-alt"></i></button>
+        <div class="inset text-center button-div">
+            <button data-add-counts class="add-docket-info btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button data-generate class="generate-documents btn btn-success" disabled>Generate Documents <i class="fas fa-external-link-alt"></i></button>
         </div>
-        <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts"
-            button
-            below.</p>
+        <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
+        </p>
         <a id="vtCourtsOnlineA" target="_blank" href="https://secure.vermont.gov/vtcdas/user">
             <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
         </a>
     </div>
+<div class="active-state">
     <div class="popTop">
         <div id="defendantInfo">
-            <div class="petitioner-details">
-                <p><b>Petitioner Information</b></p>
-                <button id="edit-petitioner" class="btn btn-outline-secondary">Edit</button>
+            <div class="pet-item">
+                <p class="section-label">Petitioner Information</p>
+                <button data-edit class="btn btn-outline-secondary">Edit</button>
             </div>
-            <div class="petitioner-details">
-                <p class="petitioner-label">Name:</p>
+            <div class="pet-item">
+                <p class="pet-label">Name:</p>
                 <p class="pet-detail" id='defendantName' contenteditable="false"></p>
             </div>
-            <div class="petitioner-details">
-                <p class="petitioner-label">DOB:</p>
+            <div class="pet-item">
+                <p class="pet-label">DOB:</p>
                 <p class="pet-detail" id='defendantDOB' contenteditable="false"></p>
             </div>
-            <div class="petitioner-details">
-                <p class="petitioner-label">Address:</p>
+            <div class="pet-item">
+                <p class="pet-label">Address:</p>
                 <p class="pet-detail" id='defendantAddress' contenteditable="false"></p>
             </div>
         </div>
         <div id="logoDiv">
-            <button id="clear-data" class="expunge-it btn btn-outline-secondary">Clear All</button>
+            <button data-clear class="clear-data btn btn-outline-secondary">Clear All</button>
             <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
             <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
-    </div>
-    <div id="mainButtonDiv" class="col-md-4 text-center bottom-div">
-        <div class="col-md-4 text-center button-div">
-            <button id="add-docket-info" class="js-add-count btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button id="create-petition" class="btn btn-success">Generate Documents <i
-                    class="fas fa-external-link-alt"></i></button>
+            </div>
+
+    <div class="popTop inset text-center bottom-div">
+        <div class="inset text-center button-div">
+            <button data-add-counts class="btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button data-generate class="btn btn-success">Generate Documents <i class="fas fa-external-link-alt"></i></button>
         </div>
     </div>
-    <p id="countsLabel"><b>Counts</b></p>
+    <p class="section-label">Counts</p>
     <hr>
-    <div id="countCards" class="accordion col-md-4 text-center"></div>
+    <div id="countCards" class="count-cards accordion inset text-center"></div>
     <hr>
-    <div id="bottomText" class="col-md-4 text-center bottom-div">
+    <div id="bottomText" class="inset text-center bottom-div">
         <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid</p>
     </div>
+
+</div>
     <script id='script' src="popup.js"></script>
 </body>
-
 </html>
