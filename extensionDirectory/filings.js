@@ -224,10 +224,12 @@ var app = new Vue({
   methods:{
     saveAndParseData: function(data) {
         app.saved = data
+        app.addFullDescriptionToCounts()
+        console.log(app.saved)
         //parse the data
-        app.filings = app.groupCountsIntoFilings(data.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
-        app.ineligible = app.groupIneligibleCounts(data.counts)
-        app.noAction = app.groupNoAction(data.counts)
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
+        app.ineligible = app.groupIneligibleCounts(app.saved.counts);
+        app.noAction = app.groupNoAction(app.saved.counts);
         app.$nextTick(function () {
           app.updatePageTitle();
           //call any vanilla js functions that need to run after vue is all done setting up.
@@ -449,19 +451,19 @@ var app = new Vue({
           return "Petition";
       }
     },
-    addDocketNumberToDescriptions: function(counts){
-      var allCountsWithUpdatedDescriptions = counts.map(function(count) {
-          count["descriptionFull"] = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
-          return count
-        });
-      return allCountsWithUpdatedDescriptions
+    addFullDescriptionToCounts: function(){
+      for (countIndex in app.saved.counts) {
+          var count = app.saved.counts[countIndex];
+          var descriptionFull = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
+          Vue.set(app.saved.counts[countIndex],"descriptionFull",descriptionFull);
+      }
     },
     filterAndMakeFilingObject: function(counts,county,filingType,docketSheetNum=""){
       var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType && (docketSheetNum =="" ||  docketSheetNum == count.docketSheetNum));
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
     makeFilingObject: function(counts, filingType, county){
-      var countsOnThisFiling = this.addDocketNumberToDescriptions(counts);
+      var countsOnThisFiling = counts;
       var numCounts = countsOnThisFiling.length;
       var docketNums = this.allDocketNumsObject(countsOnThisFiling);
       var numDockets = docketNums.length;
