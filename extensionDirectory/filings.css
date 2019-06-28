@@ -72,13 +72,14 @@
 
 .filing-nav {
     position: fixed;
-    top:100px;
+    top:60px;
+    height: calc(100vh - 60px);
     left:0;
     padding:1rem;
-    padding-left:1;
     z-index: 100;
     background-color:#fff;
     width:15em;
+    overflow-y:scroll;
 }
 .filing-nav ol {
     padding:0;
@@ -288,7 +289,10 @@ p.document-meta-data__body {
 .stipulated-closing {
     margin-top:1.5rem;
 }
-
+p.filing-dated-city {
+    margin-top:1.5rem;
+    margin-bottom:1.5rem;
+}
 /* Use this with a span full of non-breaking spaces to give it a solid fill-in underline */
 .fill-in {
     opacity: 1;
@@ -311,7 +315,7 @@ p.document-meta-data__body {
         padding: 6rem;
         height: 100%;
         border:2px solid #ddd;
-        margin-left:15rem;
+        margin-left:17rem;
         margin-right:auto;
         margin-top:8rem;
         position: relative;
