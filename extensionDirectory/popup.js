@@ -1,14 +1,54 @@
-let createPetition = document.getElementById('create-petition');
-let clearData = document.getElementById('clear-data');
-let addCounts = document.getElementById('add-docket-info');
 let loadedMessage;
-let docketInfo = document.getElementById('docketInfo');
-let coverDiv = document.getElementById("coverDiv");
-
 
 getData();
+initButtons();
+initListeners();
 
-createPetition.onclick = function (element) {
+function initButtons(){
+    $("[data-add-counts]").click(addDocketCounts)
+    $("[data-edit]").click(editPetitioner)
+    $("[data-generate]").click(createPetition)
+    $("[data-clear]").click(clearData)
+}
+
+function initListeners(){
+    // Listen to messages from the payload.js script and write to popout.html
+    chrome.runtime.onMessage.addListener(function (message) {
+        loadedMessage = message[0]
+        console.log(loadedMessage)
+        setPopUpData(loadedMessage)
+        $('body').addClass('active');
+
+    });
+
+    //Update chrome storage when a petition is selected
+    $('body').on('change', 'select.petitionSelect', function () {
+
+        selectID = this.id
+        filingType = this.value
+        chrome.storage.local.get(['expungevt'], function (result) {
+            for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
+                countID = "select" + result.expungevt[0]["counts"][i].docketNum.trim() + "-" + result.expungevt[0]["counts"][i].countNum.trim()
+
+                if (countID === selectID) {
+                    result.expungevt[0]["counts"][i]["filingType"] = filingType
+                }
+            }
+            chrome.storage.local.set({
+                expungevt: result.expungevt
+            });
+            console.log(result.expungevt)
+
+        });
+    });
+
+    //prevents the select in the petition cards from opening the accordion.
+    $('body').on('click', 'select.petitionSelect', function(event){
+        event.stopPropagation();
+    });
+}
+
+function createPetition(element) {
 
     chrome.tabs.query({
         active: true, currentWindow: true
@@ -21,47 +61,37 @@ createPetition.onclick = function (element) {
     })
 };
 
-clearData.onclick = function (element) {
+function clearData(element){
 
     var r = confirm("Are you sure you want to clear all data for this petitioner?");
     if (r == true) {
-        txt = "You pressed OK!";
-
-        var myNode = document.getElementById("countCards");
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
+ 
+        var allCards = document.getElementById("countCards");
+        while (allCards.firstChild) {
+            allCards.removeChild(allCards.firstChild);
         }
-        document.getElementById('defendantName').innerHTML = "";
-        document.getElementById('defendantDOB').innerHTML = "";
-        document.getElementById('defendantAddress').innerHTML = "";
+        $('.pet-detail').text = "";
         chrome.storage.local.clear()
-        coverDiv.style.display = "block";
-        $("#mainButtonDiv").css('padding-top', 75);
-
+        $('body').removeClass('active');
     }
-
 };
 
 
-$("#edit-petitioner").click(function () {
+function editPetitioner() {
     var value = $('.pet-detail').attr('contenteditable');
     if (value == 'false') {
-        $("#edit-petitioner").html("Save");
+        $("[data-edit]").html("Save");
         $('.pet-detail').attr('contenteditable', 'true');
-        $('.pet-detail').css({
-            'border': 'black solid 1px',
-            'outline': 'none'
-        })
     }
     else {
-        $("#edit-petitioner").html("Edit");
+        $("[data-edit]").html("Edit");
         $('.pet-detail').attr('contenteditable', 'false');
-        $('.pet-detail').css({
-            'border': 'none',
-            'outline': 'none'
-        })
 
-        chrome.storage.local.get(['expungevt'], function (result) {
+        savePetitonerData();
+    }
+};
+function savePetitonerData(){
+    chrome.storage.local.get(['expungevt'], function (result) {
 
             //defendant info
             result.expungevt[0].defName = $("#defendantName").html();
@@ -86,22 +116,19 @@ $("#edit-petitioner").click(function () {
             console.log(result.expungevt[0].defAddress)
 
         });
-    }
-});
-
+}
 
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
             setPopUpData(result.expungevt[0])
-            $("#mainButtonDiv").css('padding-top', 0);
-            $("#coverDiv").toggle(false);
+            $('body').addClass('active');
+
         }
     });
 }
 
 
-$(".js-add-count").click(addDocketCounts)
 
 function addDocketCounts() {
 
@@ -117,17 +144,8 @@ function addDocketCounts() {
             chrome.tabs.executeScript(null, { file: 'payload.js' });
         });
     });
-
 };
 
-// Listen to messages from the payload.js script and write to popout.html
-chrome.runtime.onMessage.addListener(function (message) {
-    loadedMessage = message[0]
-    console.log(loadedMessage)
-    setPopUpData(loadedMessage)
-    $("#coverDiv").toggle(false);
-    $("#mainButtonDiv").css('padding-top', 0);
-});
 
 function setPopUpData(allData) {
     //defendant info
@@ -162,8 +180,6 @@ function setPopUpData(allData) {
         $('#countCards').append(card);
         $(cardSelectID).val(count.filingType);
     }
-
-
 }
 
 function createCountCard(count, dob) {
@@ -250,11 +266,6 @@ function createCountCard(count, dob) {
 
     function getRelativeDate(date) {
 
-        // dateArray = date.split("/")
-
-        // relDate = moment(date,"M/D/YY").fromNow()
-
-
         let fromTime = moment(date, "M/D/YY").diff(moment(), "milliseconds")
         let duration = moment.duration(fromTime)
         let years = duration.years() / -1
@@ -307,40 +318,9 @@ function createCountCard(count, dob) {
         } else {
             spanHTML = "<span class='pill pill--rounded pill--outline-black'> adult </span>"
         }
-
         return spanHTML
-
-
     }
-
 }
 
 
-
-
-//Updtate chrome storage when a petition is selected
-$('body').on('change', 'select.petitionSelect', function () {
-
-    selectID = this.id
-    filingType = this.value
-    chrome.storage.local.get(['expungevt'], function (result) {
-        for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
-            countID = "select" + result.expungevt[0]["counts"][i].docketNum.trim() + "-" + result.expungevt[0]["counts"][i].countNum.trim()
-
-            if (countID === selectID) {
-                result.expungevt[0]["counts"][i]["filingType"] = filingType
-            }
-
-        }
-        chrome.storage.local.set({
-            expungevt: result.expungevt
-        });
-        console.log(result.expungevt)
-
-    });
-});
-
-$('body').on('click', 'select.petitionSelect', function(event){
-    event.stopPropagation();
-});
 

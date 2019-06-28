@@ -1,40 +1,87 @@
+
 body {
     width: 475px;
-    border: 2px solid grey;
+    height:400px;
+    padding:10px;
+    box-sizing: border-box;
+}
+body.active {
+    height:auto;
+}
+body:before {
+    content:"";
+        border: 2px solid grey;
+        position: fixed;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index: 1000;
+        pointer-events: none;
+
+}
+button {
+    outline: none;
 }
 
-#defendantInfo p {
+body.active .empty-state, body .active-state {
+    display:none;
+}
+body .empty-state, body.active .active-state{
+    display:block;
+}
+
+.pet-label,.pet-details {
     margin: 0;
 }
 
 #edit-petitioner{
-    margin-left: 15px;
+    margin-left: 20px;
     height: 30px;
 }
-.petitioner-details .btn {
+.pet-item .btn {
     padding:0 1rem;
 }
 .pet-detail {
     padding: 0px 5px 0px 5px;
     word-break: break-all;
+    width:60%;
+}
+p.pet-detail {
+    margin:0;
+}
+.pet-item {
+    display: flex;
+    margin-top: 5px;
+    align-items: baseline;
 }
 
-button {
-    outline: none;
+.pet-label {
+    width: 100px;
+    padding-left: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Helvetica, Arial, sans-serif;
 }
-#countCards {
-    margin-bottom: 15px !important;
+
+
+
+
+.pet-detail[contenteditable=true] {
+    outline:1px solid black;
+}
+.count-cards {
+    margin-bottom: 15px;
 }
 
 .accordion {
     white-space: normal;
     text-decoration: none !important;
-    width: 290px;
 }
 
 .empty-state {
     width: 100%;
-    height: 290px;
+    height: 100%;
     background-color: white;
     position:fixed;
     padding:0;
@@ -43,38 +90,24 @@ button {
     top:0;
     left:0;
     border: 2px solid grey;
-    border-bottom:0;
-
 }
-
+.inset {
+    padding-left:2px;
+    padding-right:2px;
+}
 #bottomText {
     position: relative;
     z-index: 100;
 }
+
 .popTop {
     display: flex;
     flex-direction: row;
     width: 100%;
-    min-height: 175px;
-    margin: 5px;
 }
 
 #defendantInfo {
     width: 70%;
-}
-
-.petitioner-details {
-    display: flex;
-    flex-direction: row;
-    margin-top: 5px;
-}
-
-.petitioner-label {
-    width: 100px;
-    padding-left: 15px;
-    font-size: 14px;
-    font-weight: bold;
-    font-family: Helvetica, Arial, sans-serif;
 }
 
 #logoDiv {
@@ -99,15 +132,7 @@ button {
     margin-top: 70px;
 }
 
-#coverDiv {
-    height:100%;
-    background-color: white;
-    border-bottom: 2px solid grey;
-    z-index: 99;
-}
-
 #mainButtonDiv {
-    padding-top:75px;
     position: relative;
     z-index: 0;
 }
@@ -154,8 +179,9 @@ button {
     z-index: 99;
 }
 
-#countsLabel {
-    margin: 5px;
+.section-label {
+    margin: 5px 10px;
+    font-weight: bold;
 }
 
 hr {
@@ -172,9 +198,7 @@ hr {
     padding: 2px;
 }
 
-.pillText {
-    padding: 3px;
-}
+
 
 .card-body {
     padding: 2px !important;
@@ -192,9 +216,8 @@ hr {
     padding: 4px;
 }
 
-.expunge-it {
+.clear-data {
     width: 100px;
-    font-family: Helvetica, Arial, sans-serif;
     margin-bottom: 3px;
     margin: 10px 5px 10px 5px;
     align-self: center;
@@ -205,7 +228,7 @@ hr {
     flex-direction: row;
     width: 100%;
     justify-content: center;
-    margin: 35px 10px 5px 10px;  
+    margin: 25px 10px 5px 10px;  
     text-align: center;
 }
 
@@ -213,11 +236,11 @@ hr {
     margin: 5px;
 }
 
-#add-docket-info {
+.add-docket-info {
     width: 150px;
 }
 
-#create-petition {
+.create-documents {
     width: 250px;
 }
 
@@ -225,6 +248,8 @@ hr {
 
 .card .card-header {
     padding:0.5rem;
+    -webkit-appearance:none;
+    cursor: pointer;
 }
 .card-header__column {
     position: relative;
@@ -280,6 +305,7 @@ hr {
 }
 
 /* Pills */
+
 .pill {
     min-width: 50px;
     font-size:0.75rem;
@@ -299,7 +325,6 @@ hr {
     color: #2FA54A;
     background-color: transparent;
 }
-
 
 .pill.pill--outline-black {
     border: 2px solid #555;
