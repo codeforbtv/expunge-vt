@@ -42,10 +42,18 @@ function getPetitionerInfo() {
     defDOB = docketBody.substring(dobLocation, dobLocationEnd)
 
     //Get Address
-    addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
-    addressArray = addressString[0].split("\n")
-    addressArray.pop()
-    addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
+    try {
+        //match all between address and next hearing
+        addressString = docketBody.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms)
+        addressArray = addressString[0].split("\n")
+        addressArray.pop()
+        //trims off disposed text and excess spaces
+        addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
+    }
+    catch {
+        addressArray = []
+        addressArray[0] = "No Address found"
+    }
     for (i = 0; i < addressArray.length; i++) {
         addressArray[i] = addressArray[i].trim()
     }
