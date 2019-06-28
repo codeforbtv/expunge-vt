@@ -105,7 +105,8 @@ Vue.component('docket-caption', {
       <div class="capParens">
           )<br>)<br>)<br>)
         </div>
-      </div>`),
+      </div>
+      `),
   props: ['name']
 });
 
@@ -155,16 +156,18 @@ Vue.component('filing-footer', {
                   </div>
               </div>
           </div>
-
-`),
+          `),
   props: ['type','signature','stipulated']
 });
+
 
 Vue.component('filing-dated-city', {
   template: (`
     <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
   `)
 });
+
+
 //vue app
 
 var app = new Vue({
@@ -173,7 +176,7 @@ var app = new Vue({
     groupCounts: true,
     saved: {
     	defName: "",
-    	defAddress: ["",""],
+    	defAddress: [""],
     	defDOB: "",
     	counts: [],
     },
@@ -200,7 +203,6 @@ var app = new Vue({
       }
     }
   },
-
   mounted() {
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
@@ -217,27 +219,20 @@ var app = new Vue({
         var loadSettingsCallback = (function(){
           app.loadResponses(loadResponsesCallback);
         })
-        
         app.loadSettings(loadSettingsCallback);
-
-
-
-
     });
   },
   methods:{
     saveAndParseData: function(data) {
-                console.log("save and parse");
-
         app.saved = data
         //parse the data
         app.filings = app.groupCountsIntoFilings(data.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
         app.ineligible = app.groupIneligibleCounts(data.counts)
         app.noAction = app.groupNoAction(data.counts)
         app.$nextTick(function () {
-            app.updatePageTitle();
-            //call any vanilla js functions that need to run after vue is all done setting up.
-            initAfterVue();
+          app.updatePageTitle();
+          //call any vanilla js functions that need to run after vue is all done setting up.
+          initAfterVue();
         })
     },
     saveSettings: function(){
@@ -256,7 +251,6 @@ var app = new Vue({
     },
     loadSettings: function(callback){
       console.log("load settings")
-
       chrome.storage.local.get('expungevtSettings', function (result) {
         //test if we have any data
 
@@ -267,13 +261,11 @@ var app = new Vue({
         } else {
           app.groupCounts = true;
         }
-
         callback();
-    });
+      });
     },
     loadResponses: function(callback){
       console.log("load responses")
-
       chrome.storage.local.get('expungevtResponses', function (result) {
         //test if we have any data
 
@@ -284,9 +276,8 @@ var app = new Vue({
         } else {
           app.responses = {};
         }
-
         callback();
-    });
+      });
     },
     groupCountsIntoFilings: function(counts, groupDockets = true){
       
@@ -300,6 +291,7 @@ var app = new Vue({
       
       //iterate through all counties and create the filings
       for (var county in filingCounties){
+        
         var countyName = filingCounties[county]
         
         //filter all counts to the ones only needed for this county
@@ -309,7 +301,6 @@ var app = new Vue({
         var filingsForThisCounty = this.groupByFilingType(allEligibleCountsForThisCounty)
 
         console.log("there are "+filingsForThisCounty.length +" different filings needed in "+ countyName)
-        console.log(filingsForThisCounty)
 
         //if there are no filings needed for this county, move along to the next one.
         if (filingsForThisCounty.length == 0) continue;
@@ -323,16 +314,13 @@ var app = new Vue({
 
         //iterate through the filing types needed for this county and push them into the array
         for (var filingIndex in filingsForThisCounty){
-          console.log(filingIndex)
           var filingType = filingsForThisCounty[filingIndex]
 
           //if the filing is not one we're going to need a petition for, let's skip to the next filing type
           if (!this.isFileable(filingType)) continue;
-            console.log("is fileable")
 
           //create the filing object that will be added to the array for this county
           var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
-          console.log(filingObject)
           //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
           if (groupDockets || filingObject.numDocketSheets == 1) {
               allFilingsForThisCountyObject.push(filingObject);
@@ -356,19 +344,15 @@ var app = new Vue({
           filings:allFilingsForThisCountyObject
         });
       }
-      
-
       return groupedFilings;
     },
     createResponseObjectForFiling: function(id){
-      console.log("testing for " + id);
       if (app.responses[id] === undefined) {
-        console.log("creating default for " + id);
         Vue.set(app.responses, id, "")
       }
     },
     createNoticeOfAppearanceFiling: function(county, counts){
-        return this.makeFilingObject(counts, 'PSNoA', county);
+      return this.makeFilingObject(counts, 'PSNoA', county);
     },
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
@@ -385,38 +369,38 @@ var app = new Vue({
       return allCounties.filter((v, i, a) => a.indexOf(v) === i)
     },
     groupByFilingType:function(counts) {
-        var allCounts = counts.map(function(count) {
-          return count.filingType
-        });
-        return allCounts.filter((v, i, a) => a.indexOf(v) === i)
+      var allCounts = counts.map(function(count) {
+        return count.filingType
+      });
+      return allCounts.filter((v, i, a) => a.indexOf(v) === i)
     },
     allDocketNumsObject: function (counts){
 
-        allDocketNums = counts.map(function(count) {
-          return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
-        });
+      allDocketNums = counts.map(function(count) {
+        return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
+      });
 
-        //filter the docket number object array to make it unique
-        var result = allDocketNums.filter((e, i) => {
-          return allDocketNums.findIndex((x) => {
-          return x.num == e.num && x.county == e.county;}) == i;
-        });
+      //filter the docket number object array to make it unique
+      var result = allDocketNums.filter((e, i) => {
+        return allDocketNums.findIndex((x) => {
+        return x.num == e.num && x.county == e.county;}) == i;
+      });
 
-        return result;
+      return result;
     },
     allDocketSheetNumsObject: function (counts){
 
-        allDocketSheetNums = counts.map(function(count) {
-          return {num:count.docketSheetNum}
-        });
+      allDocketSheetNums = counts.map(function(count) {
+        return {num:count.docketSheetNum}
+      });
 
-        //filter the docket number object array to make it unique
-        var result = allDocketSheetNums.filter((e, i) => {
-          return allDocketSheetNums.findIndex((x) => {
-          return x.num == e.num}) == i;
-        });
+      //filter the docket number object array to make it unique
+      var result = allDocketSheetNums.filter((e, i) => {
+        return allDocketSheetNums.findIndex((x) => {
+        return x.num == e.num}) == i;
+      });
 
-        return result;
+      return result;
     },
     isStipulated: function(filingType){
       return (
@@ -466,27 +450,12 @@ var app = new Vue({
           return "Petition";
       }
     },
-    makeNumCountsString: function(num){
-      if (num > 1) {
-          return num+" Counts"
-        } else {
-          return "1 Count"
-        }
-    },
-    makeNumDocketsString: function(num){
-      if (num > 1) {
-          return num+" Dockets"
-        } else {
-          return "1 Docket"
-        }
-    },
     addDocketNumberToDescriptions: function(counts){
       var allCountsWithUpdatedDescriptions = counts.map(function(count) {
           count["descriptionFull"] = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
           return count
         });
       return allCountsWithUpdatedDescriptions
-
     },
     filterAndMakeFilingObject: function(counts,county,filingType,docketSheetNum=""){
       var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType && (docketSheetNum =="" ||  docketSheetNum == count.docketSheetNum));
@@ -503,7 +472,7 @@ var app = new Vue({
       var filingId = filingType+"-"+county+"-"+docketNums[0].num;
 
       return {
-        id:filingId,
+        id: filingId,
         type: filingType,
         title: this.filingNameFromType(filingType),
         county: county,
@@ -511,25 +480,25 @@ var app = new Vue({
         numDockets: numDockets,
         numDocketSheets: numDocketSheets,
         multipleCounts: isMultipleCounts,
-        numCountsString: this.makeNumCountsString(numCounts),
-        numDocketsString: this.makeNumDocketsString(numDockets),
+        numCountsString: this.pluralize("Count",numCounts),
+        numDocketsString: this.pluralize("Docket",numDockets),
         isStipulated: this.isStipulated(filingType),
         isEligible: this.isEligible(filingType),
         docketNums: docketNums,
         docketSheetNums: docketSheetNums,
-        counts:countsOnThisFiling,
+        counts: countsOnThisFiling,
       }
     },
     updatePageTitle: function(){
       var title = "Filings for "+this.petitioner.name
       document.title = title;
     },
+    clearAll: function(){
+      document.location.reload()
+    },
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
       return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
-    },
-    clearAll: function(){
-      document.location.reload()
     },
     linesBreaksFromArray: function(array) {
       var string = "";
@@ -543,6 +512,11 @@ var app = new Vue({
         string += array[i];
       }
       return string;
+    },
+    pluralize: function(word, num){
+      var phrase = num+" "+word;
+      if (num > 1) return phrase+"s";
+      return phrase;
     }
   },
   computed: {
@@ -558,7 +532,6 @@ var app = new Vue({
     },
     countsExpungedNC: function (data) {
       const excCounts = data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
-      console.log(excCounts)
       return excCounts;
     },
     countsExpungedC: function (data) {
@@ -570,11 +543,11 @@ var app = new Vue({
       return excCounts;
     },
     numDockets: function(){
-        var numDockets = app.saved.counts.filter((e, i) => {
-          return app.saved.counts.findIndex((x) => {
-          return x.docketNum == e.docketNum && x.county == e.county;}) == i;
-        });
-        return numDockets.length
+      var numDockets = app.saved.counts.filter((e, i) => {
+        return app.saved.counts.findIndex((x) => {
+        return x.docketNum == e.docketNum && x.county == e.county;}) == i;
+      });
+      return numDockets.length
     }
   },
   filters: {
@@ -589,12 +562,4 @@ var app = new Vue({
       return value.charAt(0).toLowerCase() + value.slice(1)
     }
   }
-})
-
-//testing data
-//  var multiCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "ExNC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","filingType": "StipSC","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Adsr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
-//  var singleCounty = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Addison","filingType": "X","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"},{"countNum":"2","docketNum":"16-3-97","docketCounty":"Cncr","county":"Chittenden","titleNum":"13","sectionNum":"7559(E) VRCRP 42","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Dismissed by state","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"VIOLATION OF CONDITIONS OF RELEASE"}]};
-//  var singleCount = {"defName":"George D. Papadopoulos","defDOB":"8/19/1987","defAddress":["FCI Oxford","Oxford WI 53952"],"counts":[{"countNum":"1","docketNum":"15-2-97","docketCounty":"Cncr","county":"Chittenden","filingType": "ExNC","titleNum":"13","sectionNum":"2502","offenseClass":"mis","dispositionDate":"02/13/97","offenseDisposition":"Plea guilty","allegedOffenseDate":"10/25/96","arrestCitationDate":"12/06/96","description":"ATTEMPTED PETIT LARCENY"}]};
-
-//app.saved = multiCounty
-//app.filings = app.groupCountsIntoFilings(app.saved.counts)
+});
