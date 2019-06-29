@@ -1,3 +1,5 @@
+const maxCountsOnNoA = 10;
+
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
@@ -12,7 +14,8 @@ function initAfterVue(){
 }
 
 function initAfterFilingRefresh(){
-  setInitialExpandForTextAreas()
+  setInitialExpandForTextAreas();
+  initScrollDetection();
 }
 
 function initTextAreaAutoExpand(){
@@ -56,7 +59,7 @@ function initScrollDetection() {
       nested: true,
       nestedClass: 'active-parent',
       offset: 200, // how far from the top of the page to activate a content area
-      reflow: false, // if true, listen for reflows
+      reflow: true, // if true, listen for reflows
     });
 }
 
@@ -310,22 +313,32 @@ var app = new Vue({
         var allFilingsForThisCountyObject = []
 
         //add the notice of appearance filing to this county because we have petitions to file
-        var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(countyName, allEligibleCountsForThisCounty)
-        allFilingsForThisCountyObject.push(noticeOfAppearanceObject)
+        //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
+        var maxDocketsPerNoA = maxCountsOnNoA || 10;
+        var allEligibleCountsForThisCountySegmented = this.segmentCountsByMaxDocketNumber(allEligibleCountsForThisCounty, maxDocketsPerNoA);
+
+        //iterate through our array of segmented count arrays to create all of the NoAs needed.
+        for (var NoAindex in allEligibleCountsForThisCountySegmented){
+          var NoACounts = allEligibleCountsForThisCountySegmented[NoAindex];
+          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(countyName, NoACounts);
+          allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
+        }
 
         //iterate through the filing types needed for this county and push them into the array
         for (var filingIndex in filingsForThisCounty){
-          var filingType = filingsForThisCounty[filingIndex]
+          var filingType = filingsForThisCounty[filingIndex];
 
           //if the filing is not one we're going to need a petition for, let's skip to the next filing type
           if (!this.isFileable(filingType)) continue;
 
           //create the filing object that will be added to the array for this county
-          var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType)
+          var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType);
+          
           //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
+          //this is determined based on the state of the UI checkbox for grouping.
           if (groupDockets || filingObject.numDocketSheets == 1) {
               allFilingsForThisCountyObject.push(filingObject);
-              this.createResponseObjectForFiling(filingObject.id)
+              this.createResponseObjectForFiling(filingObject.id);
           
           } else {
             //break the filing object into multiple petitions
@@ -346,6 +359,30 @@ var app = new Vue({
         });
       }
       return groupedFilings;
+    },
+    segmentCountsByMaxDocketNumber: function(counts, max){
+          var allDocketNums = this.allDocketNumsObject(counts);
+          var numSegments = Math.ceil(allDocketNums.length/max);
+          console.log(numSegments);
+
+          var result = []
+          for (var i=0; i<numSegments ; i++ ){
+
+            var start = i*max;
+            var end = Math.min(((i*max)+(max)), allDocketNums.length);
+
+            var docketObjectsThisSegment = allDocketNums.slice(start, end);
+            console.log("dockets this segment", docketsThisSegment);
+            //TODO: need to map the array to only have docket nums 
+            var docketsThisSegment = docketObjectsThisSegment.map(function(docket){   
+              return docket.num   
+            });
+
+            var segment = counts.filter(f => docketsThisSegment.includes(f.docketNum));
+            result.push(segment)
+          }
+
+          return result;
     },
     createResponseObjectForFiling: function(id){
       if (app.responses[id] === undefined) {
