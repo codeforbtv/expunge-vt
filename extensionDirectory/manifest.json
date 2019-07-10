@@ -2,7 +2,7 @@
     "name": "ExpungeVT!",
     "version": "1.0",
     "description": "Expunge records found on VTCourtsOnline with ease!",
-    "permissions": ["activeTab", "declarativeContent", "storage","<all_urls>"],
+    "permissions": ["activeTab", "declarativeContent", "storage","<all_urls>","downloads"],
     "background": {
       "scripts": ["background.js"],
       "persistent": false
@@ -23,7 +23,7 @@
       "128": "images/get_started128.png"
     },
     "manifest_version": 2,
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com/ https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://unpkg.com/ https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
     "externally_connectable": {
       "ids": ["*"]
     }

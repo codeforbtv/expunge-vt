@@ -28,6 +28,7 @@ function initTextAreaAutoExpand(){
 function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id === 'js-print') printDocument();
+    if (event.target.id === 'js-export') downloadCSV({ data_array: app.saved.counts, filename: app.csvFilename });
   }, false);
 }
 
@@ -586,6 +587,10 @@ var app = new Vue({
         return x.docketNum == e.docketNum && x.county == e.county;}) == i;
       });
       return numDockets.length
+    },
+    csvFilename:function(){
+      var date = new Date()
+      return "data-for-"+app.petitioner.name + "-" + date.toDateString() + ".csv"
     }
   },
   filters: {
