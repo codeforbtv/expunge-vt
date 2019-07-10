@@ -1,21 +1,3 @@
-var stockData = [
-        {
-            Symbol: "AAPL",
-            Company: "Apple Inc.",
-            Price: "132.54"
-        },
-        {
-            Symbol: "INTC",
-            Company: "Intel Corporation",
-            Price: "33.45"
-        },
-        {
-            Symbol: "GOOG",
-            Company: "Google Inc",
-            Price: "554.52"
-        },
-    ];
-
     function convertArrayOfObjectsToCSV(args) {
         var result, ctr, keys, columnDelimiter, lineDelimiter, data;
 
@@ -54,7 +36,6 @@ var stockData = [
         });
         if (csv == null)
         return;
-
 
         var blob = new Blob([csv], {type: "text/csv;charset=utf-8;"});
         var url = URL.createObjectURL(blob);
