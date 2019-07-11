@@ -28,7 +28,7 @@ function initTextAreaAutoExpand(){
 function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id === 'js-print') printDocument();
-    if (event.target.id === 'js-export') downloadCSV({ data_array: app.saved.counts, filename: app.csvFilename });
+    if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
   }, false);
 }
 
@@ -556,6 +556,9 @@ var app = new Vue({
       var phrase = num+" "+word;
       if (num > 1) return phrase+"s";
       return phrase;
+    },
+    slugify: function(string) {
+      return string.replace(/\s+/g, '-').toLowerCase();
     }
   },
   computed: {
@@ -590,7 +593,10 @@ var app = new Vue({
     },
     csvFilename:function(){
       var date = new Date()
-      return "data-for-"+app.petitioner.name + "-" + date.toDateString() + ".csv"
+      return app.slugify("data for "+app.petitioner.name + " " + date.toDateString() + ".csv");
+    },
+    csvData:function(){
+      return app.saved.counts;
     }
   },
   filters: {

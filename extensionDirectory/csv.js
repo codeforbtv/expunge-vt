@@ -8,6 +8,7 @@
 
         columnDelimiter = args.columnDelimiter || ',';
         lineDelimiter = args.lineDelimiter || '\n';
+        contentQuoting = args.quoting || '"';
 
         keys = Object.keys(data[0]);
 
@@ -19,8 +20,9 @@
             ctr = 0;
             keys.forEach(function(key) {
                 if (ctr > 0) result += columnDelimiter;
-
+                result += contentQuoting;
                 result += item[key];
+                result += contentQuoting;
                 ctr++;
             });
             result += lineDelimiter;
