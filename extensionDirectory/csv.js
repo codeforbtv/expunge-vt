@@ -1,5 +1,5 @@
     function convertArrayOfObjectsToCSV(args) {
-        var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+        var result, ctr, keys, columnDelimiter, lineDelimiter, contentQuoting, data;
 
         data = args.data || null;
         if (data == null || !data.length) {
