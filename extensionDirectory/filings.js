@@ -28,6 +28,7 @@ function initTextAreaAutoExpand(){
 function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id === 'js-print') printDocument();
+    if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
   }, false);
 }
 
@@ -484,9 +485,22 @@ var app = new Vue({
           return "Stipulated Petition to Seal Conviction"
         case "SC":
           return "Petition to Seal Conviction"
+        case "X":
+          return "Ineligible"
         default:
-          return "Petition";
+          return "None";
       }
+    },
+    offenseAbbreviationToFull: function(offenseClass) {
+      switch (offenseClass) {
+        case "mis":
+          return "Misdemeanor"
+        case "fel":
+          return "Felony"
+        default:
+          return "";
+      }
+
     },
     addFullDescriptionToCounts: function(){
       for (countIndex in app.saved.counts) {
@@ -555,6 +569,9 @@ var app = new Vue({
       var phrase = num+" "+word;
       if (num > 1) return phrase+"s";
       return phrase;
+    },
+    slugify: function(string) {
+      return string.replace(/\s+/g, '-').toLowerCase();
     }
   },
   computed: {
@@ -562,7 +579,8 @@ var app = new Vue({
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
-  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress))
+  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress)),
+      addressString: this.saved.defAddress.join(", ")
   	  }
     },
     numCountsIneligible: function () {
@@ -586,6 +604,30 @@ var app = new Vue({
         return x.docketNum == e.docketNum && x.county == e.county;}) == i;
       });
       return numDockets.length
+    },
+    csvFilename:function(){
+      var date = new Date()
+      return app.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
+    },
+    csvData:function(){
+
+      return app.saved.counts.map(function(count) {
+        return {
+          Petitioner_Name: app.petitioner["name"], 
+          Petitioner_DOB: app.petitioner.dob, 
+          Petitioner_Address: app.petitioner.addressString, 
+          Petitioner_Phone: app.responses.phone, 
+          County: count.county, 
+          Docket_Sheet_Number:count.docketSheetNum, 
+          Count_Docket_Number:count.docketNum, 
+          Filing_Type:app.filingNameFromType(count.filingType), 
+          Count_Description:count.description, 
+          Count_Statute_Title: count.titleNum, 
+          Count_Statute_Section: count.sectionNum, 
+          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass), 
+          Offense_Disposition:count.offenseDisposition, 
+          Offense_Disposition_Date:count.dispositionDate}
+      });
     }
   },
   filters: {
