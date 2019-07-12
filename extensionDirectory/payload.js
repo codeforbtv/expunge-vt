@@ -146,6 +146,7 @@ function processCountLine1(countLine1, countNum) {
 
     //Create count object with all count line 1 items
     countObject = [{
+        "guid": guid(),
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],
@@ -227,3 +228,14 @@ function getCounty(countyCode) {
     }]
     return vtCounties[0][code]
 }
+
+
+function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
+  }
