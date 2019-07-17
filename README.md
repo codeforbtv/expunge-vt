@@ -2,12 +2,11 @@
 
 This project attempts to help VLA clear records more quickly during their expungment clinics.
 
-A criminal record can interfere with getting a job, housing, food assistance and other aspects of life. Many records are decades old and are eligible to be removed, but the process generally requires the help of an attourney.
+A criminal record can interfere with getting a job, housing, food assistance and other aspects of life. Many records are decades old and are eligible to be removed, but the process generally requires the help of an attorney.
 
-Our partner Vermont Legal Aid holds periodic clinics where attourneys volunteer their time to help clear eligible records for vermonters, but it is a very manual process. These clinics generally have a waitlist of Vermonters who cannot be processed.
+Our partner, Vermont Legal Aid, holds periodic clinics where attorneys volunteer their time to help clear eligible records for Vermonters. It is a very manual process. These clinics generally have a waitlist of Vermonters who cannot be processed.
 
-This project is a chrome extension that let's attourneys generate printable forms rather than copy them from the web by hand. This could bring the time it takes to clear someone's record from ~90 min to around 20 min -
-**...potentially doubling or trippling the number of clients VLA can serve.**
+This project is a chrome extension that let's attorneys generate printable forms rather than copy them from the web by hand. This could bring the time it takes to clear someone's record from around 90 minutes to around 20 minutes, potentially doubling or trippling the number of clients VLA can serve.
 
 # The Chrome extension
 
@@ -16,8 +15,8 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 ## Requirements for using this extension
 
 - This tool is designed exclusively for VT Legal Aid.
-- Users must have an active subscription with [VT Courts Online](https://secure.vermont.gov/vtcdas/user)
-- This tool does not save or expand access to any data
+- Users must have an active subscription with [VT Courts Online](https://secure.vermont.gov/vtcdas/user).
+- This tool does not save or expand access to any data.
 
 ## Setup for local development
 
