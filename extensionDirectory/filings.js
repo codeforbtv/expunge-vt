@@ -1,4 +1,5 @@
 const maxCountsOnNoA = 10;
+Vue.config.devtools = true
 
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
@@ -176,34 +177,43 @@ Vue.component('filing-dated-city', {
 var app = new Vue({
   el: '#filing-app',
   data: {
-    groupCounts: true,
+    settings:{
+      groupCounts: true,
+      proSe: true,
+      attorneyName:"",
+      attorneyAddress:[]
+    },
     saved: {
     	defName: "",
     	defAddress: [""],
     	defDOB: "",
-    	counts: [],
+    	counts: []
     },
     filings: "",
     ineligible:"",
     noAction: "",
     responses: {}
   },
-  watch: {
+  watch: 
+  {
     'responses': {
-     handler(){
-       app.saveResponses()
-     },
-     deep: true
-   },
-    'groupCounts': {
+       handler(){
+         app.saveResponses()
+       },
+       deep: true
+    },
+    'settings': {
       handler(){
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts);
+        console.log("settings updated")
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts);
         app.saveSettings()
-        app.$nextTick(function () {
+        app.$nextTick(function () 
+        {
         //call any vanilla js functions after update.
           initAfterFilingRefresh();
         })
-      }
+      },
+      deep:true
     }
   },
   mounted() {
@@ -231,7 +241,7 @@ var app = new Vue({
         app.addFullDescriptionToCounts()
         console.log(app.saved)
         //parse the data
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts) //counts, groupCountsFromMultipleDockets=true
         app.ineligible = app.groupIneligibleCounts(app.saved.counts);
         app.noAction = app.groupNoAction(app.saved.counts);
         app.$nextTick(function () {
@@ -241,10 +251,11 @@ var app = new Vue({
         })
     },
     saveSettings: function(){
-      var settings = app.groupCounts
-      console.log("save settings")
+      var settings = app.settings
+      console.log("save settings", app.settings)
       chrome.storage.local.set({
         expungevtSettings: settings
+
       });
     },
     saveResponses: function(){
@@ -258,13 +269,12 @@ var app = new Vue({
       console.log("load settings")
       chrome.storage.local.get('expungevtSettings', function (result) {
         //test if we have any data
+          console.log("loading settings", result)
 
         if (result.expungevtSettings !== undefined) {
           //load the data
           var settings = result.expungevtSettings
-          app.groupCounts = settings; 
-        } else {
-          app.groupCounts = true;
+          app.settings = settings; 
         }
         callback();
       });
@@ -391,7 +401,7 @@ var app = new Vue({
       }
     },
     createNoticeOfAppearanceFiling: function(county, counts){
-      return this.makeFilingObject(counts, 'PSNoA', county);
+      return this.makeFilingObject(counts, 'NoA', county);
     },
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
@@ -456,7 +466,7 @@ var app = new Vue({
     },
     isSupported: function(filingType){
       switch (filingType) {
-        case "PSNoA": //Pro Se Notice of Appearance 
+        case "NoA":
         case "StipExC":
         case "ExC":
         case "StipExNC":
@@ -471,7 +481,7 @@ var app = new Vue({
     },
     filingNameFromType: function(filingType){
       switch (filingType) {
-        case "PSNoA":
+        case "NoA":
           return "Notice of Appearance"
         case "StipExC":
           return "Stipulated Petition to Expunge Conviction"
@@ -500,7 +510,6 @@ var app = new Vue({
         default:
           return "";
       }
-
     },
     addFullDescriptionToCounts: function(){
       for (countIndex in app.saved.counts) {

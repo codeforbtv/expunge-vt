@@ -35,11 +35,12 @@
     <div id="filing-app">
 
         <template v-if="filings || ineligible">
-            <div v-if="petitioner.name" class="header-bar-wrapper no-print">
+            <div v-if="petitioner.name" class="header-bar-wrapper">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
-                        <label v-if="numDockets > 1">Group Counts from Multiple Docket Sheets <input type="checkbox" v-model="groupCounts"></label>
+                        <label v-if="numDockets > 1">Group Counts from Multiple Docket Sheets <input type="checkbox" v-model="settings.groupCounts"></label>
+                        <label>Pro Se<input type="checkbox" v-model="settings.proSe"></label>
                         <button id="js-print" class="btn btn-primary no-print">Print All</button>
                         <button id="js-export" class="btn btn-primary no-print">Export to CSV</button>
                     </div>
@@ -90,12 +91,22 @@
 
                                         <!-- Begin Unique Portion of Filings -->
 
+                                        <!-- Notice of Appearance -->
 
-                                        <div class="filing-body" v-if="filing.type == 'PSNoA'">
+                                        <div class="filing-body" v-if="filing.type == 'NoA'">
+                                            <template v-if="settings.proSe">
+
                                             <p class="indent">
                                                 Please note the <span class="italic">pro se</span> appearance of
                                                 {{petitioner.name}}, (Date of Birth: {{petitioner.dob}}) in the above
                                                 captioned action.</p>
+                                            </template>
+                                            <template v-else>
+                                            <p class="indent">
+                                                Please note the appearance of
+                                                {{petitioner.name}} in the above
+                                                captioned action.</p>
+                                            </template>
 
                                         </div>
 
@@ -107,7 +118,7 @@
                                                 Petitioner moves the Court to expunge the record of the above-captioned
                                                 conviction<span v-if="filing.multipleCounts">s</span> pursuant to 13
                                                 V.S.A. &sect; 7602.</p>
-                                            <p>1. I was convicted of the following crime<span
+                                            <p>1. Petitioner was convicted of the following crime<span
                                                     v-if="filing.multipleCounts">s</span>:</p>
                                             <table class="count-table">
                                                 <thead class="count-table__header">
@@ -133,8 +144,8 @@
                                                     is a</span> qualifying crime<span
                                                     v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect;
                                                 7601(4).</p>
-                                            <p><span v-if="!filing.isStipulated">3. I completed the terms and conditions
-                                                    of my sentence over 5 years ago, and I paid all restitution
+                                            <p><span v-if="!filing.isStipulated">3. Petitioner completed the terms and conditions
+                                                    of their sentence over 5 years ago, and paid all restitution
                                                     owed.</span></p>
                                             <p><span v-if="!filing.isStipulated">4.</span><span v-else>3. </span>
                                                 Expunging all record of <span v-if="filing.multipleCounts">these
@@ -190,7 +201,7 @@
                                                 Petitioner moves the Court to seal the record of the above-captioned
                                                 conviction<span v-if="filing.multipleCounts">s</span> pursuant to 33
                                                 V.S.A. &sect; 5119(g).</p>
-                                            <p>1. I was convicted of the following crime<span
+                                            <p>1. Petitioner was convicted of the following crime<span
                                                     v-if="filing.multipleCounts">s</span>:</p>
                                             <table class="count-table">
                                                 <thead class="count-table__header">
@@ -213,19 +224,19 @@
                                                 <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
 
                                             </table>
-                                            <p>2. I was under 21 when the crime<span v-if="filing.multipleCounts">s
+                                            <p>2. Petitioner was under 21 when the crime<span v-if="filing.multipleCounts">s
                                                     were</span><span v-else> was</span> allegedly committed.</p>
 
-                                            <p>3. I was not later convicted of a listed crime, pursuant to 13 V.S.A.
-                                                &sect; 5301(7), nor am I currently being charged of such an offense.</p>
-                                            <p>4. I believe the court will find that I have been rehabilitated, as
+                                            <p>3. Petitioner was not later convicted of a listed crime, pursuant to 13 V.S.A.
+                                                &sect; 5301(7), nor is petitioner currently being charged of such an offense.</p>
+                                            <p>4. Petitioner believes the court will find that they have been rehabilitated, as
                                                 evidenced by the following:</p>
                                         </div>
 
                                         <!-- End Unique Portion of Filings -->
 
 
-                                        <template v-if="filing.type != 'PSNoA'">
+                                        <template v-if="filing.type != 'NoA'">
                                             <div class="filing-body__response">
                                                 <p class="no-visible" v-html="nl2br(responses[filing.id])"></p>
                                                 <textarea class="no-print" v-model="responses[filing.id]"
