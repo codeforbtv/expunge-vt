@@ -90,32 +90,33 @@ function editPetitioner() {
         savePetitonerData();
     }
 };
-function savePetitonerData(){
-    chrome.storage.local.get(['expungevt'], function (result) {
 
-            //defendant info
-            result.expungevt[0].defName = $("#defendantName").html();
-            result.expungevt[0].defDOB = $("#defendantDOB").html();
-            setAddress()
+function savePetitonerData() {
+    chrome.storage.local.get(['expungevt'], function(result) {
 
-            chrome.storage.local.set({
-                expungevt: result.expungevt
-            });
+        //defendant info
+        result.expungevt[0].defName = $("#defendantName").html();
+        result.expungevt[0].defDOB = $("#defendantDOB").html();
+        var address = $("#defendantAddress").html()
+        console.log(address)
+        result.expungevt[0].defAddress = addressArrayFromHTML(address)
 
-            function setAddress(addrHTML) {
-                addressString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
-                addressString = addressString.replace(/<div>/g, "<br>")
-                addressHTML = addressString.split('<br>')
-                var filteredHTML = addressHTML.filter(function (el) {
-                    return el != "";
-                });
-                for (i = 0; i < filteredHTML.length; i++) {
-                    result.expungevt[0].defAddress[i] = filteredHTML[i]
-                }
-            }
-            console.log(result.expungevt[0].defAddress)
-
+        chrome.storage.local.set({
+            expungevt: result.expungevt
         });
+
+        function addressArrayFromHTML(addressHTMLString) {
+            addressHTMLString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
+            addressHTMLString = addressHTMLString.replace(/<div>/g, "<br>")
+            addressHTMLString = addressHTMLString.split('<br>')
+            var array = addressHTMLString.filter(function(el) {
+                return el != "";
+            });
+            return array
+        }
+        console.log(result.expungevt[0].defAddress)
+
+    });
 }
 
 function getData() {
