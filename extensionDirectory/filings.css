@@ -62,6 +62,7 @@
 }
 .header-bar__controls label {
     margin:0;
+    margin-left:0.75rem;
 }
 .header-bar__controls button {
     margin-left:0.5rem;

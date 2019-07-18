@@ -9,6 +9,8 @@ function initButtons(){
     $("[data-edit]").click(editPetitioner)
     $("[data-generate]").click(createPetition)
     $("[data-clear]").click(clearData)
+    $("[data-reset]").click(resetSettings)
+
 }
 
 function initListeners(){
@@ -71,11 +73,30 @@ function clearData(element){
             allCards.removeChild(allCards.firstChild);
         }
         $('.pet-detail').text = "";
-        chrome.storage.local.clear()
+
+        chrome.storage.local.get(['expungevtSettings'], function (result) {
+            console.log(result.expungevtSettings)
+            chrome.storage.local.clear(function(){
+                chrome.storage.local.set({
+                    expungevtSettings: result.expungevtSettings
+                });
+            })
+            
+        });
+
         $('body').removeClass('active');
     }
 };
 
+function resetSettings(element){
+
+    var r = confirm("Are you sure you want to reset setting to the defaults?");
+    if (r == true) {
+        chrome.storage.local.set({
+            expungevtSettings: ""
+        });
+    }
+};
 
 function editPetitioner() {
     var value = $('.pet-detail').attr('contenteditable');
