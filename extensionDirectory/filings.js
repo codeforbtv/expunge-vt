@@ -266,7 +266,7 @@ var app = new Vue({
         //test if we have any data
           console.log("loading settings", result)
 
-        if (result.expungevtSettings !== undefined) {
+        if (result.expungevtSettings !== undefined && result.expungevtSettings !== "") {
           //load the data
           var settings = result.expungevtSettings
           app.settings = settings; 
