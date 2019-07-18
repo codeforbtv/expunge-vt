@@ -72,6 +72,17 @@ function clearData(element){
         }
         $('.pet-detail').text = "";
         chrome.storage.local.clear()
+
+        chrome.storage.local.get(['expungevtSettings'], function (result) {
+            console.log(result.expungevtSettings)
+            chrome.storage.local.clear(function(){
+                chrome.storage.local.set({
+                    expungevtSettings: result.expungevtSettings
+                });
+            })
+            
+        });
+
         $('body').removeClass('active');
     }
 };
