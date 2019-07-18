@@ -71,7 +71,6 @@ function clearData(element){
             allCards.removeChild(allCards.firstChild);
         }
         $('.pet-detail').text = "";
-        chrome.storage.local.clear()
 
         chrome.storage.local.get(['expungevtSettings'], function (result) {
             console.log(result.expungevtSettings)
