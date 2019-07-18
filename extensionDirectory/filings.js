@@ -51,6 +51,12 @@ function detectChangesInLocalStorage(){
   };
 
   app.saveAndParseData(storageChange.newValue[0])
+  app.loadSettings(function(){})
+  app.loadResponses(function(){})
+
+
+
+
 
   });
 }
@@ -144,19 +150,7 @@ Vue.component('filing-nav', {
 });
 
 Vue.component('filing-footer', {
-  template: (`<div class="filing-closing">
-              <p class="filing-closing__salutation">Respectfully requested,</p>
-              <div class="filing-closing__signature-area">
-                  <div class="filing-closing__signature-box">
-                      <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
-                      <p class="filing-closing__petitioner-address" v-html="signature.address"></p>
-                  </div>
-                  <div class="filing-closing__date-box">
-                      <p>Date</p>
-                  </div>
-              </div>
-
-              <div class="stipulated-closing" v-if="stipulated">
+  template: (`<div class="stipulated-closing" v-if="stipulated">
                   <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
                   <div class="filing-closing__signature-box">
                       <p class="filing-closing__name">State's Attorney/Attorney General</p>
@@ -164,7 +158,7 @@ Vue.component('filing-footer', {
               </div>
           </div>
           `),
-  props: ['type','signature','stipulated']
+  props: ['stipulated']
 });
 
 Vue.component('filing-dated-city', {
@@ -180,8 +174,8 @@ var app = new Vue({
     settings:{
       groupCounts: true,
       proSe: true,
-      attorneyName:"",
-      attorneyAddress:[]
+      attorney:"",
+      attorneyAddress:""
     },
     saved: {
     	defName: "",
@@ -232,6 +226,7 @@ var app = new Vue({
         var loadSettingsCallback = (function(){
           app.loadResponses(loadResponsesCallback);
         })
+        console.log("beginning to load settings")
         app.loadSettings(loadSettingsCallback);
     });
   },
