@@ -147,6 +147,7 @@ function processCountLine1(countLine1, countNum) {
     //Create count object with all count line 1 items
     countObject = [{
         "guid": guid(),
+        "uid": docketSheetNum + countLine1Array[0] + countLine1Array[1]+checkDisposition(disposition),
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],
