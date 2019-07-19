@@ -171,10 +171,13 @@ function processCountLine1(countLine1, countNum) {
         }
     }
 
+    var uid = docketSheetNum + countLine1Array[0] + countLine1Array[1] + checkDisposition(disposition);
+    uid = uid.split(' ').join('_');
+
     //Create count object with all count line 1 items
     countObject = [{
         "guid": guid(),
-        "uid": docketSheetNum + countLine1Array[0] + countLine1Array[1]+checkDisposition(disposition),
+        "uid": uid,
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],

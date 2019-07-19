@@ -15,7 +15,6 @@ function initListeners(){
     // Listen to messages from the payload.js script and write to popout.html
     chrome.runtime.onMessage.addListener(function (message) {
         loadedMessage = message[0]
-        console.log(loadedMessage)
         setPopUpData(loadedMessage)
         $('body').addClass('active');
 
@@ -23,7 +22,7 @@ function initListeners(){
 
     //Update chrome storage when a petition is selected
     $('body').on('change', 'select.petitionSelect', function () {
-
+        
         selectID = this.id
         filingType = this.value
         chrome.storage.local.get(['expungevt'], function (result) {
@@ -37,7 +36,7 @@ function initListeners(){
             chrome.storage.local.set({
                 expungevt: result.expungevt
             });
-            console.log(result.expungevt)
+            console.log(result.expungevt);
 
         });
     });
@@ -45,6 +44,47 @@ function initListeners(){
     //prevents the select in the petition cards from opening the accordion.
     $('body').on('click', 'select.petitionSelect', function(event){
         event.stopPropagation();
+    });
+
+    //prevents the delete icon in the petition cards from opening the accordion.
+    $('body').on('click', 'i.countDeleter', function (event) {
+        event.stopPropagation();
+    });
+
+    //Delete count from popup and from storage when delete file is selected
+    $('body').on('click', 'i.countDeleter', function () {
+        var confirmDelete = confirm("Are you sure that you would like to delete this count?");
+        if (confirmDelete == true) {
+
+            selectID = this.id
+            chrome.storage.local.get(['expungevt'], function (result) {
+                for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
+                    countUID = result.expungevt[0]["counts"][i].uid;
+                    countID = "del" + countUID;
+
+                    if (countID === selectID) {
+                        console.log("MATCH")
+                        result.expungevt[0]["counts"].splice([i]);
+                        result.expungevt[0].totalCounts--;
+                        //delete card headingID and collapseID
+                        headingID = "#heading" + countUID;
+                        collapseID = "#collapse" + countUID;
+                        console.log(headingID)
+                        $(headingID).remove();
+                        $(collapseID).remove();
+                    }
+                }
+                chrome.storage.local.set({
+                    expungevt: result.expungevt
+                });
+
+                
+
+                console.log(result.expungevt)
+
+            });
+
+        }
     });
 }
 
@@ -153,7 +193,7 @@ function setPopUpData(allData) {
     document.getElementById('defendantDOB').innerHTML = allData.defDOB;
     document.getElementById('defendantAddress').innerHTML = getAddress(allData.defAddress);
 
-    console.log(allData.defAddress)
+    console.log(allData);
     function getAddress(addrArray) {
         addressHTML = ""
         for (i = 0; i < addrArray.length; i++) {
@@ -169,23 +209,27 @@ function setPopUpData(allData) {
     $('#countCards').empty();
     for (i = 0; i < allData.totalCounts; i++) {
         count = allData.counts[i]
-        dockNum = count.docketNum.trim();
-        ctNum = count.countNum.trim();
-        cardSelectID = "#select" + dockNum + "-" + ctNum
 
-        let card = document.createElement('div');
-        card.classList.add('card');
+        if (typeof count !== 'undefined') {
+            dockNum = count.docketNum.trim();
+            ctNum = count.countNum.trim();
+            cardSelectID = "#select" + dockNum + "-" + ctNum
 
-        card.innerHTML = createCountCard(count, allData.defDOB)
-        $('#countCards').append(card);
-        $(cardSelectID).val(count.filingType);
+            let card = document.createElement('div');
+            card.classList.add('card');
+
+            card.innerHTML = createCountCard(count, allData.defDOB)
+            $('#countCards').append(card);
+            $(cardSelectID).val(count.filingType);
+        }
     }
 }
 
 function createCountCard(count, dob) {
     dockNum = count.docketNum.trim();
     ctNum = count.countNum.trim();
-    cardID = dockNum + "-" + ctNum
+    cardID = count.uid;
+    console.log(cardID);
     let cardHTML = (`
         <div class="card-header" id=${"heading" + cardID} type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
                 <div class="card-header__column">
@@ -208,15 +252,17 @@ function createCountCard(count, dob) {
                             </select>
                         </div>
                     </div>
-
-                    <div class="card-header__pills-row">
-                        <span class="pill pill--rounded ${offenseTypeColor()}">
-                            ${count.offenseClass}
-                        </span>
-                        <span class="pill pill--rounded ${dispositionColor()}">
-                            ${count.offenseDisposition}
-                        </span>
-                        ${getAgeAtDispositionHTML()}
+                    <div class="card-header__bottom-row">
+                        <div class="card-header__pills-row">
+                            <span class="pill pill--rounded ${offenseTypeColor()}">
+                                ${count.offenseClass}
+                            </span>
+                            <span class="pill pill--rounded ${dispositionColor()}">
+                                ${count.offenseDisposition}
+                            </span>
+                            ${getAgeAtDispositionHTML()}
+                        </div>
+                        <i id=${"del" + cardID} class="fas fa-folder-minus countDeleter"></i>
                     </div>
                 </div>
         </div>
@@ -244,7 +290,7 @@ function createCountCard(count, dob) {
         </div>
     `);
 
-    return cardHTML
+    return cardHTML;
 
     function checkDisposition() {
         dispDate = count.dispositionDate
