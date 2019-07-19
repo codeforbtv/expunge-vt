@@ -39,7 +39,6 @@ else {
                 }
                 if (matchCount == 0) {
                     result.expungevt[0]["counts"].push(petitionerCountObject[0]["counts"][i]);
-                    result.expungevt[0]["totalCounts"] += 1;
                 }
 
             }
@@ -106,7 +105,6 @@ function getCountInfo(tempPetitionerCountObject) {
     countsEnd = nthIndex(docketBody, divider, 3)
     allCountsBody = docketBody.substring(countsStart, countsEnd)
     countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
-    tempPetitionerCountObject[0]["totalCounts"] = countTotal;
     allCountsArray = allCountsBody.split("\n")
 
     //Move data from count table into objects

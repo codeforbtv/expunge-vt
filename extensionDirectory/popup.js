@@ -61,11 +61,12 @@ function initListeners(){
                 for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
                     countUID = result.expungevt[0]["counts"][i].uid;
                     countID = "del" + countUID;
+                    console.log({ selectID })
+                    console.log({ countID })
 
                     if (countID === selectID) {
                         console.log("MATCH")
                         result.expungevt[0]["counts"].splice([i]);
-                        result.expungevt[0].totalCounts--;
                         //delete card headingID and collapseID
                         headingID = "#heading" + countUID;
                         collapseID = "#collapse" + countUID;
@@ -207,7 +208,7 @@ function setPopUpData(allData) {
     }
 
     $('#countCards').empty();
-    for (i = 0; i < allData.totalCounts; i++) {
+    for (i = 0; i < allData.counts.length; i++) {
         count = allData.counts[i]
 
         if (typeof count !== 'undefined') {
@@ -229,7 +230,6 @@ function createCountCard(count, dob) {
     dockNum = count.docketNum.trim();
     ctNum = count.countNum.trim();
     cardID = count.uid;
-    console.log(cardID);
     let cardHTML = (`
         <div class="card-header" id=${"heading" + cardID} type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
                 <div class="card-header__column">
