@@ -55,34 +55,25 @@ function initListeners(){
     $('body').on('click', 'i.countDeleter', function () {
         var confirmDelete = confirm("Are you sure that you would like to delete this count?");
         if (confirmDelete == true) {
-
-            selectID = this.id
+            
+            selectID = this.id.replace("del","");
             chrome.storage.local.get(['expungevt'], function (result) {
-                for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
-                    countUID = result.expungevt[0]["counts"][i].uid;
-                    countID = "del" + countUID;
-                    console.log({ selectID })
-                    console.log({ countID })
 
-                    if (countID === selectID) {
-                        console.log("MATCH")
-                        result.expungevt[0]["counts"].splice([i]);
-                        //delete card headingID and collapseID
-                        headingID = "#heading" + countUID;
-                        collapseID = "#collapse" + countUID;
-                        console.log(headingID)
-                        $(headingID).remove();
-                        $(collapseID).remove();
-                    }
-                }
+                counts = result.expungevt[0]["counts"]
+                index = counts.findIndex(x => x.uid === selectID);
+                console.log(index)
+                headingID = "#heading" + counts[index].uid;
+                collapseID = "#collapse" + counts[index].uid;
+                $(headingID).remove();
+                $(collapseID).remove();
+                counts.splice(index,1)
+
+                result.expungevt[0]["counts"] = counts
+                console.log(result.expungevt)
+
                 chrome.storage.local.set({
                     expungevt: result.expungevt
                 });
-
-                
-
-                console.log(result.expungevt)
-
             });
 
         }
