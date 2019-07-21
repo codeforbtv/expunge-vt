@@ -296,12 +296,21 @@ hr {
     width:100%;
 }
 
-.card-header__pills-row {
-    position: relative;
-    display:flex;
+.card-header__bottom-row {
+    display: flex;
     flex-direction: row;
-    align-content: flex-start;
 }
+
+.card-header__pills-row {
+    display: flex;
+    flex-direction: row;
+    width: 95%;
+    margin: 0;
+}
+.card-header__bottom-row i {
+    color: Red;
+}
+
 
 .card-header__description {
     text-decoration: none !important;

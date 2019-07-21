@@ -13,17 +13,43 @@ if (hasCounts == false) {
     });
     chrome.runtime.sendMessage(petitionerCountObject);
 }
+
 else {
     chrome.storage.local.get(['expungevt'], function (result) {
-
-        for (i = 0; i < petitionerCountObject[0]["counts"].length; i++) {
-            result.expungevt[0]["counts"].push(petitionerCountObject[0]["counts"][i])
-            result.expungevt[0]["totalCounts"] += 1
+        let oldName = result.expungevt[0]["defName"];
+        let newName = petitionerCountObject[0]["defName"];
+        let nameAnswer = true;
+        if (oldName != newName) {
+            nameAnswer = confirm("The name on the counts you are trying to add is " +
+                newName +
+                ", which is not the same as " +
+                oldName +
+                ". Are you sure you want to continue?");
         }
-        chrome.storage.local.set({
-            expungevt: result.expungevt
-        });
-        chrome.runtime.sendMessage(result.expungevt);
+        if (oldName == newName || nameAnswer == true) {
+            let totalMatchCount = 0;
+            for (let i = 0; i < petitionerCountObject[0]["counts"].length; i++) {
+                let matchCount = 0;
+
+                for (let j = 0; j < result.expungevt[0]["counts"].length; j++) {
+                    if (result.expungevt[0]["counts"][j].uid == petitionerCountObject[0]["counts"][i].uid) {
+                        matchCount++;
+                        totalMatchCount++;
+                    }
+                }
+                if (matchCount == 0) {
+                    result.expungevt[0]["counts"].push(petitionerCountObject[0]["counts"][i]);
+                }
+
+            }
+            if (totalMatchCount > 0) {
+                alert(totalMatchCount + " counts matched existing counts and were not added.")
+            }
+            chrome.storage.local.set({
+                expungevt: result.expungevt
+            });
+            chrome.runtime.sendMessage(result.expungevt);
+        }
 
     });
 
@@ -79,7 +105,6 @@ function getCountInfo(tempPetitionerCountObject) {
     countsEnd = nthIndex(docketBody, divider, 3)
     allCountsBody = docketBody.substring(countsStart, countsEnd)
     countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
-    tempPetitionerCountObject[0]["totalCounts"] = countTotal;
     allCountsArray = allCountsBody.split("\n")
 
     //Move data from count table into objects
@@ -144,8 +169,13 @@ function processCountLine1(countLine1, countNum) {
         }
     }
 
+    var uid = docketSheetNum + countLine1Array[0] + countLine1Array[1] + checkDisposition(disposition);
+    uid = uid.split(' ').join('_');
+
     //Create count object with all count line 1 items
     countObject = [{
+        "guid": guid(),
+        "uid": uid,
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],
@@ -171,25 +201,25 @@ function processCountLine1(countLine1, countNum) {
     //Get Alleged offense date:
     try {
         offenseDateArray = docketBody.match(/Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
-        offenseDateString = offenseDateArray[countNum]
-        offenseDateLocation = offenseDateString.length
+        offenseDateString = offenseDateArray[countNum];
+        offenseDateLocation = offenseDateString.length;
         offenseDateLocationEnd = offenseDateLocation - 8
-        allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd)
-        countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim()
+        allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd);
+        countObject[0]["allegedOffenseDate"] = allegedOffenseDate.trim();
     }
     catch (err) {
-        countObject[0]["allegedOffenseDate"] = "Check Docket"
-        console.log("Error:" + err)
+        countObject[0]["allegedOffenseDate"] = "Check Docket";
+        console.log("Error:" + err);
     }
 
     //Get Arrest/citation date:
     try {
-        arrestDateArray = docketBody.match(/Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi)
-        arrestDateString = arrestDateArray[countNum]
-        arrestDateLocation = arrestDateString.length
-        arrestDateLocationEnd = arrestDateLocation - 8
-        arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd)
-        countObject[0]["arrestCitationDate"] = arrestCitationDate.trim()
+        arrestDateArray = docketBody.match(/Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi);
+        arrestDateString = arrestDateArray[countNum];
+        arrestDateLocation = arrestDateString.length;
+        arrestDateLocationEnd = arrestDateLocation - 8;
+        arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd);
+        countObject[0]["arrestCitationDate"] = arrestCitationDate.trim();
     }
     catch (err) {
         countObject[0]["arrestCitationDate"] = "Check Docket"
@@ -227,3 +257,14 @@ function getCounty(countyCode) {
     }]
     return vtCounties[0][code]
 }
+
+
+function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+      s4() + '-' + s4() + s4() + s4();
+  }

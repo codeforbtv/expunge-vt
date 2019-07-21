@@ -175,7 +175,8 @@ var app = new Vue({
       groupCounts: true,
       proSe: true,
       attorney:"",
-      attorneyAddress:""
+      attorneyAddress:"",
+      attorneyPhone:""
     },
     saved: {
     	defName: "",
@@ -275,10 +276,8 @@ var app = new Vue({
       });
     },
     loadResponses: function(callback){
-      console.log("load responses")
       chrome.storage.local.get('expungevtResponses', function (result) {
         //test if we have any data
-
         if (result.expungevtResponses !== undefined) {
           //load the data
           var responses = result.expungevtResponses
@@ -368,18 +367,17 @@ var app = new Vue({
     },
     segmentCountsByMaxDocketNumber: function(counts, max){
           var allDocketNums = this.allDocketNumsObject(counts);
-          var numSegments = Math.ceil(allDocketNums.length/max);
-          console.log(numSegments);
 
+          var numSegments = Math.ceil(allDocketNums.length/max);
           var result = []
+
           for (var i=0; i<numSegments ; i++ ){
 
             var start = i*max;
             var end = Math.min(((i*max)+(max)), allDocketNums.length);
 
             var docketObjectsThisSegment = allDocketNums.slice(start, end);
-            console.log("dockets this segment", docketsThisSegment);
-            //TODO: need to map the array to only have docket nums 
+
             var docketsThisSegment = docketObjectsThisSegment.map(function(docket){   
               return docket.num   
             });

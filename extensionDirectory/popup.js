@@ -7,8 +7,8 @@ initListeners();
 function initButtons(){
     $("[data-add-counts]").click(addDocketCounts)
     $("[data-edit]").click(editPetitioner)
-    $("[data-generate]").click(createPetition)
-    $("[data-clear]").click(clearData)
+    $("[data-generate]").click(openPetitionsPage)
+    $("[data-clear]").click(confirmClearData)
     $("[data-reset]").click(resetSettings)
 
 }
@@ -17,20 +17,19 @@ function initListeners(){
     // Listen to messages from the payload.js script and write to popout.html
     chrome.runtime.onMessage.addListener(function (message) {
         loadedMessage = message[0]
-        console.log(loadedMessage)
-        setPopUpData(loadedMessage)
+        renderPopup(loadedMessage)
         $('body').addClass('active');
 
     });
 
     //Update chrome storage when a petition is selected
     $('body').on('change', 'select.petitionSelect', function () {
-
+        
         selectID = this.id
         filingType = this.value
         chrome.storage.local.get(['expungevt'], function (result) {
             for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
-                countID = "select" + result.expungevt[0]["counts"][i].docketNum.trim() + "-" + result.expungevt[0]["counts"][i].countNum.trim()
+                countID = "select" + result.expungevt[0]["counts"][i].uid;
 
                 if (countID === selectID) {
                     result.expungevt[0]["counts"][i]["filingType"] = filingType
@@ -39,18 +38,78 @@ function initListeners(){
             chrome.storage.local.set({
                 expungevt: result.expungevt
             });
-            console.log(result.expungevt)
-
         });
     });
 
-    //prevents the select in the petition cards from opening the accordion.
     $('body').on('click', 'select.petitionSelect', function(event){
+        //prevents the select in the petition cards from opening the accordion.
         event.stopPropagation();
     });
+
+    $('body').on('click', 'i.countDeleter', function (event) {
+        //prevents the delete icon in the petition cards from opening the accordion.
+        event.stopPropagation();
+
+        var countId = this.id.replace("del","");
+        confirmDeleteCount(countId)
+
+    });
+
+}
+//Delete count from popup and from storage when delete file is selected
+function confirmDeleteCount(countId) {
+
+    chrome.storage.local.get(['expungevt'], function (result) {
+
+        //see how many counts are left
+        //if there's just one, and the user confirms, clear all data
+        //if there's more than one, and the user confirms, just remove that one count.
+        let numCounts = result.expungevt[0]["counts"].length
+        if (numCounts <= 1){
+            var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
+            if (confirmDeleteLast == true) {
+                clearData()
+            }
+        } else {
+            var counts = result.expungevt[0]["counts"]
+            var currentCount = counts.filter(count => count.uid == countId)
+            var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount[0].description}\"?`);
+            if (confirmDelete == true) {
+                deleteCount(countId)
+            }
+        }
+    })
+}
+function deleteCount(countId){
+
+    let clearCountFromPopup = function() {
+        headingID = "#heading" + countId;
+        collapseID = "#collapse" + countId;
+        $(headingID).remove();
+        $(collapseID).remove();
+    }
+
+    let clearCountFromLocalStorage = function(){
+
+        chrome.storage.local.get(['expungevt'], function (result) {
+            counts = result.expungevt[0]["counts"]
+            index = counts.findIndex(x => x.uid === countId);
+            counts.splice(index,1)
+            result.expungevt[0]["counts"] = counts
+
+            chrome.storage.local.set({
+                expungevt: result.expungevt
+            });
+        });
+
+    }
+
+    clearCountFromPopup()
+    clearCountFromLocalStorage()
+
 }
 
-function createPetition(element) {
+function openPetitionsPage(element) {
 
     chrome.tabs.query({
         active: true, currentWindow: true
@@ -63,35 +122,38 @@ function createPetition(element) {
     })
 };
 
-function clearData(element){
+function confirmClearData(element){
 
     var r = confirm("Are you sure you want to clear all data for this petitioner?");
     if (r == true) {
  
-        var allCards = document.getElementById("countCards");
-        while (allCards.firstChild) {
-            allCards.removeChild(allCards.firstChild);
-        }
-        $('.pet-detail').text = "";
-
-        chrome.storage.local.get(['expungevtSettings'], function (result) {
-            console.log(result.expungevtSettings)
-            chrome.storage.local.clear(function(){
-                chrome.storage.local.set({
-                    expungevtSettings: result.expungevtSettings
-                });
-            })
-            
-        });
-
-        $('body').removeClass('active');
+        clearData()
     }
 };
 
-function resetSettings(element){
+function clearData(){
 
-    var r = confirm("Are you sure you want to reset setting to the defaults?");
-    if (r == true) {
+    $('#countCards').empty()
+    $('.pet-detail').text("");
+    $('body').removeClass('active');
+
+    //get the settings object from local storage
+    chrome.storage.local.get(['expungevtSettings'], function (result) {
+        
+        //clear all local storage
+        chrome.storage.local.clear(function(){
+
+            //re-save the settings object back to local storage
+            chrome.storage.local.set({
+                expungevtSettings: result.expungevtSettings
+            });
+        })
+    });
+}
+
+function resetSettings(element){
+    var confirmed = confirm("Are you sure you want to reset setting to the defaults?");
+    if (confirmed == true) {
         chrome.storage.local.set({
             expungevtSettings: ""
         });
@@ -119,7 +181,7 @@ function savePetitonerData() {
         result.expungevt[0].defName = $("#defendantName").html();
         result.expungevt[0].defDOB = $("#defendantDOB").html();
         var address = $("#defendantAddress").html()
-        console.log(address)
+
         result.expungevt[0].defAddress = addressArrayFromHTML(address)
 
         chrome.storage.local.set({
@@ -135,22 +197,18 @@ function savePetitonerData() {
             });
             return array
         }
-        console.log(result.expungevt[0].defAddress)
-
     });
 }
 
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
-            setPopUpData(result.expungevt[0])
+            renderPopup(result.expungevt[0])
             $('body').addClass('active');
 
         }
     });
 }
-
-
 
 function addDocketCounts() {
 
@@ -169,47 +227,25 @@ function addDocketCounts() {
 };
 
 
-function setPopUpData(allData) {
+function renderPopup(allData) {
     //defendant info
-    document.getElementById('defendantName').innerHTML = allData.defName;
-    document.getElementById('defendantDOB').innerHTML = allData.defDOB;
-    document.getElementById('defendantAddress').innerHTML = getAddress(allData.defAddress);
 
-    console.log(allData.defAddress)
-    function getAddress(addrArray) {
-        addressHTML = ""
-        for (i = 0; i < addrArray.length; i++) {
-            if (i === addrArray.length - 1) {
-                addressHTML += addrArray[i]
-            } else {
-                addressHTML += addrArray[i] + "<br>"
-            }
-        }
-        return addressHTML
-    }
-
+    $('#defendantName').html(allData.defName);
+    $('#defendantDOB').html(allData.defDOB);
+    $('#defendantAddress').html(allData.defAddress.join("<br>"));
     $('#countCards').empty();
-    for (i = 0; i < allData.totalCounts; i++) {
-        count = allData.counts[i]
-        dockNum = count.docketNum.trim();
-        ctNum = count.countNum.trim();
-        cardSelectID = "#select" + dockNum + "-" + ctNum
 
-        let card = document.createElement('div');
-        card.classList.add('card');
-
-        card.innerHTML = createCountCard(count, allData.defDOB)
-        $('#countCards').append(card);
-        $(cardSelectID).val(count.filingType);
+    for (countIndex in allData.counts) {
+        count = allData.counts[countIndex]
+        $('#countCards').append(generateCountCardHTML(count,allData.defDOB));
+        $("#select" + count.uid).val(count.filingType);
     }
 }
 
-function createCountCard(count, dob) {
-    dockNum = count.docketNum.trim();
-    ctNum = count.countNum.trim();
-    cardID = dockNum + "-" + ctNum
-    let cardHTML = (`
-        <div class="card-header" id=${"heading" + cardID} type="button" data-toggle="collapse" data-target=${"#collapse" + cardID} aria-expanded="false" aria-controls=${"collapse" + cardID}>
+function generateCountCardHTML(count, dob) {
+    return (`
+        <div class="card">
+        <div class="card-header" id="${"heading" + count.uid}" type="button" data-toggle="collapse" data-target="${"#collapse" + count.uid}" aria-expanded="false" aria-controls="${"collapse" + count.uid}">
                 <div class="card-header__column">
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
@@ -218,7 +254,7 @@ function createCountCard(count, dob) {
                          </button> ${checkDisposition()}
                         </div>
                         <div id="selectionDiv" class="card-header__select">
-                            <select id=${"select" + cardID} class="petitionSelect selectpicker">
+                            <select id="${"select" + count.uid}" class="petitionSelect selectpicker">
                                 <option value="">No Filing</option>
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
@@ -230,24 +266,26 @@ function createCountCard(count, dob) {
                             </select>
                         </div>
                     </div>
-
-                    <div class="card-header__pills-row">
-                        <span class="pill pill--rounded ${offenseTypeColor()}">
-                            ${count.offenseClass}
-                        </span>
-                        <span class="pill pill--rounded ${dispositionColor()}">
-                            ${count.offenseDisposition}
-                        </span>
-                        ${getAgeAtDispositionHTML()}
+                    <div class="card-header__bottom-row">
+                        <div class="card-header__pills-row">
+                            <span class="pill pill--rounded ${offenseTypeColor()}">
+                                ${count.offenseClass}
+                            </span>
+                            <span class="pill pill--rounded ${dispositionColor()}">
+                                ${count.offenseDisposition}
+                            </span>
+                            ${getAgeAtDispositionHTML(dob)}
+                        </div>
+                        <i id=${"del" + count.uid} class="fas fa-folder-minus countDeleter"></i>
                     </div>
                 </div>
         </div>
 
-        <div id=${"collapse" + cardID} class="collapse " aria-labelledby=${"heading" + cardID} data-parent="#countCards">
+        <div id="${"collapse" + count.uid}" class="collapse" aria-labelledby="${"heading" + count.uid}" data-parent="#countCards">
             <div class="card-body">
-                <p><b>Desc: </b>${"  " + count.description.trim()}</p>
-                <p><b>Statute: </b>${"  " + count.titleNum + " V.S.A. &sect " + count.sectionNum + " (" + count.offenseClass + ")"}</p>
-                <p><b>Disposition: </b>${"  " + count.offenseDisposition}</p>
+                <p><b>Desc: </b>${count.description.trim()}</p>
+                <p><b>Statute: </b>${count.titleNum} V.S.A. &sect ${count.sectionNum} (${count.offenseClass})</p>
+                <p><b>Disposition: </b>${count.offenseDisposition}</p>
                 <table class="table">
                     <thead class="">
                         <th scope="col">Alleged Offense Date</th>
@@ -264,9 +302,8 @@ function createCountCard(count, dob) {
                 </table>
             </div>
         </div>
+        </div>
     `);
-
-    return cardHTML
 
     function checkDisposition() {
         dispDate = count.dispositionDate
@@ -323,9 +360,9 @@ function createCountCard(count, dob) {
         }
     }
 
-    function getAgeAtDispositionHTML() {
+    function getAgeAtDispositionHTML(date) {
 
-        dobArray = dob.split("/")
+        dobArray = date.split("/")
         let fromTime = new Date(dobArray[2], dobArray[0]-1, dobArray[1]);
         
         dispoDate = count.dispositionDate
