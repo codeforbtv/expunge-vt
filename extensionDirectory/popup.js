@@ -9,6 +9,8 @@ function initButtons(){
     $("[data-edit]").click(editPetitioner)
     $("[data-generate]").click(openPetitionsPage)
     $("[data-clear]").click(confirmClearData)
+    $("[data-reset]").click(resetSettings)
+
 }
 
 function initListeners(){
