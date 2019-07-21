@@ -41,19 +41,19 @@ function initListeners(){
         });
     });
 
-    //prevents the select in the petition cards from opening the accordion.
     $('body').on('click', 'select.petitionSelect', function(event){
+        //prevents the select in the petition cards from opening the accordion.
         event.stopPropagation();
     });
 
     $('body').on('click', 'i.countDeleter', function (event) {
         //prevents the delete icon in the petition cards from opening the accordion.
         event.stopPropagation();
-        var selectId = this.id.replace("del","");
-        confirmDeleteCount(selectId)
+
+        var countId = this.id.replace("del","");
+        confirmDeleteCount(countId)
 
     });
-
 
 }
 //Delete count from popup and from storage when delete file is selected
@@ -66,15 +66,14 @@ function confirmDeleteCount(countId) {
         //if there's more than one, and the user confirms, just remove that one count.
         let numCounts = result.expungevt[0]["counts"].length
         if (numCounts <= 1){
-        var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
+            var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
             if (confirmDeleteLast == true) {
                 clearData()
             }
         } else {
-
-        var counts = result.expungevt[0]["counts"]
-        var currentCount = counts.filter(count => count.uid == countId)
-        var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount[0].description}\"?`);
+            var counts = result.expungevt[0]["counts"]
+            var currentCount = counts.filter(count => count.uid == countId)
+            var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount[0].description}\"?`);
             if (confirmDelete == true) {
                 deleteCount(countId)
             }
@@ -133,29 +132,28 @@ function confirmClearData(element){
 };
 
 function clearData(){
-    var allCards = document.getElementById("countCards");
-        while (allCards.firstChild) {
-            allCards.removeChild(allCards.firstChild);
-        }
-        $('.pet-detail').text = "";
 
-        chrome.storage.local.get(['expungevtSettings'], function (result) {
-            console.log(result.expungevtSettings)
-            chrome.storage.local.clear(function(){
-                chrome.storage.local.set({
-                    expungevtSettings: result.expungevtSettings
-                });
-            })
-            
-        });
+    $('#countCards').empty()
+    $('.pet-detail').text("");
+    $('body').removeClass('active');
 
-        $('body').removeClass('active');
+    //get the settings object from local storage
+    chrome.storage.local.get(['expungevtSettings'], function (result) {
+        
+        //clear all local storage
+        chrome.storage.local.clear(function(){
+
+            //re-save the settings object back to local storage
+            chrome.storage.local.set({
+                expungevtSettings: result.expungevtSettings
+            });
+        })
+    });
 }
 
 function resetSettings(element){
-
-    var r = confirm("Are you sure you want to reset setting to the defaults?");
-    if (r == true) {
+    var confirmed = confirm("Are you sure you want to reset setting to the defaults?");
+    if (confirmed == true) {
         chrome.storage.local.set({
             expungevtSettings: ""
         });
@@ -183,7 +181,7 @@ function savePetitonerData() {
         result.expungevt[0].defName = $("#defendantName").html();
         result.expungevt[0].defDOB = $("#defendantDOB").html();
         var address = $("#defendantAddress").html()
-        console.log(address)
+
         result.expungevt[0].defAddress = addressArrayFromHTML(address)
 
         chrome.storage.local.set({
@@ -199,14 +197,12 @@ function savePetitonerData() {
             });
             return array
         }
-        console.log(result.expungevt[0].defAddress)
     });
 }
 
 function getData() {
     chrome.storage.local.get(['expungevt'], function (result) {
         if (JSON.stringify(result) != "{}") {
-            console.log(result.expungevt[0])
             renderPopup(result.expungevt[0])
             $('body').addClass('active');
 
