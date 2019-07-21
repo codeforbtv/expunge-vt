@@ -62,3 +62,6 @@ typings/
 
 #remove apple system files
 .DS_Store
+
+#remove vs code files
+.vs/
