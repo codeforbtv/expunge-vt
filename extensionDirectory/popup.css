@@ -97,6 +97,7 @@ p.pet-detail {
 }
 #bottomText {
     position: relative;
+    font-size:0.75rem;
     z-index: 100;
 }
 
@@ -222,7 +223,15 @@ hr {
     margin: 10px 5px 10px 5px;
     align-self: center;
 }
+.reset-settings {
+    font-weight: 500;
+    color:#777777;
+    cursor: pointer;
+}
+.reset-settings:hover {
+    color:#222222;
 
+}
 .button-div {
     display:flex;
     flex-direction: row;

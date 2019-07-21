@@ -136,10 +136,29 @@ function clearData(){
             allCards.removeChild(allCards.firstChild);
         }
         $('.pet-detail').text = "";
-        chrome.storage.local.clear()
+
+        chrome.storage.local.get(['expungevtSettings'], function (result) {
+            console.log(result.expungevtSettings)
+            chrome.storage.local.clear(function(){
+                chrome.storage.local.set({
+                    expungevtSettings: result.expungevtSettings
+                });
+            })
+            
+        });
+
         $('body').removeClass('active');
 }
 
+function resetSettings(element){
+
+    var r = confirm("Are you sure you want to reset setting to the defaults?");
+    if (r == true) {
+        chrome.storage.local.set({
+            expungevtSettings: ""
+        });
+    }
+};
 
 function editPetitioner() {
     var value = $('.pet-detail').attr('contenteditable');
@@ -154,30 +173,31 @@ function editPetitioner() {
         savePetitonerData();
     }
 };
-function savePetitonerData(){
-    chrome.storage.local.get(['expungevt'], function (result) {
+
+function savePetitonerData() {
+    chrome.storage.local.get(['expungevt'], function(result) {
+
         //defendant info
         result.expungevt[0].defName = $("#defendantName").html();
         result.expungevt[0].defDOB = $("#defendantDOB").html();
-        setAddress()
+        var address = $("#defendantAddress").html()
+        console.log(address)
+        result.expungevt[0].defAddress = addressArrayFromHTML(address)
 
         chrome.storage.local.set({
             expungevt: result.expungevt
         });
 
-        function setAddress(addrHTML) {
-            addressString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
-            addressString = addressString.replace(/<div>/g, "<br>")
-            addressHTML = addressString.split('<br>')
-            var filteredHTML = addressHTML.filter(function (el) {
+        function addressArrayFromHTML(addressHTMLString) {
+            addressHTMLString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
+            addressHTMLString = addressHTMLString.replace(/<div>/g, "<br>")
+            addressHTMLString = addressHTMLString.split('<br>')
+            var array = addressHTMLString.filter(function(el) {
                 return el != "";
             });
-            for (i = 0; i < filteredHTML.length; i++) {
-                result.expungevt[0].defAddress[i] = filteredHTML[i]
-            }
+            return array
         }
         console.log(result.expungevt[0].defAddress)
-
     });
 }
 

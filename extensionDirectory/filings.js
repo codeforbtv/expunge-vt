@@ -1,4 +1,5 @@
 const maxCountsOnNoA = 10;
+Vue.config.devtools = true
 
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
@@ -28,6 +29,7 @@ function initTextAreaAutoExpand(){
 function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id === 'js-print') printDocument();
+    if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
   }, false);
 }
 
@@ -49,6 +51,12 @@ function detectChangesInLocalStorage(){
   };
 
   app.saveAndParseData(storageChange.newValue[0])
+  app.loadSettings(function(){})
+  app.loadResponses(function(){})
+
+
+
+
 
   });
 }
@@ -142,19 +150,7 @@ Vue.component('filing-nav', {
 });
 
 Vue.component('filing-footer', {
-  template: (`<div class="filing-closing">
-              <p class="filing-closing__salutation">Respectfully requested,</p>
-              <div class="filing-closing__signature-area">
-                  <div class="filing-closing__signature-box">
-                      <p class="filing-closing__name">{{signature.name}}, Petitioner</p>
-                      <p class="filing-closing__petitioner-address" v-html="signature.address"></p>
-                  </div>
-                  <div class="filing-closing__date-box">
-                      <p>Date</p>
-                  </div>
-              </div>
-
-              <div class="stipulated-closing" v-if="stipulated">
+  template: (`<div class="stipulated-closing" v-if="stipulated">
                   <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
                   <div class="filing-closing__signature-box">
                       <p class="filing-closing__name">State's Attorney/Attorney General</p>
@@ -162,7 +158,7 @@ Vue.component('filing-footer', {
               </div>
           </div>
           `),
-  props: ['type','signature','stipulated']
+  props: ['stipulated']
 });
 
 Vue.component('filing-dated-city', {
@@ -175,34 +171,43 @@ Vue.component('filing-dated-city', {
 var app = new Vue({
   el: '#filing-app',
   data: {
-    groupCounts: true,
+    settings:{
+      groupCounts: true,
+      proSe: true,
+      attorney:"",
+      attorneyAddress:""
+    },
     saved: {
     	defName: "",
     	defAddress: [""],
     	defDOB: "",
-    	counts: [],
+    	counts: []
     },
     filings: "",
     ineligible:"",
     noAction: "",
     responses: {}
   },
-  watch: {
+  watch: 
+  {
     'responses': {
-     handler(){
-       app.saveResponses()
-     },
-     deep: true
-   },
-    'groupCounts': {
+       handler(){
+         app.saveResponses()
+       },
+       deep: true
+    },
+    'settings': {
       handler(){
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts);
+        console.log("settings updated")
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts);
         app.saveSettings()
-        app.$nextTick(function () {
+        app.$nextTick(function () 
+        {
         //call any vanilla js functions after update.
           initAfterFilingRefresh();
         })
-      }
+      },
+      deep:true
     }
   },
   mounted() {
@@ -221,6 +226,7 @@ var app = new Vue({
         var loadSettingsCallback = (function(){
           app.loadResponses(loadResponsesCallback);
         })
+        console.log("beginning to load settings")
         app.loadSettings(loadSettingsCallback);
     });
   },
@@ -230,7 +236,7 @@ var app = new Vue({
         app.addFullDescriptionToCounts()
         console.log(app.saved)
         //parse the data
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.groupCounts) //counts, groupCountsFromMultipleDockets=true
+        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts) //counts, groupCountsFromMultipleDockets=true
         app.ineligible = app.groupIneligibleCounts(app.saved.counts);
         app.noAction = app.groupNoAction(app.saved.counts);
         app.$nextTick(function () {
@@ -240,10 +246,11 @@ var app = new Vue({
         })
     },
     saveSettings: function(){
-      var settings = app.groupCounts
-      console.log("save settings")
+      var settings = app.settings
+      console.log("save settings", app.settings)
       chrome.storage.local.set({
         expungevtSettings: settings
+
       });
     },
     saveResponses: function(){
@@ -257,13 +264,12 @@ var app = new Vue({
       console.log("load settings")
       chrome.storage.local.get('expungevtSettings', function (result) {
         //test if we have any data
+          console.log("loading settings", result)
 
-        if (result.expungevtSettings !== undefined) {
+        if (result.expungevtSettings !== undefined && result.expungevtSettings !== "") {
           //load the data
           var settings = result.expungevtSettings
-          app.groupCounts = settings; 
-        } else {
-          app.groupCounts = true;
+          app.settings = settings; 
         }
         callback();
       });
@@ -390,7 +396,7 @@ var app = new Vue({
       }
     },
     createNoticeOfAppearanceFiling: function(county, counts){
-      return this.makeFilingObject(counts, 'PSNoA', county);
+      return this.makeFilingObject(counts, 'NoA', county);
     },
     groupIneligibleCounts: function(counts){
       var ineligibleCounts = counts.filter(count => count.filingType == "X" )
@@ -455,7 +461,7 @@ var app = new Vue({
     },
     isSupported: function(filingType){
       switch (filingType) {
-        case "PSNoA": //Pro Se Notice of Appearance 
+        case "NoA":
         case "StipExC":
         case "ExC":
         case "StipExNC":
@@ -470,7 +476,7 @@ var app = new Vue({
     },
     filingNameFromType: function(filingType){
       switch (filingType) {
-        case "PSNoA":
+        case "NoA":
           return "Notice of Appearance"
         case "StipExC":
           return "Stipulated Petition to Expunge Conviction"
@@ -484,8 +490,20 @@ var app = new Vue({
           return "Stipulated Petition to Seal Conviction"
         case "SC":
           return "Petition to Seal Conviction"
+        case "X":
+          return "Ineligible"
         default:
-          return "Petition";
+          return "None";
+      }
+    },
+    offenseAbbreviationToFull: function(offenseClass) {
+      switch (offenseClass) {
+        case "mis":
+          return "Misdemeanor"
+        case "fel":
+          return "Felony"
+        default:
+          return "";
       }
     },
     addFullDescriptionToCounts: function(){
@@ -555,6 +573,9 @@ var app = new Vue({
       var phrase = num+" "+word;
       if (num > 1) return phrase+"s";
       return phrase;
+    },
+    slugify: function(string) {
+      return string.replace(/\s+/g, '-').toLowerCase();
     }
   },
   computed: {
@@ -562,7 +583,8 @@ var app = new Vue({
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
-  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress))
+  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress)),
+      addressString: this.saved.defAddress.join(", ")
   	  }
     },
     numCountsIneligible: function () {
@@ -586,6 +608,30 @@ var app = new Vue({
         return x.docketNum == e.docketNum && x.county == e.county;}) == i;
       });
       return numDockets.length
+    },
+    csvFilename:function(){
+      var date = new Date()
+      return app.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
+    },
+    csvData:function(){
+
+      return app.saved.counts.map(function(count) {
+        return {
+          Petitioner_Name: app.petitioner["name"], 
+          Petitioner_DOB: app.petitioner.dob, 
+          Petitioner_Address: app.petitioner.addressString, 
+          Petitioner_Phone: app.responses.phone, 
+          County: count.county, 
+          Docket_Sheet_Number:count.docketSheetNum, 
+          Count_Docket_Number:count.docketNum, 
+          Filing_Type:app.filingNameFromType(count.filingType), 
+          Count_Description:count.description, 
+          Count_Statute_Title: count.titleNum, 
+          Count_Statute_Section: count.sectionNum, 
+          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass), 
+          Offense_Disposition:count.offenseDisposition, 
+          Offense_Disposition_Date:count.dispositionDate}
+      });
     }
   },
   filters: {
