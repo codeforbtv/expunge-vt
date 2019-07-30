@@ -354,6 +354,8 @@ function generateCountCardHTML(count, dob) {
     function dispositionColor() {
 
         if (count.offenseDisposition === "Dismissed by state") {
+        var dispositionNormalized = count.offenseDisposition.toLowerCase();
+        if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
             return "pill--outline-green"
         } else {
             return "pill--outline-black"
