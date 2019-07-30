@@ -9,7 +9,7 @@ chrome.runtime.onInstalled.addListener(function () {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [
         new chrome.declarativeContent.PageStateMatcher({
-        pageUrl: {hostEquals: ''},
+        pageUrl: {hostContains: ''},
       }),
       new chrome.declarativeContent.PageStateMatcher({
         pageUrl: {hostContains: 'secure.vermont.gov'},
