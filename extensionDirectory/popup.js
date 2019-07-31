@@ -4,7 +4,7 @@ getData();
 initButtons();
 initListeners();
 
-function initButtons(){
+function initButtons() {
     $("[data-add-counts]").click(addDocketCounts)
     $("[data-edit]").click(editPetitioner)
     $("[data-generate]").click(openPetitionsPage)
@@ -13,9 +13,9 @@ function initButtons(){
 
 }
 
-function initListeners(){
+function initListeners() {
     // Listen to messages from the payload.js script and write to popout.html
-    chrome.runtime.onMessage.addListener(function (message) {
+    chrome.runtime.onMessage.addListener(function(message) {
         loadedMessage = message[0]
         renderPopup(loadedMessage)
         $('body').addClass('active');
@@ -23,11 +23,11 @@ function initListeners(){
     });
 
     //Update chrome storage when a petition is selected
-    $('body').on('change', 'select.petitionSelect', function () {
-        
+    $('body').on('change', 'select.petitionSelect', function() {
+
         selectID = this.id
         filingType = this.value
-        chrome.storage.local.get(['expungevt'], function (result) {
+        chrome.storage.local.get(['expungevt'], function(result) {
             for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
                 countID = "select" + result.expungevt[0]["counts"][i].uid;
 
@@ -41,16 +41,16 @@ function initListeners(){
         });
     });
 
-    $('body').on('click', 'select.petitionSelect', function(event){
+    $('body').on('click', 'select.petitionSelect', function(event) {
         //prevents the select in the petition cards from opening the accordion.
         event.stopPropagation();
     });
 
-    $('body').on('click', 'i.countDeleter', function (event) {
+    $('body').on('click', 'i.countDeleter', function(event) {
         //prevents the delete icon in the petition cards from opening the accordion.
         event.stopPropagation();
 
-        var countId = this.id.replace("del","");
+        var countId = this.id.replace("del", "");
         confirmDeleteCount(countId)
 
     });
@@ -59,13 +59,13 @@ function initListeners(){
 //Delete count from popup and from storage when delete file is selected
 function confirmDeleteCount(countId) {
 
-    chrome.storage.local.get(['expungevt'], function (result) {
+    chrome.storage.local.get(['expungevt'], function(result) {
 
         //see how many counts are left
         //if there's just one, and the user confirms, clear all data
         //if there's more than one, and the user confirms, just remove that one count.
         let numCounts = result.expungevt[0]["counts"].length
-        if (numCounts <= 1){
+        if (numCounts <= 1) {
             var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
             if (confirmDeleteLast == true) {
                 clearData()
@@ -80,7 +80,8 @@ function confirmDeleteCount(countId) {
         }
     })
 }
-function deleteCount(countId){
+
+function deleteCount(countId) {
 
     let clearCountFromPopup = function() {
         headingID = "#heading" + countId;
@@ -89,12 +90,12 @@ function deleteCount(countId){
         $(collapseID).remove();
     }
 
-    let clearCountFromLocalStorage = function(){
+    let clearCountFromLocalStorage = function() {
 
-        chrome.storage.local.get(['expungevt'], function (result) {
+        chrome.storage.local.get(['expungevt'], function(result) {
             counts = result.expungevt[0]["counts"]
             index = counts.findIndex(x => x.uid === countId);
-            counts.splice(index,1)
+            counts.splice(index, 1)
             result.expungevt[0]["counts"] = counts
 
             chrome.storage.local.set({
@@ -112,7 +113,8 @@ function deleteCount(countId){
 function openPetitionsPage(element) {
 
     chrome.tabs.query({
-        active: true, currentWindow: true
+        active: true,
+        currentWindow: true
     }, tabs => {
         let index = tabs[0].index;
         chrome.tabs.create({
@@ -122,26 +124,26 @@ function openPetitionsPage(element) {
     })
 };
 
-function confirmClearData(element){
+function confirmClearData(element) {
 
     var r = confirm("Are you sure you want to clear all data for this petitioner?");
     if (r == true) {
- 
+
         clearData()
     }
 };
 
-function clearData(){
+function clearData() {
 
     $('#countCards').empty()
     $('.pet-detail').text("");
     $('body').removeClass('active');
 
     //get the settings object from local storage
-    chrome.storage.local.get(['expungevtSettings'], function (result) {
-        
+    chrome.storage.local.get(['expungevtSettings'], function(result) {
+
         //clear all local storage
-        chrome.storage.local.clear(function(){
+        chrome.storage.local.clear(function() {
 
             //re-save the settings object back to local storage
             chrome.storage.local.set({
@@ -151,7 +153,7 @@ function clearData(){
     });
 }
 
-function resetSettings(element){
+function resetSettings(element) {
     var confirmed = confirm("Are you sure you want to reset setting to the defaults?");
     if (confirmed == true) {
         chrome.storage.local.set({
@@ -165,8 +167,7 @@ function editPetitioner() {
     if (value == 'false') {
         $("[data-edit]").html("Save");
         $('.pet-detail').attr('contenteditable', 'true');
-    }
-    else {
+    } else {
         $("[data-edit]").html("Edit");
         $('.pet-detail').attr('contenteditable', 'false');
 
@@ -201,7 +202,7 @@ function savePetitonerData() {
 }
 
 function getData() {
-    chrome.storage.local.get(['expungevt'], function (result) {
+    chrome.storage.local.get(['expungevt'], function(result) {
         if (JSON.stringify(result) != "{}") {
             renderPopup(result.expungevt[0])
             $('body').addClass('active');
@@ -212,7 +213,7 @@ function getData() {
 
 function addDocketCounts() {
 
-    chrome.storage.local.get(['expungevt'], function (result) {
+    chrome.storage.local.get(['expungevt'], function(result) {
         if (JSON.stringify(result) != "{}") {
             countString = 'var hasCounts = true;'
         } else {
@@ -220,7 +221,7 @@ function addDocketCounts() {
         }
         chrome.tabs.executeScript(null, {
             code: countString
-        }, function () {
+        }, function() {
             chrome.tabs.executeScript(null, { file: 'payload.js' });
         });
     });
@@ -237,7 +238,7 @@ function renderPopup(allData) {
 
     for (countIndex in allData.counts) {
         count = allData.counts[countIndex]
-        $('#countCards').append(generateCountCardHTML(count,allData.defDOB));
+        $('#countCards').append(generateCountCardHTML(count, allData.defDOB));
         $("#select" + count.uid).val(count.filingType);
     }
 }
@@ -310,7 +311,7 @@ function generateCountCardHTML(count, dob) {
         if (dispDate == "" || dispDate == null) {
             return ""
         } else {
-        return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
+            return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
         }
     }
 
@@ -342,6 +343,7 @@ function generateCountCardHTML(count, dob) {
         }
 
     }
+
     function offenseTypeColor() {
 
         if (count.offenseClass === "fel") {
@@ -352,8 +354,6 @@ function generateCountCardHTML(count, dob) {
     }
 
     function dispositionColor() {
-
-        if (count.offenseDisposition === "Dismissed by state") {
         var dispositionNormalized = count.offenseDisposition.toLowerCase();
         if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
             return "pill--outline-green"
@@ -365,8 +365,8 @@ function generateCountCardHTML(count, dob) {
     function getAgeAtDispositionHTML(date) {
 
         dobArray = date.split("/")
-        let fromTime = new Date(dobArray[2], dobArray[0]-1, dobArray[1]);
-        
+        let fromTime = new Date(dobArray[2], dobArray[0] - 1, dobArray[1]);
+
         dispoDate = count.dispositionDate
         let toTime = moment(dispoDate, "MM/DD/YY")
 
@@ -382,6 +382,3 @@ function generateCountCardHTML(count, dob) {
         return spanHTML
     }
 }
-
-
-
