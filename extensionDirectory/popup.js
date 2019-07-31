@@ -81,7 +81,7 @@ function confirmDeleteCount(countId) {
     })
 }
 
-function deleteCount(countId) {
+function deleteCount(countId){
 
     let clearCountFromPopup = function() {
         headingID = "#heading" + countId;
@@ -101,6 +101,8 @@ function deleteCount(countId) {
             chrome.storage.local.set({
                 expungevt: result.expungevt
             });
+        $('#runningCount').html(getRunningCountString(counts.length));
+
         });
 
     }
@@ -108,6 +110,10 @@ function deleteCount(countId) {
     clearCountFromPopup()
     clearCountFromLocalStorage()
 
+}
+
+function getRunningCountString(countLength) {
+    return "Counts (" + countLength +")"
 }
 
 function openPetitionsPage(element) {
@@ -235,6 +241,7 @@ function renderPopup(allData) {
     $('#defendantDOB').html(allData.defDOB);
     $('#defendantAddress').html(allData.defAddress.join("<br>"));
     $('#countCards').empty();
+    $('#runningCount').html(getRunningCountString(allData.counts.length));
 
     for (countIndex in allData.counts) {
         count = allData.counts[countIndex]
