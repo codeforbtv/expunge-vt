@@ -129,6 +129,27 @@ function getCountInfo(tempPetitionerCountObject) {
 
 }
 
+
+function isSurchageDue(){
+
+    //if a surchage is entered in the record there is at least one def-pay section
+    //if the surchage was due and has been paid, there is a finpay section.
+    //if there is a defpay record and no fin pay record, then a surchage is due.
+    //if there is no defpay and no finpay, then no surchage is due.
+
+    var isSurchageDue = (surchargeCreated() && !finalPayment())
+    console.log(isSurchageDue)
+
+    return isSurchageDue;
+
+    function surchargeCreated(){
+        return docketBody.includes("defpay") || docketBody.includes("surcharge assessed");
+     }
+    function finalPayment(){
+        return docketBody.includes("finpay") || docketBody.includes("paid in full")
+    }
+}
+
 //Break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum) {
     //Break into array and remove spaces
@@ -186,7 +207,8 @@ function processCountLine1(countLine1, countNum) {
         "dispositionDate": countLine1Array[felMisLocation + 1],
         "offenseDisposition": checkDisposition(disposition),
         "filingType": "",
-        "docketSheetNum": docketSheetNum
+        "docketSheetNum": docketSheetNum,
+        "outstandingPayment":isSurchageDue()
     }]
 
     function checkDisposition() {
