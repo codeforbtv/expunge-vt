@@ -65,3 +65,4 @@ typings/
 
 #remove vs code files
 .vs/
+.vscode/
