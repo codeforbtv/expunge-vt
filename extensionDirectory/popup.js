@@ -266,11 +266,16 @@ function generateCountCardHTML(count, dob) {
                                 <option value="">No Filing</option>
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
-                                <option value="ExNC">Expunge Nonconviction</option>
+                                <option value="ExNC">Expunge Non-Conviction</option>
+                                <option value="ExNCrim">Expunge Non-Criminal</option>
                                 <option value="SC">Seal Conviction</option>
+                                <option value="SDui">Seal DUI</option>
                                 <option value="StipExC">(Stip) Expunge Conviction</option>
-                                <option value="StipExNC">(Stip) Expunge Nonconviction</option>
+                                <option value="StipExNC">(Stip) Expunge Non-Conviction</option>
+                                <option value="StipExNCrim">(Stip) Expunge Non-Criminal</option>
                                 <option value="StipSC">(Stip) Seal Conviction</option>
+                                <option value="StipSDui">(Stip) Seal DUI</option>
+
                             </select>
                         </div>
                     </div>

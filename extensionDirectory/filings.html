@@ -178,6 +178,41 @@
                                                     dismissed charges</span><span v-else>this dismissed charge</span> serves the interest of justice, as</p>
                                         </div>
 
+                                        <!-- (Stipulated) Petiton To Expunge Non-Crime -->
+
+                                        <div class="filing-body" v-if="filing.type == 'ExNCrim' || filing.type == 'StipExNCrim'">
+
+                                            <p class="indent">
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                </template>
+                                                <template v-else>
+                                                    by and through counsel,
+                                                    <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                </template>, and hereby moves the Court to expunge the record of the following charge
+                                                <span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B), the following offense<span v-if="filing.multipleCounts">s are </span><span v-else> is</span>no longer criminal and should be expunged immediately:</p>
+                                            <table class="count-table">
+                                                <thead class="count-table__header">
+                                                    <th valign="middle" scope="col">Date of Dismissal</th>
+                                                    <th valign="middle" scope="col">Charge<span v-if="filing.multipleCounts">s</span></th>
+                                                </thead>
+                                                <tbody class="count-table__body">
+                                                    <tr class="count-item" v-for="count in filing.counts">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
+                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        </td>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <p>2. Expunging all record of <span v-if="filing.multipleCounts">these
+                                                    offenses</span><span v-else>this offense</span> serves the interest of justice, as</p>
+                                        </div>
+
+
                                         <!-- (Stipulated) Petiton To Seal Conviction -->
 
                                         <div class="filing-body" v-if="filing.type == 'SC' || filing.type == 'StipSC'">
@@ -217,6 +252,51 @@
                                             <p>3. Petitioner was not later convicted of a listed crime, pursuant to 13 V.S.A. &sect; 5301(7), nor is petitioner currently being charged of such an offense.</p>
                                             <p>4. Petitioner believes the court will find that they have been rehabilitated, as evidenced by the following:</p>
                                         </div>
+
+
+                                        <!-- (Stipulated) Petiton To Seal DUI Conviction -->
+
+                                        <div class="filing-body" v-if="filing.type == 'SDui' || filing.type == 'StipSDui'">
+
+                                            <p class="indent">
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                </template>
+                                                <template v-else>
+                                                    by and through counsel,
+                                                    <span class="no-visible">{{settings['attorney']}}</span>
+                                                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                </template>, and hereby moves the Court to seal the record of the above-captioned conviction
+                                                <span v-if="filing.multipleCounts">s</span> pursuant to 33 V.S.A. &sect; 5119(g).</p>
+                                            <p>1. Petitioner was convicted of the following DUI crime<span v-if="filing.multipleCounts">s</span>:</p>
+                                            <table class="count-table">
+                                                <thead class="count-table__header">
+                                                    <th valign="middle" scope="col">Conviction Date</th>
+                                                    <th valign="middle" scope="col">Offense Description</th>
+                                                </thead>
+                                                <tbody class="count-table__body">
+                                                    <tr class="count-item" v-for="count in filing.counts">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
+                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        </td>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
+
+                                            </table>
+                                            <p>2. Petitioner was under 21 when the crime<span v-if="filing.multipleCounts">s
+                                                    were</span><span v-else> was</span> allegedly committed.</p>
+
+                                            <p>3. Petitioner was not later convicted of a listed crime, pursuant to 13 V.S.A. &sect; 5301(7), nor is petitioner currently being charged of such an offense.</p>
+                                            <p>4. Petitioner believes the court will find that they have been rehabilitated, as evidenced by the following:</p>
+                                        </div>
+
+
+
+
 
                                         <!-- End Unique Portion of Filings -->
 
@@ -373,8 +453,30 @@
                                                                     <td v-html="filing.docketNum + ' ' + filing.docketCounty">
                                                                     </td>
                                                                 </tr>
+                                                                <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
+                                                                    NON-CRIME petitions drafted...
+                                                                </th>
+                                                                <tr v-for="filing in countsExpungedNCrim">
+                                                                    <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                                    </td>
+                                                                    <td>{{filing.dispositionDate}}</td>
+                                                                    <td>{{filing.offenseDisposition}}</td>
+                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    </td>
+                                                                </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted...</th>
                                                                 <tr v-for="filing in countsSealC">
+                                                                    <td><span v-if="isStipulated(filing.filingType)"><i
+                                                                        class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
+                                                                    </td>
+                                                                    <td>{{filing.dispositionDate}}</td>
+                                                                    <td>{{filing.offenseDisposition}}</td>
+                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    </td>
+                                                                </tr>
+                                                                <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted...</th>
+                                                                <tr v-for="filing in countsSealDui">
                                                                     <td><span v-if="isStipulated(filing.filingType)"><i
                                                                         class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                     </td>
