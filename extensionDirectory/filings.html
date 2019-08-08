@@ -190,7 +190,7 @@
                                                     by and through counsel,
                                                     <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
                                                 </template>, and hereby moves the Court to expunge the record of the following charge
-                                                <span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B), the following offense<span v-if="filing.multipleCounts">s are </span><span v-else> is</span>no longer criminal and should be expunged immediately:</p>
+                                                <span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B), the following <span v-if="filing.multipleCounts">offenses are</span><span v-else>offense is</span> no longer criminal and should be expunged immediately:</p>
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Date of Dismissal</th>
