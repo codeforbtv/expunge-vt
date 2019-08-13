@@ -447,8 +447,10 @@ var app = new Vue({
     isStipulated: function(filingType){
       return (
         filingType == "StipExC" || 
-        filingType == "StipExNC" || 
-        filingType == "StipSC");
+        filingType == "StipExNC" ||
+        filingType == "StipExNCrim" || 
+        filingType == "StipSC" ||  
+        filingType == "StipSDui");
     },
     isEligible: function(filingType){
       return (
@@ -464,8 +466,12 @@ var app = new Vue({
         case "ExC":
         case "StipExNC":
         case "ExNC":
+        case "StipExNCrim":
+        case "ExNCrim":
         case "StipSC":
+        case "StipSDui":
         case "SC":
+        case "SDui":
         case "X":
           return true;
         default:
@@ -484,9 +490,17 @@ var app = new Vue({
           return "Stipulated Petition to Expunge Non-Conviction"
         case "ExNC":
           return "Petition to Expunge Non-Conviction"
+        case "StipExNCrim":
+          return "Stipulated Petition to Expunge Conviction"
+        case "ExNCrim":
+          return "Petition to Expunge Conviction"
         case "StipSC":
           return "Stipulated Petition to Seal Conviction"
         case "SC":
+          return "Petition to Seal Conviction"
+        case "StipSDui":
+          return "Stipulated Petition to Seal Conviction"
+        case "SDui":
           return "Petition to Seal Conviction"
         case "X":
           return "Ineligible"
@@ -589,16 +603,19 @@ var app = new Vue({
       return this.ineligible.length;
     },
     countsExpungedNC: function (data) {
-      const excCounts = data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
-      return excCounts;
+      return data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
     },
     countsExpungedC: function (data) {
-      const excCounts = data.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
-      return excCounts;
+      return data.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
+    },
+    countsExpungedNCrim: function (data) {
+      return data.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
     },
     countsSealC: function (data) {
-      const excCounts = data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
-      return excCounts;
+      return data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
+    },
+    countsSealDui: function (data) {
+      return data.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
     },
     numDockets: function(){
       var numDockets = app.saved.counts.filter((e, i) => {
