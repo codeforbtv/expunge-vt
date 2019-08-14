@@ -399,7 +399,7 @@ function generateCountCardHTML(count, dob) {
     function getOutstandingPaymentHTML(paymentDue) {
         var spanHTML = ""
         if (paymentDue) {
-            spanHTML = "<span class='pill pill--rounded pill--outline-black'>$ Due</span>"
+            spanHTML = "<span class='pill pill--rounded pill--outline-black'>Surcharge</span>"
         }
         return spanHTML
     }

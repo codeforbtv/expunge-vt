@@ -143,7 +143,7 @@ function isSurchageDue(){
     return isSurchageDue;
 
     function surchargeCreated(){
-        return docketBody.includes("defpay") || docketBody.includes("surcharge assessed");
+        return docketBody.includes("defpay") || docketBody.includes("surcharge assessed") || docketBody.includes("Referred to collection agency") || docketBody.includes("referred to collection agency");;
      }
     function finalPayment(){
         return docketBody.includes("finpay") || docketBody.includes("paid in full")
