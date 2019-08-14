@@ -288,6 +288,7 @@ function generateCountCardHTML(count, dob) {
                                 ${count.offenseDisposition}
                             </span>
                             ${getAgeAtDispositionHTML(dob)}
+                            ${getOutstandingPaymentHTML(count.outstandingPayment)}
                         </div>
                         <i id=${"del" + count.uid} class="fas fa-folder-minus countDeleter"></i>
                     </div>
@@ -365,6 +366,7 @@ function generateCountCardHTML(count, dob) {
         }
     }
 
+
     function dispositionColor() {
         var dispositionNormalized = count.offenseDisposition.toLowerCase();
         if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
@@ -393,4 +395,13 @@ function generateCountCardHTML(count, dob) {
         }
         return spanHTML
     }
+
+    function getOutstandingPaymentHTML(paymentDue) {
+        var spanHTML = ""
+        if (paymentDue) {
+            spanHTML = "<span class='pill pill--rounded pill--outline-black'>Surcharge</span>"
+        }
+        return spanHTML
+    }
+
 }
