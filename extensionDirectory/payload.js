@@ -102,9 +102,10 @@ function getCountInfo(tempPetitionerCountObject) {
 
     //Determine Number of Counts and create array with each line count
     countsStart = nthIndex(docketBody, divider, 2) + divider.length + 1
-    countsEnd = nthIndex(docketBody, divider, 3)
+    countsEnd = docketBody.substring(countsStart).indexOf("=") + countsStart
     allCountsBody = docketBody.substring(countsStart, countsEnd)
     countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
+    countTotal = Math.ceil(countTotal)
     allCountsArray = allCountsBody.split("\n")
 
     //Move data from count table into objects
@@ -130,7 +131,7 @@ function getCountInfo(tempPetitionerCountObject) {
 }
 
 
-function isSurchageDue(){
+function isSurchageDue() {
 
     //if a surchage is entered in the record there is at least one def-pay section
     //if the surchage was due and has been paid, there is a finpay section.
@@ -142,11 +143,11 @@ function isSurchageDue(){
 
     return isSurchageDue;
 
-    function surchargeCreated(){
+    function surchargeCreated() {
         return docketBody.includes("defpay") || docketBody.includes("surcharge assessed") || docketBody.includes("Referred to collection agency") || docketBody.includes("referred to collection agency");;
 
-     }
-    function finalPayment(){
+    }
+    function finalPayment() {
         return docketBody.includes("finpay") || docketBody.includes("paid in full")
     }
 }
@@ -209,7 +210,7 @@ function processCountLine1(countLine1, countNum) {
         "offenseDisposition": checkDisposition(disposition),
         "filingType": "",
         "docketSheetNum": docketSheetNum,
-        "outstandingPayment":isSurchageDue()
+        "outstandingPayment": isSurchageDue()
     }]
 
     function checkDisposition() {
@@ -284,10 +285,10 @@ function getCounty(countyCode) {
 
 function guid() {
     function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
     }
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-      s4() + '-' + s4() + s4() + s4();
-  }
+        s4() + '-' + s4() + s4() + s4();
+}
