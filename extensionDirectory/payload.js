@@ -3,6 +3,7 @@ docketBody = document.getElementsByTagName("pre")[0].innerHTML
 
 divider = "================================================================================"
 
+$("#modal1").modal("show");
 
 petitionerCountObject = getPetitionerInfo();
 petitionerCountObject = getCountInfo(petitionerCountObject);

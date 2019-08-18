@@ -1,30 +1,48 @@
 {
-    "name": "ExpungeVT!",
-    "version": "1.0",
-    "description": "Expunge records found on VTCourtsOnline with ease!",
-    "permissions": ["activeTab", "declarativeContent", "storage","<all_urls>","downloads"],
-    "background": {
-      "scripts": ["background.js"],
-      "persistent": false
-    },
-    "page_action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "images/get_started16.png",
-        "32": "images/get_started32.png",
-        "48": "images/get_started48.png",
-        "128": "images/get_started128.png"
-      }
-    },
-    "icons": {
+  "name": "ExpungeVT!",
+  "version": "1.0",
+  "description": "Expunge records found on VTCourtsOnline with ease!",
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "<all_urls>",
+    "downloads"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "16": "images/get_started16.png",
       "32": "images/get_started32.png",
       "48": "images/get_started48.png",
       "128": "images/get_started128.png"
-    },
-    "manifest_version": 2,
-    "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com/ https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
-    "externally_connectable": {
-      "ids": ["*"]
     }
-  }
+  },
+  "icons": {
+    "16": "images/get_started16.png",
+    "32": "images/get_started32.png",
+    "48": "images/get_started48.png",
+    "128": "images/get_started128.png"
+  },
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://unpkg.com/ https://cdn.jsdelivr.net https://code.jquery.com https://cdnjs.cloudflare.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com; object-src 'self'",
+  "externally_connectable": {
+    "ids": [
+      "*"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://secure.vermont.gov/*"],
+      "css": ["node_modules/bootstrap/dist/css/bootstrap.min.css"],
+      "js": ["node_modules/jquery/dist/jquery.js", "node_modules/bootstrap/dist/js/bootstrap.min.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

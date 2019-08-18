@@ -6,6 +6,7 @@ initListeners();
 
 function initButtons() {
     $("[data-add-counts]").click(addDocketCounts)
+    $("[data-custom-counts]").click(customeCounts)
     $("[data-edit]").click(editPetitioner)
     $("[data-generate]").click(openPetitionsPage)
     $("[data-clear]").click(confirmClearData)
@@ -233,6 +234,21 @@ function addDocketCounts() {
     });
 };
 
+function customeCounts() {
+
+    chrome.storage.local.get(['expungevt'], function(result) {
+        if (JSON.stringify(result) != "{}") {
+            countString = 'var hasCounts = true;'
+        } else {
+            countString = 'var hasCounts = false;'
+        }
+        chrome.tabs.executeScript(null, {
+            code: countString
+        }, function() {
+            chrome.tabs.executeScript(null, { file: 'modal.js' });
+        });
+    });
+};
 
 function renderPopup(allData) {
     //defendant info
