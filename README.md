@@ -35,20 +35,6 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 
 1. Familiarlize yourself with [how chrome extensions work](./README_EXTENSIONS_OVERVIEW.md).
 
-### Development: Live Reloading the Extension
-
-During plugin development you may need to reload the plugin via the [chrome://extensions/](chrome://extensions/) page. Using Node, your machine can trigger that  reload anytime files within the extension directory are modified. This repo uses an additional plugin, [Extension Reloader](https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid), to do so.  Installation and use of this plugin is not required, it is an optional workflow automation tool.
-
-1. Install the free extension, [Extension Reloader](https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid), from the Chrome webstore.
-
-1. From the root directory of this repository, on your local machine, run `npm install` to install required packages.
-
-1. Run `npm start` to begin watching for changes.
-
-1. To stop watching for changes, use `Ctrl + C` to end the watch in the same terminal window you applied step 3.
-
-You will need to start watching again, using `npm start` after you stop the process.
-
 ## Usage instructions
 
 ...MORE FUNCTIONALITY AVAILABLE SOON!
