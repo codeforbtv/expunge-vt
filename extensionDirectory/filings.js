@@ -50,7 +50,7 @@ function detectChangesInLocalStorage(){
       return
   };
 
-  app.saveAndParseData(storageChange.newValue[0])
+  app.saveAndParseData(storageChange.newValue)
   app.loadSettings(function(){})
   app.loadResponses(function(){})
 
@@ -215,10 +215,11 @@ var app = new Vue({
   	console.log('App mounted!');
   	chrome.storage.local.get('expungevt', function (result) {
         //test if we have any data
+        console.log(result)
         if (result.expungevt === undefined) return;
         //load the data
         
-        var data = result.expungevt[0]
+        var data = result.expungevt
         
         var loadResponsesCallback = (function(){ 
           app.saveAndParseData(data) 
@@ -233,6 +234,7 @@ var app = new Vue({
   },
   methods:{
     saveAndParseData: function(data) {
+      
         app.saved = data
         app.addFullDescriptionToCounts()
         console.log(app.saved)
@@ -260,6 +262,14 @@ var app = new Vue({
       chrome.storage.local.set({
         expungevtResponses: responses
       });
+    },
+    saveCounts: function(){
+      alert("saving counts")
+      var save = app.saved
+      console.log(JSON.stringify(save))
+        chrome.storage.local.set({
+          expungevt: save
+        });
     },
     loadSettings: function(callback){
       console.log("load settings")
@@ -556,6 +566,11 @@ var app = new Vue({
         docketSheetNums: docketSheetNums,
         counts: countsOnThisFiling,
       }
+    },
+    newCount: function(event){
+      alert("new count added");
+      this.saved.counts.push({ description: 'Baz' })
+
     },
     updatePageTitle: function(){
       var title = "Filings for "+this.petitioner.name

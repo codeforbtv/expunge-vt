@@ -16,25 +16,30 @@ function initButtons() {
 function initListeners() {
     // Listen to messages from the payload.js script and write to popout.html
     chrome.runtime.onMessage.addListener(function(message) {
-        loadedMessage = message[0]
+        console.log("message: "+JSON.stringify(message))
+        loadedMessage = message
         renderPopup(loadedMessage)
         $('body').addClass('active');
 
     });
 
     //Update chrome storage when a petition is selected
-    $('body').on('change', 'select.petitionSelect', function() {
+    $('body').on('change', 'select.petitionSelect', function(event) {
+
+        console.log(event.target)
 
         selectID = this.id
         filingType = this.value
-        chrome.storage.local.get(['expungevt'], function(result) {
-            for (i = 0; i < result.expungevt[0]["counts"].length; i++) {
-                countID = "select" + result.expungevt[0]["counts"][i].uid;
-
+        chrome.storage.local.get('expungevt', function(result) {
+            console.log("select-fetch: "+JSON.stringify(result))
+            for (i = 0; i < result.expungevt["counts"].length; i++) {
+                countID = "select" + result.expungevt["counts"][i].uid;
                 if (countID === selectID) {
-                    result.expungevt[0]["counts"][i]["filingType"] = filingType
+                    result.expungevt["counts"][i]["filingType"] = filingType
                 }
             }
+            console.log("select-fetch-updated: "+JSON.stringify(result))
+
             chrome.storage.local.set({
                 expungevt: result.expungevt
             });
@@ -59,19 +64,19 @@ function initListeners() {
 //Delete count from popup and from storage when delete file is selected
 function confirmDeleteCount(countId) {
 
-    chrome.storage.local.get(['expungevt'], function(result) {
+    chrome.storage.local.get('expungevt', function(result) {
 
         //see how many counts are left
         //if there's just one, and the user confirms, clear all data
         //if there's more than one, and the user confirms, just remove that one count.
-        let numCounts = result.expungevt[0]["counts"].length
+        let numCounts = result.expungevt["counts"].length
         if (numCounts <= 1) {
             var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
             if (confirmDeleteLast == true) {
                 clearData()
             }
         } else {
-            var counts = result.expungevt[0]["counts"]
+            var counts = result.expungevt["counts"]
             var currentCount = counts.filter(count => count.uid == countId)
             var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount[0].description}\"?`);
             if (confirmDelete == true) {
@@ -92,11 +97,11 @@ function deleteCount(countId){
 
     let clearCountFromLocalStorage = function() {
 
-        chrome.storage.local.get(['expungevt'], function(result) {
-            counts = result.expungevt[0]["counts"]
+        chrome.storage.local.get('expungevt', function(result) {
+            counts = result.expungevt["counts"]
             index = counts.findIndex(x => x.uid === countId);
             counts.splice(index, 1)
-            result.expungevt[0]["counts"] = counts
+            result.expungevt["counts"] = counts
 
             chrome.storage.local.set({
                 expungevt: result.expungevt
@@ -182,14 +187,14 @@ function editPetitioner() {
 };
 
 function savePetitonerData() {
-    chrome.storage.local.get(['expungevt'], function(result) {
+    chrome.storage.local.get('expungevt', function(result) {
 
         //defendant info
-        result.expungevt[0].defName = $("#defendantName").html();
-        result.expungevt[0].defDOB = $("#defendantDOB").html();
+        result.expungevt.defName = $("#defendantName").html();
+        result.expungevt.defDOB = $("#defendantDOB").html();
         var address = $("#defendantAddress").html()
 
-        result.expungevt[0].defAddress = addressArrayFromHTML(address)
+        result.expungevt.defAddress = addressArrayFromHTML(address)
 
         chrome.storage.local.set({
             expungevt: result.expungevt
@@ -208,9 +213,10 @@ function savePetitonerData() {
 }
 
 function getData() {
-    chrome.storage.local.get(['expungevt'], function(result) {
+    chrome.storage.local.get('expungevt', function(result) {
+        console.log("getting data:" + JSON.stringify(result));
         if (JSON.stringify(result) != "{}") {
-            renderPopup(result.expungevt[0])
+            renderPopup(result.expungevt)
             $('body').addClass('active');
 
         }
@@ -219,7 +225,7 @@ function getData() {
 
 function addDocketCounts() {
 
-    chrome.storage.local.get(['expungevt'], function(result) {
+    chrome.storage.local.get('expungevt', function(result) {
         if (JSON.stringify(result) != "{}") {
             countString = 'var hasCounts = true;'
         } else {
@@ -368,6 +374,7 @@ function generateCountCardHTML(count, dob) {
 
 
     function dispositionColor() {
+        console.log(count,count.offenseDisposition)
         var dispositionNormalized = count.offenseDisposition.toLowerCase();
         if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
             return "pill--outline-green"
