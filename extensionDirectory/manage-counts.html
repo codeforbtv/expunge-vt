@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Manage Counts Page</title>
+    <link href="filings.css" rel="stylesheet" type="text/css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <!-- vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15/dist/smooth-scroll.polyfills.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@4/dist/gumshoe.polyfills.min.js"></script>
+
+    <!-- font awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <!-- Begin Vue App -->
+
+    <div id="filing-app">
+
+            <div v-if="petitioner.name" class="header-bar-wrapper no-print">
+                <div class="header-bar">
+                    <h1>Counts for {{petitioner.name}}</h1>
+                </div>
+            </div>
+                <section v-for="group in saved.counts" v-bind:id="group" style="margin-top:40px;">
+                    <b>{{group}}</b>
+                    <br>
+                    County: <input v-model="group.county" placeholder="County"><br>
+                    Docket Number: <input v-model="group.docketNum" placeholder="Docket Num"><br>
+                    Alleged Offense Date: <input v-model="group.allegedOffenseDate" placeholder="Offense Date"><br>
+                    Arrest Citation Date: <input v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"><br>
+                    Disposition Date: <input v-model="group.dispositionDate" placeholder="Disposition Date"><br>
+                    Offense Disposition: <input v-model="group.offenseDisposition" placeholder="Offense Disposition"><br>
+                    Description: <input v-model="group.description" placeholder="Description"><br>
+                    Offense Class: <input v-model="group.offenseClass" placeholder="Offense Class"><br>
+                    Title & Section: <input v-model="group.titleNum" placeholder="Offense Class"> &sect; <input v-model="group.sectionNum" placeholder="Offense Class">
+                    <hr>
+                </section>
+
+                <button v-on:click="newCount">New Count</button>
+                <button v-on:click="saveCounts">Save Counts</button>
+            </div>
+        </div>
+                    <!-- End Vue App -->
+        <script id='script' src="filings.js"></script>
+        <script id='script' src="csv.js"></script>
+
+</body>
+
+</html>
