@@ -9,16 +9,16 @@ petitionerCountObject = getCountInfo(petitionerCountObject);
 
 if (hasCounts == false) {
     chrome.storage.local.set({
-        expungevt: petitionerCountObject
+        counts: petitionerCountObject
     });
     chrome.runtime.sendMessage(petitionerCountObject);
 }
 
 else {
-    chrome.storage.local.get('expungevt', function (result) {
-        console.log(result.expungevt)
+    chrome.storage.local.get('counts', function (result) {
+        console.log(result.counts)
         
-        var oldName = result.expungevt["defName"];
+        var oldName = result.counts["defName"];
         var newName = petitionerCountObject["defName"];
         var nameAnswer = true;
         if (oldName != newName) {
@@ -33,14 +33,14 @@ else {
             for (let i = 0; i < petitionerCountObject["counts"].length; i++) {
                 let matchCount = 0;
 
-                for (let j = 0; j < result.expungevt["counts"].length; j++) {
-                    if (result.expungevt["counts"][j].uid == petitionerCountObject["counts"][i].uid) {
+                for (let j = 0; j < result.counts["counts"].length; j++) {
+                    if (result.counts["counts"][j].uid == petitionerCountObject["counts"][i].uid) {
                         matchCount++;
                         totalMatchCount++;
                     }
                 }
                 if (matchCount == 0) {
-                    result.expungevt["counts"].push(petitionerCountObject["counts"][i]);
+                    result.counts["counts"].push(petitionerCountObject["counts"][i]);
                 }
 
             }
@@ -48,9 +48,9 @@ else {
                 alert(totalMatchCount + " counts matched existing counts and were not added.")
             }
             chrome.storage.local.set({
-                expungevt: result.expungevt
+                counts: result.counts
             });
-            chrome.runtime.sendMessage(result.expungevt);
+            chrome.runtime.sendMessage(result.counts);
         }
         })
     }
@@ -75,11 +75,11 @@ function getPetitionerInfo() {
         addressArray.pop()
         //trims off disposed text and excess spaces
         addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString()
-    }
-    catch {
-        addressArray = []
+    } catch {
+        addressArray = [];
         addressArray[0] = "No Address found"
     }
+
     for (i = 0; i < addressArray.length; i++) {
         addressArray[i] = addressArray[i].trim()
     }
@@ -126,7 +126,6 @@ function getCountInfo(tempPetitionerCountObject) {
             tempPetitionerCountObject.counts.push(countObject)
         }
     }
-
     return tempPetitionerCountObject
 
 }
@@ -163,15 +162,7 @@ function processCountLine1(countLine1, countNum) {
     //find location of fel/mis
     felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
-    function isFelOrMisd(element) {
-        if (element === "mis") {
-            return element = "mis"
-        };
-        if (element === "fel") {
-            return element = "fel"
-        };
 
-    }
 
     //get section string(s)
     for (j = 5; j < felMisLocation; j++) {
@@ -202,7 +193,7 @@ function processCountLine1(countLine1, countNum) {
         "countNum": countLine1Array[0],
         "docketNum": countLine1Array[1],
         "docketCounty": countLine1Array[2],
-        "county": getCounty(countLine1Array[2]),
+        "county": countyNameFromCountyCode(countLine1Array[2]),
         "titleNum": countLine1Array[4],
         "sectionNum": offenseSection,
         "offenseClass": countLine1Array[felMisLocation],
@@ -220,6 +211,12 @@ function processCountLine1(countLine1, countNum) {
         } else {
             return disposition
         }
+    }
+    function isFelOrMisd(element) {
+        if (element === "mis" || element === "fel") {
+            return element;
+        };
+        return false;
     }
 
     //Get Alleged offense date:
@@ -261,25 +258,43 @@ function nthIndex(str, subStr, n) {
     return i;
 }
 
-function getCounty(countyCode) {
-    code = countyCode.substring(0, 2).trim()
-    vtCounties = [{
-        "An": "Addison",
-        "Bn": "Bennington",
-        "Ca": "Caledonia",
-        "Cn": "Chittenden",
-        "Ex": "Essex",
-        "Fr": "Franklin",
-        "Gi": "Grand Isle",
-        "Le": "Lamoille",
-        "Oe": "Orange",
-        "Os": "Orleans",
-        "Rd": "Rutland",
-        "Wn": "Washington",
-        "Wm": "Windham",
-        "Wr": "Windsor"
-    }]
-    return vtCounties[0][code]
+function countyNameFromCountyCode(countyCode) {
+    counties = {
+        "Ancr": "Addison",
+        "Bncr": "Bennington",
+        "Cacr": "Caledonia",
+        "Cncr": "Chittenden",
+        "Excr": "Essex",
+        "Frcr": "Franklin",
+        "Gicr": "Grand Isle",
+        "Lecr": "Lamoille",
+        "Oecr": "Orange",
+        "Oscr": "Orleans",
+        "Rdcr": "Rutland",
+        "Wncr": "Washington",
+        "Wmcr": "Windham",
+        "Wrcr": "Windsor"
+    }
+    return counties[countyCode]
+}
+function countyCodeFromCounty(county) {
+    countyCodes = {
+        "Addison": "Ancr",
+        "Bennington": "Bncr",
+        "Caledonia" : "Cacr",
+        "Chittenden" : "Cncr",
+        "Essex": "Excr",
+        "Franklin": "Frcr",
+        "Grand Isle" : "Gicr",
+        "Lamoille" : "Lecr",
+        "Orange" : "Oecr",
+        "Orleans" : "Oscr",
+        "Rutland" : "Rdcr",
+        "Washington": "Wncr",
+        "Windham" : "Wmcr",
+        "Windsor" : "Wrcr"
+    }
+    return countyCodes[county]
 }
 
 

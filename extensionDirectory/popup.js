@@ -7,6 +7,7 @@ initListeners();
 function initButtons() {
     $("[data-add-counts]").click(addDocketCounts)
     $("[data-edit]").click(editPetitioner)
+    $("[data-edit-counts]").click(openManagePage)
     $("[data-generate]").click(openPetitionsPage)
     $("[data-clear]").click(confirmClearData)
     $("[data-reset]").click(resetSettings)
@@ -30,18 +31,18 @@ function initListeners() {
 
         selectID = this.id
         filingType = this.value
-        chrome.storage.local.get('expungevt', function(result) {
+        chrome.storage.local.get('counts', function(result) {
             console.log("select-fetch: "+JSON.stringify(result))
-            for (i = 0; i < result.expungevt["counts"].length; i++) {
-                countID = "select" + result.expungevt["counts"][i].uid;
+            for (i = 0; i < result.counts["counts"].length; i++) {
+                countID = "select" + result.counts["counts"][i].uid;
                 if (countID === selectID) {
-                    result.expungevt["counts"][i]["filingType"] = filingType
+                    result.counts["counts"][i]["filingType"] = filingType
                 }
             }
             console.log("select-fetch-updated: "+JSON.stringify(result))
 
             chrome.storage.local.set({
-                expungevt: result.expungevt
+                counts: result.counts
             });
         });
     });
@@ -64,21 +65,22 @@ function initListeners() {
 //Delete count from popup and from storage when delete file is selected
 function confirmDeleteCount(countId) {
 
-    chrome.storage.local.get('expungevt', function(result) {
+    chrome.storage.local.get('counts', function(result) {
 
         //see how many counts are left
         //if there's just one, and the user confirms, clear all data
         //if there's more than one, and the user confirms, just remove that one count.
-        let numCounts = result.expungevt["counts"].length
+        let numCounts = result.counts["counts"].length
         if (numCounts <= 1) {
             var confirmDeleteLast = confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information.");
             if (confirmDeleteLast == true) {
                 clearData()
             }
         } else {
-            var counts = result.expungevt["counts"]
-            var currentCount = counts.filter(count => count.uid == countId)
-            var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount[0].description}\"?`);
+            var counts = result.counts["counts"]
+            var currentCount = counts.filter(count => count.uid == countId)[0]
+            console.log(currentCount)
+            var confirmDelete = confirm(`Are you sure that you would like to delete the count \"${currentCount.description}\"?`);
             if (confirmDelete == true) {
                 deleteCount(countId)
             }
@@ -97,14 +99,14 @@ function deleteCount(countId){
 
     let clearCountFromLocalStorage = function() {
 
-        chrome.storage.local.get('expungevt', function(result) {
-            counts = result.expungevt["counts"]
+        chrome.storage.local.get('counts', function(result) {
+            counts = result.counts["counts"]
             index = counts.findIndex(x => x.uid === countId);
             counts.splice(index, 1)
-            result.expungevt["counts"] = counts
+            result.counts["counts"] = counts
 
             chrome.storage.local.set({
-                expungevt: result.expungevt
+                counts: result.counts
             });
         $('#runningCount').html(getRunningCountString(counts.length));
 
@@ -134,6 +136,19 @@ function openPetitionsPage(element) {
         })
     })
 };
+function openManagePage(element) {
+
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, tabs => {
+        let index = tabs[0].index;
+        chrome.tabs.create({
+            url: chrome.extension.getURL('./manage-counts.html'),
+            index: index + 1,
+        })
+    })
+};
 
 function confirmClearData(element) {
 
@@ -146,30 +161,18 @@ function confirmClearData(element) {
 
 function clearData() {
 
-    $('#countCards').empty()
-    $('.pet-detail').text("");
-    $('body').removeClass('active');
 
-    //get the settings object from local storage
-    chrome.storage.local.get(['expungevtSettings'], function(result) {
-
-        //clear all local storage
-        chrome.storage.local.clear(function() {
-
-            //re-save the settings object back to local storage
-            chrome.storage.local.set({
-                expungevtSettings: result.expungevtSettings
-            });
-        })
-    });
+    chrome.storage.local.remove(['counts','responses'],function(){
+        $('#countCards').empty()
+        $('.pet-detail').text("");
+        $('body').removeClass('active');
+    })
 }
 
 function resetSettings(element) {
     var confirmed = confirm("Are you sure you want to reset setting to the defaults?");
     if (confirmed == true) {
-        chrome.storage.local.set({
-            expungevtSettings: ""
-        });
+        chrome.storage.local.remove(['settings'])
     }
 };
 
@@ -187,17 +190,17 @@ function editPetitioner() {
 };
 
 function savePetitonerData() {
-    chrome.storage.local.get('expungevt', function(result) {
+    chrome.storage.local.get('counts', function(result) {
 
         //defendant info
-        result.expungevt.defName = $("#defendantName").html();
-        result.expungevt.defDOB = $("#defendantDOB").html();
+        result.counts.defName = $("#defendantName").html();
+        result.counts.defDOB = $("#defendantDOB").html();
         var address = $("#defendantAddress").html()
 
-        result.expungevt.defAddress = addressArrayFromHTML(address)
+        result.counts.defAddress = addressArrayFromHTML(address)
 
         chrome.storage.local.set({
-            expungevt: result.expungevt
+            counts: result.counts
         });
 
         function addressArrayFromHTML(addressHTMLString) {
@@ -213,10 +216,10 @@ function savePetitonerData() {
 }
 
 function getData() {
-    chrome.storage.local.get('expungevt', function(result) {
+    chrome.storage.local.get('counts', function(result) {
         console.log("getting data:" + JSON.stringify(result));
         if (JSON.stringify(result) != "{}") {
-            renderPopup(result.expungevt)
+            renderPopup(result.counts)
             $('body').addClass('active');
 
         }
@@ -225,7 +228,7 @@ function getData() {
 
 function addDocketCounts() {
 
-    chrome.storage.local.get('expungevt', function(result) {
+    chrome.storage.local.get('counts', function(result) {
         if (JSON.stringify(result) != "{}") {
             countString = 'var hasCounts = true;'
         } else {
@@ -330,7 +333,7 @@ function generateCountCardHTML(count, dob) {
         if (dispDate == "" || dispDate == null) {
             return ""
         } else {
-            return "<p class='card-header__disposition-date'> Est. Disposition: " + dispDate + "  (" + getRelativeDate(dispDate) + " ago) </p>"
+            return "<p class='card-header__disposition-date'> Est. Disposition: " + moment(dispDate).format('L') + "  (" + getRelativeDate(dispDate) + " ago) </p>"
         }
     }
 
@@ -345,7 +348,7 @@ function generateCountCardHTML(count, dob) {
 
     function getRelativeDate(date) {
 
-        let fromTime = moment(date, "M/D/YY").diff(moment(), "milliseconds")
+        let fromTime = moment(date).diff(moment(), "milliseconds")
         let duration = moment.duration(fromTime)
         let years = duration.years() / -1
         let months = duration.months() / -1
@@ -389,7 +392,7 @@ function generateCountCardHTML(count, dob) {
         let fromTime = new Date(dobArray[2], dobArray[0] - 1, dobArray[1]);
 
         dispoDate = count.dispositionDate
-        let toTime = moment(dispoDate, "MM/DD/YY")
+        let toTime = moment(dispoDate, "MM-DD-YY")
 
         ageSinceOffense = toTime.diff(fromTime, "years", true).toFixed(2);
 

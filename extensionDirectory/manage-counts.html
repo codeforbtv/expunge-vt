@@ -32,30 +32,52 @@
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Counts for {{petitioner.name}}</h1>
+                    <div class="header-bar__controls">
+                        <button v-on:click="newCount" class="btn btn-primary">New Count</button>
+                        <button v-on:click="saveCounts" class="btn btn-primary">Save</button>
+                    </div>
                 </div>
             </div>
                 <section v-for="group in saved.counts" v-bind:id="group" style="margin-top:40px;">
                     <b>{{group}}</b>
                     <br>
-                    County: <input v-model="group.county" placeholder="County"><br>
+                    County:
+                    <select v-model="group.county">
+                        <option>Addison</option>
+                        <option>Bennington</option>
+                        <option>Caledonia</option>
+                        <option>Chittenden</option>
+                        <option>Essex</option>
+                        <option>Franklin</option>
+                        <option>Grand Isle</option>
+                        <option>Lamoille</option>
+                        <option>Orange</option>
+                        <option>Orleans</option>
+                        <option>Rutland</option>
+                        <option>Washington</option>
+                        <option>Windham</option>
+                        <option>Windsor</option>
+                    </select> {{group.county}}<br>
                     Docket Number: <input v-model="group.docketNum" placeholder="Docket Num"><br>
-                    Alleged Offense Date: <input v-model="group.allegedOffenseDate" placeholder="Offense Date"><br>
-                    Arrest Citation Date: <input v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"><br>
-                    Disposition Date: <input v-model="group.dispositionDate" placeholder="Disposition Date"><br>
+                    Docket Sheet Num: {{group.docketNum}}<br>
+                    Alleged Offense Date: <input type="date" v-model="group.allegedOffenseDate" placeholder="Offense Date"><br>
+                    Arrest Citation Date: <input type="date" v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"><br>
+                    Disposition Date: <input type="date" v-model="group.dispositionDate" placeholder="Disposition Date"><br>
                     Offense Disposition: <input v-model="group.offenseDisposition" placeholder="Offense Disposition"><br>
                     Description: <input v-model="group.description" placeholder="Description"><br>
-                    Offense Class: <input v-model="group.offenseClass" placeholder="Offense Class"><br>
-                    Title & Section: <input v-model="group.titleNum" placeholder="Offense Class"> &sect; <input v-model="group.sectionNum" placeholder="Offense Class">
+                    Offense Class:
+                    <select v-model="group.offenseClass">
+                        <option value="mis">Misdemeanor</option>
+                        <option value="fel">Felony</option>
+                    </select>
+                    <br>
+                    V.S.C. Title & Section: <input v-model="group.titleNum" placeholder="Title"> &sect; <input v-model="group.sectionNum" placeholder="Section">
                     <hr>
                 </section>
-
-                <button v-on:click="newCount">New Count</button>
-                <button v-on:click="saveCounts">Save Counts</button>
             </div>
         </div>
                     <!-- End Vue App -->
         <script id='script' src="filings.js"></script>
-        <script id='script' src="csv.js"></script>
 
 </body>
 

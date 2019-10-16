@@ -42,7 +42,7 @@ function initSmoothScroll(){
 
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
-  var storageChange = changes['expungevt'];
+  var storageChange = changes['counts'];
   if (storageChange === undefined) return;
 
   if (storageChange.newValue === undefined) {
@@ -50,14 +50,7 @@ function detectChangesInLocalStorage(){
       return
   };
 
-  app.saveAndParseData(storageChange.newValue)
-  app.loadSettings(function(){})
-  app.loadResponses(function(){})
-
-
-
-
-
+  app.loadAll(function(){})
   });
 }
 
@@ -184,9 +177,6 @@ var app = new Vue({
     	defDOB: "",
     	counts: []
     },
-    filings: "",
-    ineligible:"",
-    noAction: "",
     responses: {}
   },
   watch: 
@@ -213,84 +203,72 @@ var app = new Vue({
   },
   mounted() {
   	console.log('App mounted!');
-  	chrome.storage.local.get('expungevt', function (result) {
-        //test if we have any data
-        console.log(result)
-        if (result.expungevt === undefined) return;
-        //load the data
-        
-        var data = result.expungevt
-        
-        var loadResponsesCallback = (function(){ 
-          app.saveAndParseData(data) 
-        });
-        
-        var loadSettingsCallback = (function(){
-          app.loadResponses(loadResponsesCallback);
-        })
-        console.log("beginning to load settings")
-        app.loadSettings(loadSettingsCallback);
-    });
+
+
+
+    app.loadAll();
+
+
+
   },
   methods:{
-    saveAndParseData: function(data) {
-      
-        app.saved = data
-        app.addFullDescriptionToCounts()
-        console.log(app.saved)
-        //parse the data
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts) //counts, groupCountsFromMultipleDockets=true
-        app.ineligible = app.groupIneligibleCounts(app.saved.counts);
-        app.noAction = app.groupNoAction(app.saved.counts);
-        app.$nextTick(function () {
-          app.updatePageTitle();
-          //call any vanilla js functions that need to run after vue is all done setting up.
-          initAfterVue();
-        })
-    },
     saveSettings: function(){
-      var settings = app.settings
       console.log("save settings", app.settings)
       chrome.storage.local.set({
-        expungevtSettings: settings
-
+        settings: app.settings
       });
     },
     saveResponses: function(){
-      var responses = app.responses
       console.log("save responses")
       chrome.storage.local.set({
-        expungevtResponses: responses
+        responses: app.responses
       });
     },
     saveCounts: function(){
-      alert("saving counts")
-      var save = app.saved
-      console.log(JSON.stringify(save))
+      console.log("saving counts")
         chrome.storage.local.set({
-          expungevt: save
+          counts: app.saved
         });
     },
-    loadSettings: function(callback){
-      console.log("load settings")
-      chrome.storage.local.get('expungevtSettings', function (result) {
-        //test if we have any data
-          console.log("loading settings", result)
+    loadAll: function(callback){
 
-        if (result.expungevtSettings !== undefined && result.expungevtSettings !== "") {
+        chrome.storage.local.get(function (result) {
+        //test if we have any data
+          console.log("loading all");
+          if (result.settings !== undefined && result.settings !== "") {
+              app.settings = result.settings
+          }
+          if (result.responses !== undefined) {
+              app.responses = result.responses
+          }
+          if (result.counts !== undefined) {
+              app.saved = result.counts
+              app.addFullDescriptionToCounts()
+          }
+          callback();
+          app.$nextTick(function () {
+            app.updatePageTitle();
+            //call any vanilla js functions that need to run after vue is all done setting up.
+            initAfterVue();
+          })
+        })
+    },
+    loadSettings: function(callback){
+      chrome.storage.local.get('settings', function (result) {
+        //test if we have any data
+        if (result.settings !== undefined && result.settings !== "") {
           //load the data
-          var settings = result.expungevtSettings
-          app.settings = settings; 
+          app.settings = result.settings; 
         }
         callback();
       });
     },
     loadResponses: function(callback){
-      chrome.storage.local.get('expungevtResponses', function (result) {
+      chrome.storage.local.get('responses', function (result) {
         //test if we have any data
-        if (result.expungevtResponses !== undefined) {
+        if (result.responses !== undefined) {
           //load the data
-          var responses = result.expungevtResponses
+          var responses = result.responses
           app.responses = responses; 
         } else {
           app.responses = {};
@@ -568,8 +546,8 @@ var app = new Vue({
       }
     },
     newCount: function(event){
-      alert("new count added");
-      this.saved.counts.push({ description: 'Baz' })
+      this.saved.counts.push({ description: 'Count' })
+
 
     },
     updatePageTitle: function(){
@@ -613,6 +591,19 @@ var app = new Vue({
   		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress)),
       addressString: this.saved.defAddress.join(", ")
   	  }
+    },
+    filings: function (){
+      var shouldGroupCounts = true;
+      if (app.settings.groupCounts !== undefined) {
+        group = app.settings.groupCounts;
+      }
+      return  app.groupCountsIntoFilings(app.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
+    },
+    ineligible: function(){
+      return app.groupIneligibleCounts(app.saved.counts);
+    },
+    noAction: function(){
+      return app.groupNoAction(app.saved.counts);
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
