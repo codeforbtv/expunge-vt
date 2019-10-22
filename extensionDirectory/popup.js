@@ -1,17 +1,10 @@
 let loadedMessage;
 
-getData();
 initButtons();
 initListeners();
 
 function initButtons() {
-    $("[data-add-counts]").click(addDocketCounts)
-    $("[data-edit]").click(editPetitioner)
-    $("[data-edit-counts]").click(openManagePage)
-    $("[data-generate]").click(openPetitionsPage)
-    $("[data-clear]").click(confirmClearData)
     $("[data-reset]").click(resetSettings)
-
 }
 
 function initListeners() {
@@ -22,34 +15,10 @@ function initListeners() {
         console.log("newData: "+ JSON.stringify(newData))
         chrome.storage.local.get('counts', function(result) {
             combinedData = appendDataWithConfirmation(newData, result.counts)
-            renderPopup(combinedData)
             chrome.storage.local.set({
                 counts: combinedData
             });
         $('body').addClass('active');
-        });
-    });
-
-    //Update chrome storage when a petition is selected
-    $('body').on('change', 'select.petitionSelect', function(event) {
-
-        console.log(event.target)
-
-        selectID = this.id
-        filingType = this.value
-        chrome.storage.local.get('counts', function(result) {
-            console.log("select-fetch: "+JSON.stringify(result))
-            for (i = 0; i < result.counts["counts"].length; i++) {
-                countID = "select" + result.counts["counts"][i].uid;
-                if (countID === selectID) {
-                    result.counts["counts"][i]["filingType"] = filingType
-                }
-            }
-            console.log("select-fetch-updated: "+JSON.stringify(result))
-
-            chrome.storage.local.set({
-                counts: result.counts
-            });
         });
     });
 
@@ -95,14 +64,6 @@ function confirmDeleteCount(countId) {
 }
 
 function deleteCount(countId){
-
-    let clearCountFromPopup = function() {
-        headingID = "#heading" + countId;
-        collapseID = "#collapse" + countId;
-        $(headingID).remove();
-        $(collapseID).remove();
-    }
-
     let clearCountFromLocalStorage = function() {
 
         chrome.storage.local.get('counts', function(result) {
@@ -114,66 +75,14 @@ function deleteCount(countId){
             chrome.storage.local.set({
                 counts: result.counts
             });
-        $('#runningCount').html(getRunningCountString(counts.length));
-
         });
-
     }
-
-    clearCountFromPopup()
     clearCountFromLocalStorage()
-
 }
 
-function getRunningCountString(countLength) {
-    return "Counts (" + countLength +")"
-}
-
-function openPetitionsPage(element) {
-
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, tabs => {
-        let index = tabs[0].index;
-        chrome.tabs.create({
-            url: chrome.extension.getURL('./filings.html'),
-            index: index + 1,
-        })
-    })
-};
-function openManagePage(element) {
-
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, tabs => {
-        let index = tabs[0].index;
-        chrome.tabs.create({
-            url: chrome.extension.getURL('./manage-counts.html'),
-            index: index + 1,
-        })
-    })
-};
-
-function confirmClearData(element) {
-
-    var r = confirm("Are you sure you want to clear all data for this petitioner?");
-    if (r == true) {
-
-        clearData()
-    }
-};
-
-function clearData() {
 
 
-    chrome.storage.local.remove(['counts','responses'],function(){
-        $('#countCards').empty()
-        $('.pet-detail').text("");
-        $('body').removeClass('active');
-    })
-}
+
 
 function resetSettings(element) {
     var confirmed = confirm("Are you sure you want to reset setting to the defaults?");
@@ -181,77 +90,6 @@ function resetSettings(element) {
         chrome.storage.local.remove(['settings'])
     }
 };
-
-function editPetitioner() {
-    var value = $('.pet-detail').attr('contenteditable');
-    if (value == 'false') {
-        $("[data-edit]").html("Save");
-        $('.pet-detail').attr('contenteditable', 'true');
-    } else {
-        $("[data-edit]").html("Edit");
-        $('.pet-detail').attr('contenteditable', 'false');
-
-        savePetitonerData();
-    }
-};
-
-function savePetitonerData() {
-    chrome.storage.local.get('counts', function(result) {
-
-        //defendant info
-        result.counts.defName = $("#defendantName").html();
-        result.counts.defDOB = $("#defendantDOB").html();
-        var address = $("#defendantAddress").html()
-
-        result.counts.defAddress = addressArrayFromHTML(address)
-
-        chrome.storage.local.set({
-            counts: result.counts
-        });
-
-        function addressArrayFromHTML(addressHTMLString) {
-            addressHTMLString = $("#defendantAddress").html().replace(/<\/div>/g, "<br>")
-            addressHTMLString = addressHTMLString.replace(/<div>/g, "<br>")
-            addressHTMLString = addressHTMLString.split('<br>')
-            var array = addressHTMLString.filter(function(el) {
-                return el != "";
-            });
-            return array
-        }
-    });
-}
-
-function getData() {
-    chrome.storage.local.get('counts', function(result) {
-        console.log("getting data:" + JSON.stringify(result));
-        if (JSON.stringify(result) != "{}") {
-            renderPopup(result.counts)
-            $('body').addClass('active');
-
-        }
-    });
-}
-
-function addDocketCounts() {
-    chrome.tabs.executeScript(null, { file: 'payload.js' });
-};
-
-
-function renderPopup(allData) {
-    //defendant info
-
-    $('#defendantName').html(allData.defName);
-    $('#defendantDOB').html(allData.defDOB);
-    $('#defendantAddress').html(allData.defAddress.join("<br>"));
-    $('#countCards').empty();
-    $('#runningCount').html(getRunningCountString(allData.counts.length));
-
-    for (countIndex in allData.counts) {
-        count = allData.counts[countIndex]
-        $('#countCards').append(generateCountCardHTML(count, allData.defDOB));
-        $("#select" + count.uid).val(count.filingType);
-    }
-}
 
 function generateCountCardHTML(count, dob) {
     return (`
@@ -369,9 +207,7 @@ function generateCountCardHTML(count, dob) {
         }
     }
 
-
     function dispositionColor() {
-        console.log(count,count.offenseDisposition)
         var dispositionNormalized = count.offenseDisposition.toLowerCase();
         if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
             return "pill--outline-green"
@@ -413,32 +249,24 @@ function generateCountCardHTML(count, dob) {
 
 
 function appendDataWithConfirmation(newData, oldData) {
-    console.log("new" + JSON.stringify(newData),"old" + JSON.stringify(oldData))
 
+    //if there is no old data, then the new data is what we'll use
     if (oldData === undefined) {
         return newData
     }
+    //if the petitioner is not the same, we'll use the old data
     if (!isSamePetitioner()) 
     {
         return oldData
     }
 
-    function isSamePetitioner(){
-        var oldName = oldData["defName"];
-        var newName = newData["defName"];
-        if (oldName != newName) {
-            return confirm(`"The name on the counts you are trying to add is ${newName}, which is not the same as ${oldName}. Are you sure you want to continue?`);
-        }
-        return true
-    }
-
     var returnData = oldData
-
     var newCounts = newData.counts
 
     for (count in newCounts) {
         var currentCount = newCounts[count]
-        if (oldData.counts.filter(count => count.uid === currentCount.uid).length > 0) {
+        console.log(currentCount.uid)
+        if (oldData.counts.filter(count => count.uid === currentCount.uid).length = 0) {
             returnData.counts.push(currentCount)
         }
     }
@@ -450,12 +278,23 @@ function appendDataWithConfirmation(newData, oldData) {
     }
 
     return returnData
+
+
+    function isSamePetitioner(){
+        var oldName = oldData["defName"];
+        var newName = newData["defName"];
+        if (oldName != newName) {
+            return confirm(`"The name on the counts you are trying to add is ${newName}, which is not the same as ${oldName}. Are you sure you want to continue?`);
+        }
+        return true
+    }
 }
  
 
 function getPetitionerInfo(rawData) {
 
     console.log("gettingPetitionerInfo")
+    
     //Get Defendant Name
     nameLocation = nthIndex(rawData, "Defendant:", 1) + 15
     nameLocationEnd = nthIndex(rawData, "DOB:", 1) - 40
@@ -490,7 +329,7 @@ function getPetitionerInfo(rawData) {
     parsedData = {
         "defName": defName,
         "defDOB": defDOB,
-        "defAddress": addressArray,
+        "defAddress": addressArray.join('\n'),
         "counts": getCountInfo(rawData),
     }
 
@@ -565,8 +404,6 @@ function processCountLine1(countLine1, countNum, rawData) {
     //find location of fel/mis
     felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
-
-
     //get section string(s)
     for (j = 5; j < felMisLocation; j++) {
         if (j === 5) {
@@ -630,7 +467,6 @@ function processCountLine1(countLine1, countNum, rawData) {
         offenseDateLocationEnd = offenseDateLocation - 8
         allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd);
         countObject["allegedOffenseDate"] = allegedOffenseDate.trim();
-        console.log("allegedOffenseDate: " + allegedOffenseDate.trim())
 
     }
     catch (err) {
@@ -701,7 +537,6 @@ function countyCodeFromCounty(county) {
     }
     return countyCodes[county]
 }
-
 
 function guid() {
     function s4() {

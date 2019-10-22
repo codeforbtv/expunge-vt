@@ -4,19 +4,18 @@ Vue.config.devtools = true
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
-    initSmoothScroll();
-    detectChangesInLocalStorage();
+    //initSmoothScroll();
 }, false);
 
 function initAfterVue(){
   //sets intital height of all text areas to show all text.
   setInitialExpandForTextAreas();
-  initScrollDetection()
+  //initScrollDetection()
 }
 
 function initAfterFilingRefresh(){
   setInitialExpandForTextAreas();
-  initScrollDetection();
+  //initScrollDetection();
 }
 
 function initTextAreaAutoExpand(){
@@ -32,28 +31,26 @@ function initButtons(){
     if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
   }, false);
 }
-
+/*
 function initSmoothScroll(){
   var scroll = new SmoothScroll('a[href*="#"]',{
     offset: 150,
     durationMax: 300
   });
 }
-
+*/
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
   var storageChange = changes['counts'];
   if (storageChange === undefined) return;
-
   if (storageChange.newValue === undefined) {
       app.clearAll();
       return
   };
-
-  app.loadAll(function(){})
+    app.loadAll(function(){})
   });
 }
-
+/*
 function initScrollDetection() {
   //initates the scrollspy for the filing-nav module.
   var spy = new Gumshoe('#filing-nav a',{
@@ -63,7 +60,7 @@ function initScrollDetection() {
       reflow: true, // if true, listen for reflows
     });
 }
-
+*/
 function setInitialExpandForTextAreas(){
   //sets the default size for all text areas based on their content.
   //call this after vue has initialized and displayed
@@ -190,12 +187,23 @@ var app = new Vue({
     'settings': {
       handler(){
         console.log("settings updated")
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts);
-        app.saveSettings()
+        this.saveSettings()
         app.$nextTick(function () 
         {
         //call any vanilla js functions after update.
-          initAfterFilingRefresh();
+          //initAfterFilingRefresh();
+        })
+      },
+      deep:true
+    },
+    'saved': {
+      handler(){
+        console.log("counts updated")
+        this.saveCounts()
+        app.$nextTick(function () 
+        {
+        //call any vanilla js functions after update.
+          //initAfterFilingRefresh();
         })
       },
       deep:true
@@ -203,12 +211,8 @@ var app = new Vue({
   },
   mounted() {
   	console.log('App mounted!');
-
-
-
-    app.loadAll();
-
-
+    this.loadAll();
+    detectChangesInLocalStorage();
 
   },
   methods:{
@@ -232,49 +236,37 @@ var app = new Vue({
     },
     loadAll: function(callback){
 
+      if (callback === undefined){
+        callback = function(){}
+      }
+
         chrome.storage.local.get(function (result) {
         //test if we have any data
           console.log("loading all");
-          if (result.settings !== undefined && result.settings !== "") {
-              app.settings = result.settings
-          }
-          if (result.responses !== undefined) {
-              app.responses = result.responses
-          }
+          console.log(JSON.stringify(result))
           if (result.counts !== undefined) {
               app.saved = result.counts
               app.addFullDescriptionToCounts()
           }
+          if (result.settings !== undefined && result.settings !== "") {
+            console.log("settings found")
+            console.log(JSON.stringify(result.settings))
+            Vue.set(app, "settings", result.settings)
+          } else {
+            console.log("No settings found, saving default settings")
+            this.saveSettings()
+          }
+          if (result.responses !== undefined) {
+              app.responses = result.responses
+          }
+          
           callback();
           app.$nextTick(function () {
             app.updatePageTitle();
             //call any vanilla js functions that need to run after vue is all done setting up.
-            initAfterVue();
+            //initAfterVue();
           })
         })
-    },
-    loadSettings: function(callback){
-      chrome.storage.local.get('settings', function (result) {
-        //test if we have any data
-        if (result.settings !== undefined && result.settings !== "") {
-          //load the data
-          app.settings = result.settings; 
-        }
-        callback();
-      });
-    },
-    loadResponses: function(callback){
-      chrome.storage.local.get('responses', function (result) {
-        //test if we have any data
-        if (result.responses !== undefined) {
-          //load the data
-          var responses = result.responses
-          app.responses = responses; 
-        } else {
-          app.responses = {};
-        }
-        callback();
-      });
     },
     groupCountsIntoFilings: function(counts, groupDockets = true){
       
@@ -405,7 +397,6 @@ var app = new Vue({
       return allCounts.filter((v, i, a) => a.indexOf(v) === i)
     },
     allDocketNumsObject: function (counts){
-
       allDocketNums = counts.map(function(count) {
         return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
       });
@@ -547,8 +538,6 @@ var app = new Vue({
     },
     newCount: function(event){
       this.saved.counts.push({ description: 'Count' })
-
-
     },
     updatePageTitle: function(){
       var title = "Filings for "+this.petitioner.name
@@ -581,62 +570,100 @@ var app = new Vue({
     },
     slugify: function(string) {
       return string.replace(/\s+/g, '-').toLowerCase();
-    }
+    },
+  
+    openPetitionsPage: function() {
+
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, tabs => {
+          let index = tabs[0].index;
+          chrome.tabs.create({
+              url: chrome.extension.getURL('./filings.html'),
+              index: index + 1,
+          })
+      })
+    },
+    openManagePage: function (element) {
+
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, tabs => {
+            let index = tabs[0].index;
+            chrome.tabs.create({
+                url: chrome.extension.getURL('./manage-counts.html'),
+                index: index + 1,
+            })
+        })
+      },
+  
+   addDocketCounts: function() {
+    chrome.tabs.executeScript(null, { file: 'payload.js' });
   },
+  confirmClearData: function (element) {
+
+    if (confirm("Are you sure you want to clear all data for this petitioner?"));
+    {
+        chrome.storage.local.remove(['counts','responses'])
+    }
+  }
+},
   computed: {
   	petitioner: function () {
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
-  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress)),
-      addressString: this.saved.defAddress.join(", ")
+  		address: this.nl2br(this.saved.defAddress)
+      //addressString: this.saved.defAddress.join(", ")
   	  }
     },
     filings: function (){
       var shouldGroupCounts = true;
-      if (app.settings.groupCounts !== undefined) {
-        group = app.settings.groupCounts;
+      if (this.settings.groupCounts !== undefined) {
+        group = this.settings.groupCounts;
       }
-      return  app.groupCountsIntoFilings(app.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
+      return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
     },
     ineligible: function(){
-      return app.groupIneligibleCounts(app.saved.counts);
+      return this.groupIneligibleCounts(this.saved.counts);
     },
     noAction: function(){
-      return app.groupNoAction(app.saved.counts);
+      return this.groupNoAction(app.saved.counts);
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
     },
     countsExpungedNC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
+      return this.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
     },
     countsExpungedC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
+      return this.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
     },
     countsExpungedNCrim: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
+      return this.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
     },
     countsSealC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
+      return this.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
     },
     countsSealDui: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
+      return this.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
     },
     numDockets: function(){
-      var numDockets = app.saved.counts.filter((e, i) => {
-        return app.saved.counts.findIndex((x) => {
+      var numDockets = this.saved.counts.filter((e, i) => {
+        return this.saved.counts.findIndex((x) => {
         return x.docketNum == e.docketNum && x.county == e.county;}) == i;
       });
       return numDockets.length
     },
     csvFilename:function(){
       var date = new Date()
-      return app.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
+      return this.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
     },
     csvData:function(){
 
-      return app.saved.counts.map(function(count) {
+      return this.saved.counts.map(function(count) {
         return {
           Petitioner_Name: app.petitioner["name"], 
           Petitioner_DOB: app.petitioner.dob, 
@@ -665,6 +692,25 @@ var app = new Vue({
       if (!value) return ''
       value = value.toString()
       return value.charAt(0).toLowerCase() + value.slice(1)
+    },
+    sinceNow: function (value) {
+    if (!value) return ''
+    
+    let fromTime = moment(value).diff(moment(), "milliseconds")
+    let duration = moment.duration(fromTime)
+    let years = duration.years() / -1
+    let months = duration.months() / -1
+    let days = duration.days() / -1
+    if (years > 0) {
+        var Ys = years == 1 ? years + "y " : years + "y "
+        var Ms = months == 1 ? months + "m " : months + "m "
+        return Ys + Ms
+    } else {
+        if (months > 0)
+            return months == 1 ? months + "m " : months + "m "
+        else
+            return days == 1 ? days + "d " : days + "d "
     }
+  }
   }
 });

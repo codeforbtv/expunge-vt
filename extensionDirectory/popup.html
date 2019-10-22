@@ -17,18 +17,24 @@
     <!-- Moment -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
+
+
+
 </head>
 
-<body class="">
-    <div id="coverDiv" class="empty-state">
+<body>
+    <div id="filing-app">
+    <div id="coverDiv" class="empty-state" v-if="saved.counts.length == 0">
         <div id="logoDivCover">
             <img id="code4btv" src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
             <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
         <div class="inset text-center button-div">
-            <button data-add-counts class="add-docket-info btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button data-edit-counts class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
-            <button data-generate class="generate-documents btn btn-success" disabled>Generate Documents <i class="fas fa-external-link-alt"></i></button>
+            <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openManagePage" class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
+            <button class="generate-documents btn btn-success" disabled>Generate Documents <i class="fas fa-external-link-alt"></i></button>
 
         </div>
         <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
@@ -37,28 +43,27 @@
             <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
         </a>
     </div>
-<div class="active-state">
+<div class="active-state" v-else>
     <div class="popTop">
         <div id="defendantInfo">
             <div class="pet-item">
                 <p class="section-label">Petitioner Information</p>
-                <button data-edit class="btn btn-outline-secondary">Edit</button>
             </div>
             <div class="pet-item">
                 <p class="pet-label">Name:</p>
-                <p class="pet-detail" id='defendantName' contenteditable="false"></p>
+                <input v-model="saved.defName">
             </div>
             <div class="pet-item">
                 <p class="pet-label">DOB:</p>
-                <p class="pet-detail" id='defendantDOB' contenteditable="false"></p>
+                <input v-model="saved.defDOB">
             </div>
             <div class="pet-item">
                 <p class="pet-label">Address:</p>
-                <p class="pet-detail" id='defendantAddress' contenteditable="false"></p>
+                <textarea v-model="saved.defAddress"></textarea>
             </div>
         </div>
         <div id="logoDiv">
-            <button data-clear class="clear-data btn btn-outline-secondary">Clear All</button>
+            <button v-on:click="confirmClearData" class="clear-data btn btn-outline-secondary">Clear All</button>
             <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
             <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
@@ -66,20 +71,92 @@
 
     <div class="popTop inset text-center bottom-div">
         <div class="inset text-center button-div">
-            <button data-add-counts class="btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button data-edit-counts class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
-            <button data-generate class="btn btn-success">Generate Documents <i class="fas fa-external-link-alt"></i></button>
+            <button v-on:click="addDocketCounts" class="btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openPetitionsPage" class="btn btn-success">Generate Documents <i class="fas fa-external-link-alt"></i></button>
         </div>
     </div>
-    <p id="runningCount" class="section-label">Counts</p>
+    <p id="runningCount" class="section-label">Counts ({{saved.counts.length}})</p>
     <hr>
-    <div id="countCards" class="count-cards accordion inset text-center"></div>
+    <div id="countCards" class="count-cards accordion inset text-center">
+    <!-- begin card -->
+
+        <div class="card" v-for="count in saved.counts">
+        <div class="card-header" v-bind:id="count.uid" type="button" data-toggle="collapse" aria-expanded="false">
+                <div class="card-header__column">
+                    <div class="card-header__title-row">
+                        <div id="description-date" class="card-header__meta-data">
+                        <button class="card-header__description btn btn-link btn-sm" >
+                            <p>{{count.description}}</p>
+                         </button>
+                         <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate}} ({{count.dispositionDate | sinceNow}} ago)</p>
+
+                        </div>
+                        <div class="card-header__select">
+                            <select v-model="count.filingType" class="petitionSelect selectpicker">
+                                <option value="">No Filing</option>
+                                <option value="X">Ineligible</option>
+                                <option value="ExC">Expunge Conviction</option>
+                                <option value="ExNC">Expunge Non-Conviction</option>
+                                <option value="ExNCrim">Expunge Non-Criminal</option>
+                                <option value="SC">Seal Conviction</option>
+                                <option value="SDui">Seal DUI</option>
+                                <option value="StipExC">(Stip) Expunge Conviction</option>
+                                <option value="StipExNC">(Stip) Expunge Non-Conviction</option>
+                                <option value="StipExNCrim">(Stip) Expunge Non-Criminal</option>
+                                <option value="StipSC">(Stip) Seal Conviction</option>
+                                <option value="StipSDui">(Stip) Seal DUI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-header__bottom-row">
+                        <div class="card-header__pills-row">
+                            <span class="pill pill--rounded ${offenseTypeColor()}">
+                                {{count.offenseClass}}
+                            </span>
+                            <span class="pill pill--rounded ${dispositionColor()}">
+                                {{count.offenseDisposition}}
+                            </span>
+                        </div>
+                        <i id="del" class="fas fa-folder-minus countDeleter"></i>
+                    </div>
+                </div>
+        </div>
+
+        <div class="collapse">
+            <div class="card-body">
+                <p><b>Desc: </b>{{count.description.trim()}}</p>
+                <p><b>Statute: </b>{{count.titleNum}} V.S.A. &sect {{count.sectionNum}} ({{count.offenseClass}})</p>
+                <p><b>Disposition: </b>{{count.offenseDisposition}}</p>
+                <table class="table">
+                    <thead class="">
+                        <th scope="col">Alleged Offense Date</th>
+                        <th scope="col">Arrest / Citation Date</th>
+                        <th scope="col">Disposition Date</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{count.allegedOffenseDate}}</td>
+                            <td>{{count.arrestCitationDate}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </div>
+    <!-- end card -->
+
+
+    </div>
     <hr>
     <div id="bottomText" class="inset text-center bottom-div">
         <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid. <span class="reset-settings" data-reset><b>Reset Settings</b></span></p>
     </div>
 
+    </div>
 </div>
     <script id='script' src="popup.js"></script>
+        <script id='script' src="filings.js"></script>
+
 </body>
 </html>
