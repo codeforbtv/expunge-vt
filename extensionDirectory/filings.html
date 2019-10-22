@@ -28,8 +28,7 @@
     <!-- Begin Vue App -->
 
     <div id="filing-app">
-
-        <template v-if="filings || ineligible">
+        <template v-if="saved.counts.length > 0 && (filings || ineligible)">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
