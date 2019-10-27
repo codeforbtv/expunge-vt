@@ -527,10 +527,8 @@
                                                 </div>
                                             </div>
                                                 <div class="county-header" v-for="group in filings">
-                                                    {{group}}
                                                     <b>We found and reviewed {{group.filings[0].numCounts}} count(s) in {{group.county}} County:</b>
                                                 <div v-for="filing in group.filings" v-if="filing.type !='NoA'">
-                                                    {{filing.type}}
                                                     <filing-type-heading v-if="filing.numCounts > 0" v-bind:heading="filing.type"></filing-type-heading>
                                                     <ul>
                                                         <li v-for="count in filing.counts">

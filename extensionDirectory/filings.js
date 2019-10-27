@@ -397,7 +397,6 @@ var app = new Vue({
             }
           }
         }
-
         //add all filings for this county to the returned filing object.
         groupedFilings.push(
           {county:countyName,
