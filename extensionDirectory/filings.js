@@ -1,6 +1,15 @@
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true
 
+$(document).on('keydown', function(e) { 
+  if((e.ctrlKey || e.metaKey) && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+      alert("Please use the 'Print All' button at the top right to ensure proper processing.");
+      e.cancelBubble = true;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+  }  
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     initButtons();
     initTextAreaAutoExpand();
@@ -139,7 +148,10 @@ Vue.component('filing-nav', {
           <a href="#extra-documents">Extra Documents</a>
           <ol>
             <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Clinic Summary Sheet</a>
+              <a href="#clinic-checkout">Clinic Record</a>
+            </li>
+            <li class="filing-nav__child-link">
+              <a href="#client-checkout">Client Summary Sheet</a>
             </li>
           </ol>
         </li>

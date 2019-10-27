@@ -301,9 +301,21 @@ p.filing-dated-city {
     border-bottom: 1.5px solid #000;
 }
 
+/* CHeckout sheet */
 
+.client-checkout-header-left {
+    width: 40%;
+    margin-right: 10px;
+}
+.client-checkout-header-right {
+    width: 55%;
+}
 
-
+.pro-se {
+    outline: 2px solid black;
+    font-size: 18px !important;
+    padding: 3px;
+}
 
 @media screen {
     body {
