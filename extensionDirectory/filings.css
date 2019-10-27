@@ -317,6 +317,16 @@ p.filing-dated-city {
     padding: 3px;
 }
 
+.county-header {
+    border-top: 3px solid black;
+    border-bottom: 1px solid black;
+    margin-bottom: 3px;
+}
+
+.atty-note-box {
+    border-bottom: 1px solid black;
+}
+
 .client-text {
     width: 80% !important;
 }

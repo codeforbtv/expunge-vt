@@ -526,83 +526,27 @@
                                                     This is a summary of all expungement or sealing activity carried out today. If action was not taken on any VT criminal counts, it is noted here as well. Please review carefully and be sure to follow up where needed. <b>NOTE, this sheet DOES NOT necessarily include your entire criminal history.</b> Contact Legal Aid if you have additional questions.
                                                 </div>
                                             </div>
-                                            <attorney-notes scope="col" colspan=4 v-if="countsExpungedC.length > 0" v-bind:heading="'These are your convictions. We have created petitions to expunge these'"></attorney-notes>
-                                            <dl>
-                                                <client-col-headings scope="col" colspan=4></client-col-headings>
-                                                <table class="table summary-table">
-                                                    <tbody>
-                                                        <tr v-for="filing in countsExpungedC">
-                                                            <td>{{filing.description}}
-                                                                <p v-if="isStipulated(filing.filingType)">(The State agreed to our expunge request)</p>
-                                                            </td>
-                                                            <td Colspan="2">{{filing.offenseDisposition}} - {{filing.dispositionDate}}
-                                                            </td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                        <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
-                                                            NON-CONVICTION petitions drafted...
-                                                        </th>
-                                                        <tr v-for="filing in countsExpungedNC">
-                                                            <td>{{filing.description}}
-                                                                <p v-if="isStipulated(filing.filingType)">(The State
-                                                                    agreed to our expunge request)</p>
-                                                            </td>
-                                                            <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                        <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
-                                                            NON-CRIME petitions drafted...
-                                                        </th>
-                                                        <tr v-for="filing in countsExpungedNCrim">
-                                                            <td>{{filing.description}}
-                                                                <p v-if="isStipulated(filing.filingType)">(The State
-                                                                    agreed to our expunge request)</p>
-                                                            </td>
-                                                            <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                        <th scope="col" Colspan="3" v-if="countsSealC.length > 0">
-                                                            SEALED petitions drafted...</th>
-                                                        <tr v-for="filing in countsSealC">
-                                                            <td>{{filing.description}}
-                                                                <p v-if="isStipulated(filing.filingType)">(The State
-                                                                    agreed to our request to seal)</p>
-                                                            </td>
-                                                            <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                        <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">
-                                                            SEALED DUI petitions drafted...</th>
-                                                        <tr v-for="filing in countsSealDui">
-                                                            <td>{{filing.description}}
-                                                                <p v-if="isStipulated(filing.filingType)">(The State
-                                                                    agreed to our request to seal)</p>
-                                                            </td>
-                                                            <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                        <th scope="col" Colspan="3" v-if="ineligible.length > 0">
-                                                            INELIGIBLE counts...</th>
-                                                        <tr v-for="filing in ineligible">
-                                                            <td><span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                            </td>
-                                                            <td>{{filing.dispositionDate}}</td>
-                                                            <td>{{filing.offenseDisposition}}</td>
-                                                            <td v-html="filing.docketNum + ' ' + filing.docketCounty">
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </dl>
+                                                <div class="county-header" v-for="group in filings">
+                                                    {{group}}
+                                                    <b>We found and reviewed {{group.filings[0].numCounts}} count(s) in {{group.county}} County:</b>
+                                                <div v-for="filing in group.filings" v-if="filing.type !='NoA'">
+                                                    {{filing.type}}
+                                                    <filing-type-heading v-if="filing.numCounts > 0" v-bind:heading="filing.type"></filing-type-heading>
+                                                    <ul>
+                                                        <li v-for="count in filing.counts">
+                                                            You were charged with {{count.description}}. 
+                                                            <p>
+                                                                Docket note: "{{count.offenseDisposition}}" - {{count.dispositionDate}}.
+                                                            </p>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="atty-note-box">
+                                                        <p class="no-visible"></p>
+                                                        Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
+                                                    </div>
+                                                </div>
+                                            </div>      
+                                                
                                         </div>
                                     </div>
                                 </article>

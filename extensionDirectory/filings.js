@@ -179,30 +179,33 @@ Vue.component('filing-dated-city', {
   `)
 });
 
-Vue.component('attorney-notes', {
+Vue.component('filing-type-heading', {
+  methods: {
+  getCheckoutPhrases(fType) {
+    checkoutPhrases=[
+      {type: "ExC", stipType: "StipExC", phrase: "These are prior convictions. We prepared a petition to expunge these."},
+      {type: "ExNC", stipType: "StipExNC", phrase: "These are cases the DID NOT result in a conviction. We prepared a petition to expunge these."},
+      {type: "ExNCrim", stipType: "StipExNCrim", phrase: "These are counts that are no longer crimes. We prepared a petition to expunge these."},
+      {type: "SC", stipType: "StipSC", phrase: "These are prior convictions that we are trying to seal instead of expunge."},
+      {type: "SDui", stipType: "StipSDui", phrase: "This is a prior DUI conviction. We prepared a petition to seal this."},
+      {type: "x", stipType: "x", phrase: "These are counts that we did not file any petitions for today. Future filing may be possible under current or future law. The notes section below may provide further explanation."}
+    ]
+
+    for (i = 0; i<checkoutPhrases.length; i++) {
+      if (checkoutPhrases[i]["type"] == fType || checkoutPhrases[i]["stipType"] == fType) {
+        return checkoutPhrases[i]["phrase"]
+      }
+    }
+    console.log(checkoutPhrases)
+  }},
   template: (`
   <div>
       <p>
-        {{heading}}
+        {{getCheckoutPhrases(heading)}}
       </p>
-    <div>
-      <p class="no-visible"></p>
-      Attorney Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
-    </div>
   </div>
   `),
   props: ['heading']
-});
-
-Vue.component('client-col-headings', {
-  template: (`
-    <thead class="">
-        <col width="300">
-        <th scope="col">Desc.</th>
-        <th scope="col" Colspan=2>How did the case end?</th>
-        <th scope="col">Docket #</th>
-    </thead>
-  `)
 });
 
 //Vue app
