@@ -179,6 +179,32 @@ Vue.component('filing-dated-city', {
   `)
 });
 
+Vue.component('attorney-notes', {
+  template: (`
+  <div>
+      <p>
+        {{heading}}
+      </p>
+    <div>
+      <p class="no-visible"></p>
+      Attorney Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
+    </div>
+  </div>
+  `),
+  props: ['heading']
+});
+
+Vue.component('client-col-headings', {
+  template: (`
+    <thead class="">
+        <col width="300">
+        <th scope="col">Desc.</th>
+        <th scope="col" Colspan=2>How did the case end?</th>
+        <th scope="col">Docket #</th>
+    </thead>
+  `)
+});
+
 //Vue app
 var app = new Vue({
   el: '#filing-app',

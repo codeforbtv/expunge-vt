@@ -317,6 +317,14 @@ p.filing-dated-city {
     padding: 3px;
 }
 
+.client-text {
+    width: 80% !important;
+}
+
+.summary-table td {
+    padding: 3px !important;
+}
+
 @media screen {
     body {
         margin: 0;
