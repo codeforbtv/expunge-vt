@@ -544,7 +544,23 @@
                                                     </div>
                                                 </div>
                                             </div>      
-                                                
+                                            <div scope="col" Colspan="3" v-if="ineligible.length > 0">
+                                                <p>
+                                                    <b>Ineligible / No Filing</b>
+                                                </p>
+                                                <p>
+                                                    You had {{ineligible.length}} count(s) that we did not file anything for today. Future filing may be possible under current law or later enacted laws. The notes section below may provide further explanation."
+                                                </p>
+                                                <ul>
+                                                    <li v-for="filing in ineligible">
+                                                        In <b>{{filing.county}}</b> county, you were charged with {{filing.description}}. On {{filing.dispositionDate}}, the docket notes "{{filing.offenseDisposition}}." (Docket#  {{filing.docketNum}} {{filing.docketCounty}})
+                                                    </li>
+                                                </ul> 
+                                                <div class="atty-note-box">
+                                                    <p class="no-visible"></p>
+                                                    Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
+                                                </div>                                        
+                                            </div>
                                         </div>
                                     </div>
                                 </article>
