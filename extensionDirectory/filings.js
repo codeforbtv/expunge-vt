@@ -183,12 +183,11 @@ Vue.component('filing-type-heading', {
   methods: {
   getCheckoutPhrases(fType) {
     checkoutPhrases=[
-      {type: "ExC", stipType: "StipExC", phrase: "These are prior convictions. We prepared a petition to expunge these."},
-      {type: "ExNC", stipType: "StipExNC", phrase: "These are cases the DID NOT result in a conviction. We prepared a petition to expunge these."},
-      {type: "ExNCrim", stipType: "StipExNCrim", phrase: "These are counts that are no longer crimes. We prepared a petition to expunge these."},
-      {type: "SC", stipType: "StipSC", phrase: "These are prior convictions that we are trying to seal instead of expunge."},
-      {type: "SDui", stipType: "StipSDui", phrase: "This is a prior DUI conviction. We prepared a petition to seal this."},
-      {type: "x", stipType: "x", phrase: "These are counts that we did not file any petitions for today. Future filing may be possible under current or future law. The notes section below may provide further explanation."}
+      {type: "ExC", stipType: "StipExC", phrase: "The following are prior conviction(s) for which we prepared a petition to expunge:"},
+      {type: "ExNC", stipType: "StipExNC", phrase: "The following are cases that DID NOT result in a conviction and for which prepared a petition to expunge:"},
+      {type: "ExNCrim", stipType: "StipExNCrim", phrase: "The following are counts that are no longer crimes for which we prepared a petition to expunge:"},
+      {type: "SC", stipType: "StipSC", phrase: "THe following are prior convictions for which a petition to seal made the most sense instead of expunge:"},
+      {type: "SDui", stipType: "StipSDui", phrase: "The following is a prior DUI conviction for which we we filed a petition to seal as that is the only available option:"}
     ]
 
     for (i = 0; i<checkoutPhrases.length; i++) {
