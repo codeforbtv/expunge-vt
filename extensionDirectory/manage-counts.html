@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-                <section v-for="group in saved.counts" v-bind:id="group" style="margin-top:40px;">
+                <section v-for="group in saved.counts" v-bind:id="group" style="margin:40px;">
                     <br>
                     County:
                     <select v-model="group.county">
@@ -62,6 +62,7 @@
                     Arrest Citation Date: <input type="date" v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"><br>
                     Disposition Date: <input type="date" v-model="group.dispositionDate" placeholder="Disposition Date"><br>
                     Offense Disposition: <input v-model="group.offenseDisposition" placeholder="Offense Disposition"><br>
+                    Is Dismissed: <input v-model="group.isDismissed" type="checkbox"><br>
                     Description: <input v-model="group.description" placeholder="Description"><br>
                     Offense Class:
                     <select v-model="group.offenseClass">
