@@ -200,7 +200,7 @@ function processCountLine1(countLine1, countNum, rawData) {
         "filingType": "",
         "docketSheetNum": docketSheetNum,
         "outstandingPayment": isSurchageDue(rawData),
-        "isDismissed": isDismissed(offenseDisposition),
+        "isDismissed": isDismissed(offenseDisposition)
     }
 
 
@@ -239,7 +239,8 @@ function parseDateFromDocket(date){
     return moment(date, 'MM/DD/YYYY').format("YYYY-MM-DD");
 }
     function isDismissed(offenseDisposition) {
-        var dispositionNormalized = offenseDisposition.toLowerCase();
+        var dispositionNormalized = offenseDisposition.toLowerCase().trim();
+        console.log("dis:"+dispositionNormalized)
         if (dispositionNormalized === "dismissed by state" || dispositionNormalized === "dismissed by court") {
             return true
         } else {
