@@ -88,7 +88,7 @@
                         <div class="card-header__description btn btn-link btn-sm" >
                             <p v-if="count.description">{{count.description}}</p>
                          </div>
-                         <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate}} ({{count.dispositionDate | sinceNow}} ago)</p>
+                         <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate | dateFormatSimple}} ({{count.dispositionDate | sinceNow}} ago)</p>
 
                         </div>
                         <div class="card-header__select">
