@@ -117,6 +117,8 @@
 
         <div class="collapse-section">
             <div class="card-body">
+                <p>County: {{count.county}}</p>
+
                 <p v-if="count.titleNum || count.sectionNum">Statute: {{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
                 <p>Disposition: {{count.offenseDisposition}} <span v-if="!count.offenseDisposition">&nbsp;Check Docket Sheet</span></p>
                 <p>Alleged Offense Date: {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></p>
