@@ -162,8 +162,8 @@
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
@@ -199,8 +199,8 @@
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
@@ -237,11 +237,11 @@
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}}</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -535,10 +535,10 @@
         </template>
         </div>
                     <!-- End Vue App -->
-
         <script id='script' src="components.js"></script>
         <script id='script' src="filings.js"></script>
         <script id='script' src="csv.js"></script>
+
 
 </body>
 
