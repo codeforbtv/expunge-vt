@@ -539,8 +539,8 @@
                                                         </li>
                                                     </ul>
                                                     <div class="atty-note-box">
-                                                        <p class="no-visible"></p>
-                                                        Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
+                                                        Notes: <span><textarea class="no-print client-text" v-model="responses[filing.id + 'summary']" placeholder="Type here..."></textarea></span>
+                                                        <p class="no-visible" v-html="nl2br(responses[filing.id + 'summary'])"></p>
                                                     </div>
                                                 </div>
                                             </div>      
@@ -557,8 +557,8 @@
                                                     </li>
                                                 </ul> 
                                                 <div class="atty-note-box">
-                                                    <p class="no-visible"></p>
-                                                    Notes: <span><textarea class="no-print client-text" placeholder="Type here..."></textarea></span>
+                                                    Notes: <span><textarea class="no-print client-text" v-model="responses[ineligiblesummary]" placeholder="Type here..."></textarea></span>
+                                                        <p class="no-visible" v-html="nl2br(responses[ineligiblesummary])"></p>
                                                 </div>                                        
                                             </div>
                                         </div>
