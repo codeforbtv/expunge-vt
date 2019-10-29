@@ -3,10 +3,10 @@ Vue.config.devtools = true
 
 $(document).on('keydown', function(e) { 
   if((e.ctrlKey || e.metaKey) && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
-      alert("Please use the 'Print All' button at the top right to ensure proper processing.");
       e.cancelBubble = true;
       e.preventDefault();
       e.stopImmediatePropagation();
+      printDocument();
   }  
 });
 
@@ -112,6 +112,7 @@ function autoExpand(field) {
 };
 
 function printDocument(){
+    console.log("Print error proofing goes here.")
     window.print();
 }
 
@@ -186,7 +187,7 @@ Vue.component('filing-type-heading', {
       {type: "ExC", stipType: "StipExC", phrase: "The following are prior conviction(s) for which we prepared a petition to expunge:"},
       {type: "ExNC", stipType: "StipExNC", phrase: "The following are cases that DID NOT result in a conviction and for which prepared a petition to expunge:"},
       {type: "ExNCrim", stipType: "StipExNCrim", phrase: "The following are counts that are no longer crimes for which we prepared a petition to expunge:"},
-      {type: "SC", stipType: "StipSC", phrase: "THe following are prior convictions for which a petition to seal made the most sense instead of expunge:"},
+      {type: "SC", stipType: "StipSC", phrase: "The following are prior convictions for which a petition to seal made the most sense instead of expunge:"},
       {type: "SDui", stipType: "StipSDui", phrase: "The following is a prior DUI conviction for which we we filed a petition to seal as that is the only available option:"}
     ]
 
