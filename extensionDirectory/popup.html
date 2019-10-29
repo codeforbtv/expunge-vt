@@ -15,9 +15,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+
     <!-- Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15/dist/smooth-scroll.polyfills.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@4/dist/gumshoe.polyfills.min.js"></script>
 
     <!-- Moment -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
@@ -32,10 +34,8 @@
             <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
         </div>
         <div class="inset text-center button-div">
-            <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="openManagePage" class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
-            <button class="generate-documents btn btn-success" disabled>Generate Documents <i class="fas fa-external-link-alt"></i></button>
-
+            <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openManagePage" class="edit-counts btn btn-primary">Add/Edit<i class="fas fa-plus-circle"></i></button>
         </div>
         <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
         </p>
@@ -71,24 +71,23 @@
 
     <div class="popTop inset text-center bottom-div">
         <div class="inset text-center button-div">
-            <button v-on:click="addDocketCounts" class="btn btn-primary">Add Counts <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Edit Counts <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="openPetitionsPage" class="btn btn-success">Generate Documents <i class="fas fa-external-link-alt"></i></button>
+            <button v-on:click="addDocketCounts" class="btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openPetitionsPage" class="btn btn-success">Petitions <i class="fas fa-external-link-alt"></i></button>
         </div>
     </div>
     <p id="runningCount" class="section-label">Counts ({{saved.counts.length}})</p>
-    <hr>
-    <div id="countCards" class="count-cards accordion inset text-center">
+    <div id="countCards" class="count-cards inset text-center">
     <!-- begin card -->
 
-        <div class="card" v-for="count in saved.counts">
-        <div class="card-header" v-bind:id="count.uid" type="button" data-toggle="collapse" aria-expanded="false">
+        <div class="card" v-bind:id="count.uid" v-for="count in saved.counts">
+        <div class="card-header"  type="button">
                 <div class="card-header__column">
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
-                        <button class="card-header__description btn btn-link btn-sm" >
-                            <p>{{count.description}}</p>
-                         </button>
+                        <div class="card-header__description btn btn-link btn-sm" >
+                            <p v-if="count.description">{{count.description}}</p>
+                         </div>
                          <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate}} ({{count.dispositionDate | sinceNow}} ago)</p>
 
                         </div>
@@ -110,53 +109,32 @@
                         </div>
                     </div>
                     <div class="card-header__bottom-row">
-                        <div class="card-header__pills-row">
-                            <span class="pill pill--rounded ${offenseTypeColor()}">
-                                {{count.offenseClass}}
-                            </span>
-                            <span class="pill pill--rounded ${dispositionColor()}">
-                                {{count.offenseDisposition}}
-                            </span>
-                        </div>
-                        <i id="del" class="fas fa-folder-minus countDeleter"></i>
+                        <pills-row v-bind:count="count" v-bind:dob="saved.defDOB"></pills-row>
+                        <i class="fas fa-folder-minus" v-on:click="confirmDeleteCount($event,count.uid)"></i>
                     </div>
                 </div>
         </div>
 
-        <div class="collapse">
+        <div class="collapse-section">
             <div class="card-body">
-                <p><b>Desc: </b>{{count.description.trim()}}</p>
-                <p><b>Statute: </b>{{count.titleNum}} V.S.A. &sect {{count.sectionNum}} ({{count.offenseClass}})</p>
-                <p><b>Disposition: </b>{{count.offenseDisposition}}</p>
-                <table class="table">
-                    <thead class="">
-                        <th scope="col">Alleged Offense Date</th>
-                        <th scope="col">Arrest / Citation Date</th>
-                        <th scope="col">Disposition Date</th>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{count.allegedOffenseDate}}</td>
-                            <td>{{count.arrestCitationDate}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p v-if="count.titleNum || count.sectionNum">Statute: {{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
+                <p>Disposition: {{count.offenseDisposition}} <span v-if="!count.offenseDisposition">&nbsp;Check Docket Sheet</span></p>
+                <p>Alleged Offense Date: {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></p>
+                <p>Arrest / Citation Date: {{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</p>
+                <p>Disposition Date: {{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></p>
             </div>
         </div>
         </div>
     <!-- end card -->
 
-
     </div>
-    <hr>
     <div id="bottomText" class="inset text-center bottom-div">
-        <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid. <span class="reset-settings" data-reset><b>Reset Settings</b></span></p>
+        <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid. <span class="reset-settings" v-on:click="resetSettings"><b>Reset Settings</b></span></p>
     </div>
 
     </div>
 </div>
     <script id='script' src="popup.js"></script>
-        <script id='script' src="filings.js"></script>
-
+    <script id='script' src="filings.js"></script>
 </body>
 </html>

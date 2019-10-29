@@ -1,21 +1,22 @@
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true
 
-document.addEventListener("DOMContentLoaded", function () {
-    initButtons();
-    initTextAreaAutoExpand();
-    //initSmoothScroll();
-}, false);
 
 function initAfterVue(){
   //sets intital height of all text areas to show all text.
-  setInitialExpandForTextAreas();
-  //initScrollDetection()
+  console.log(document.getElementsByTagName('body')[0].id);
+  if (document.getElementsByTagName('body')[0].id === "filing-page"){
+      initScrollDetection()
+      setInitialExpandForTextAreas();
+      initTextAreaAutoExpand();
+      initSmoothScroll();
+
+  }
 }
 
 function initAfterFilingRefresh(){
   setInitialExpandForTextAreas();
-  //initScrollDetection();
+  initScrollDetection();
 }
 
 function initTextAreaAutoExpand(){
@@ -25,20 +26,14 @@ function initTextAreaAutoExpand(){
   }, false);
 }
 
-function initButtons(){
-  document.addEventListener('click', function (event) {
-    if (event.target.id === 'js-print') printDocument();
-    if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
-  }, false);
-}
-/*
+
 function initSmoothScroll(){
   var scroll = new SmoothScroll('a[href*="#"]',{
     offset: 150,
     durationMax: 300
   });
 }
-*/
+
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
   var storageChange = changes['counts'];
@@ -50,7 +45,7 @@ function detectChangesInLocalStorage(){
     app.loadAll(function(){})
   });
 }
-/*
+
 function initScrollDetection() {
   //initates the scrollspy for the filing-nav module.
   var spy = new Gumshoe('#filing-nav a',{
@@ -60,7 +55,7 @@ function initScrollDetection() {
       reflow: true, // if true, listen for reflows
     });
 }
-*/
+
 function setInitialExpandForTextAreas(){
   //sets the default size for all text areas based on their content.
   //call this after vue has initialized and displayed
@@ -92,8 +87,44 @@ function autoExpand(field) {
   field.style.height = height + 'px';
 };
 
-function printDocument(){
-    window.print();
+
+function countyNameFromCountyCode(countyCode) {
+    counties = {
+        "Ancr": "Addison",
+        "Bncr": "Bennington",
+        "Cacr": "Caledonia",
+        "Cncr": "Chittenden",
+        "Excr": "Essex",
+        "Frcr": "Franklin",
+        "Gicr": "Grand Isle",
+        "Lecr": "Lamoille",
+        "Oecr": "Orange",
+        "Oscr": "Orleans",
+        "Rdcr": "Rutland",
+        "Wncr": "Washington",
+        "Wmcr": "Windham",
+        "Wrcr": "Windsor"
+    }
+    return counties[countyCode]
+}
+function countyCodeFromCounty(county) {
+    countyCodes = {
+        "Addison": "Ancr",
+        "Bennington": "Bncr",
+        "Caledonia" : "Cacr",
+        "Chittenden" : "Cncr",
+        "Essex": "Excr",
+        "Franklin": "Frcr",
+        "Grand Isle" : "Gicr",
+        "Lamoille" : "Lecr",
+        "Orange" : "Oecr",
+        "Orleans" : "Oscr",
+        "Rutland" : "Rdcr",
+        "Washington": "Wncr",
+        "Windham" : "Wmcr",
+        "Windsor" : "Wrcr"
+    }
+    return countyCodes[county]
 }
 
 //Vue Components
@@ -156,6 +187,42 @@ Vue.component('filing-dated-city', {
     <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
   `)
 });
+
+Vue.component('pills-row', {
+  template: (`<div class="card-header__pills-row">
+                <span v-if="count.offenseClass == 'mis'" class="pill pill--rounded pill--outline-green">
+                        Mis
+                </span>
+                <span v-if="count.offenseClass == 'fel'" class="pill pill--rounded pill--outline-black">
+                        Fel
+                </span>
+                <span v-if="count.isDismissed == true" class="pill pill--rounded pill--outline-green">
+                    {{count.offenseDisposition}}
+                </span>
+                <span v-if="count.isDismissed == false" class="pill pill--rounded pill--outline-black">
+                    {{count.offenseDisposition}}
+                </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) >= 18 && decimalAgeInYears(count.dispositionDate) < 21" class='pill pill--rounded pill--outline-green'> Under 21 </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) >= 21" class='pill pill--rounded pill--outline-black'> Adult </span>
+                <span v-if="count.outstandingPayment == true" class='pill pill--rounded pill--outline-black'>Surcharge</span>
+
+            </div>
+          `),
+  props: ['count','dob'],
+  methods: {
+    decimalAgeInYears: function (value) {
+      if (!value) return ''
+      if (!this.dob) return ''
+      let fromTime = moment(value).diff(moment(this.dob))
+      let duration = moment.duration(fromTime)
+
+      console.log(value, this.dob)
+      return duration.asDays()/365.25
+    },
+  }
+});
+
 
 //Vue app
 var app = new Vue({
@@ -254,7 +321,7 @@ var app = new Vue({
             Vue.set(app, "settings", result.settings)
           } else {
             console.log("No settings found, saving default settings")
-            this.saveSettings()
+            app.saveSettings()
           }
           if (result.responses !== undefined) {
               app.responses = result.responses
@@ -264,7 +331,7 @@ var app = new Vue({
           app.$nextTick(function () {
             app.updatePageTitle();
             //call any vanilla js functions that need to run after vue is all done setting up.
-            //initAfterVue();
+            initAfterVue();
           })
         })
     },
@@ -498,6 +565,7 @@ var app = new Vue({
       }
     },
     addFullDescriptionToCounts: function(){
+      if (app.saved.counts === null) {return}
       for (countIndex in app.saved.counts) {
           var count = app.saved.counts[countIndex];
           var descriptionFull = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
@@ -537,14 +605,38 @@ var app = new Vue({
       }
     },
     newCount: function(event){
-      this.saved.counts.push({ description: 'Count' })
+      this.saved.counts.push({ description: 'Count', filingType:"" })
+    },
+    confirmDeleteCount: function(event, countId) {
+      event.stopPropagation();
+        if (this.saved.counts.length > 1) {
+          var currentCount = this.saved.counts.filter(count => count.uid === countId)[0]
+          if (confirm(`Are you sure that you would like to delete the count \"${currentCount.description}\"?`))
+          {
+            this.deleteCount(countId)
+          } 
+          return;
+        }  
+        if (confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information."))
+        {
+          this.clearAll()
+        }
+    },
+    deleteCount: function(countId){
+        index = this.saved.counts.findIndex(x => x.uid === countId);
+        Vue.delete(app.saved.counts, index);
     },
     updatePageTitle: function(){
       var title = "Filings for "+this.petitioner.name
       document.title = title;
     },
     clearAll: function(){
+
+        chrome.storage.local.remove(['counts','responses'], function(){
       document.location.reload()
+
+      })
+
     },
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
@@ -571,9 +663,7 @@ var app = new Vue({
     slugify: function(string) {
       return string.replace(/\s+/g, '-').toLowerCase();
     },
-  
     openPetitionsPage: function() {
-
     chrome.tabs.query({
         active: true,
         currentWindow: true
@@ -586,7 +676,6 @@ var app = new Vue({
       })
     },
     openManagePage: function (element) {
-
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -597,17 +686,30 @@ var app = new Vue({
                 index: index + 1,
             })
         })
-      },
+  },
   
-   addDocketCounts: function() {
+  addDocketCounts: function() {
     chrome.tabs.executeScript(null, { file: 'payload.js' });
   },
-  confirmClearData: function (element) {
+  confirmClearData: function () {
 
-    if (confirm("Are you sure you want to clear all data for this petitioner?"));
+    if (confirm("Are you sure you want to clear all data for this petitioner?"))
     {
-        chrome.storage.local.remove(['counts','responses'])
+      this.clearAll()
     }
+  },
+  resetSettings: function(element) {
+    if (confirm("Are you sure you want to reset setting to the defaults?"))
+    {
+        chrome.storage.local.remove(['settings'])
+    }
+  },
+  
+  printDocument:function(){
+    window.print();
+  },
+  exportContent:function(){
+    downloadCSV({ data_array: app.csvData, filename: app.csvFilename })
   }
 },
   computed: {
@@ -616,7 +718,6 @@ var app = new Vue({
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
   		address: this.nl2br(this.saved.defAddress)
-      //addressString: this.saved.defAddress.join(", ")
   	  }
     },
     filings: function (){
@@ -635,19 +736,19 @@ var app = new Vue({
     numCountsIneligible: function () {
       return this.ineligible.length;
     },
-    countsExpungedNC: function (data) {
+    countsExpungedNC: function () {
       return this.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
     },
-    countsExpungedC: function (data) {
+    countsExpungedC: function () {
       return this.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
     },
-    countsExpungedNCrim: function (data) {
+    countsExpungedNCrim: function () {
       return this.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
     },
-    countsSealC: function (data) {
+    countsSealC: function () {
       return this.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
     },
-    countsSealDui: function (data) {
+    countsSealDui: function () {
       return this.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
     },
     numDockets: function(){
@@ -718,6 +819,7 @@ var app = new Vue({
 
 
     }
-  }
+    
+
   }
 });
