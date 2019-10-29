@@ -508,7 +508,7 @@ var app = new Vue({
       }
     },
     newCount: function(event){
-      this.saved.counts.push({ description: 'Count', filingType:"" })
+      this.saved.counts.push({ description: 'New', filingType:"" })
     },
     confirmDeleteCount: function(event, countId) {
       event.stopPropagation();
@@ -577,6 +577,14 @@ var app = new Vue({
               index: index + 1,
           })
       })
+    },
+    addAndOpenManagePage: function(){
+      if (this.saved.counts.length == 0){
+        this.newCount()
+        Vue.set(app.saved,"defName","New Petitioner")
+
+      }
+      this.openManagePage()
     },
     openManagePage: function (element) {
         chrome.tabs.query({
