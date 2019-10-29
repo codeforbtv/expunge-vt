@@ -67,15 +67,19 @@ Vue.component('pills-row', {
                 <span v-if="count.offenseClass == 'fel'" class="pill pill--rounded pill--outline-black">
                         Fel
                 </span>
+                <template v-if="count.offenseDisposition">
                 <span v-if="count.isDismissed === true" class="pill pill--rounded pill--outline-green">
                     {{count.offenseDisposition}}
                 </span>
                 <span v-if="count.isDismissed === false" class="pill pill--rounded pill--outline-black">
                     {{count.offenseDisposition}}
                 </span>
+                </template>
+                <template v-if="count.dispositionDate">
                 <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 </span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 18 && decimalAgeInYears(count.dispositionDate) < 21" class='pill pill--rounded pill--outline-green'> Under 21 </span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 21" class='pill pill--rounded pill--outline-black'> Adult </span>
+                </template>
                 <span v-if="count.outstandingPayment == true" class='pill pill--rounded pill--outline-black'>Surcharge</span>
 
             </div>
