@@ -694,22 +694,29 @@ var app = new Vue({
       return value.charAt(0).toLowerCase() + value.slice(1)
     },
     sinceNow: function (value) {
-    if (!value) return ''
-    
-    let fromTime = moment(value).diff(moment(), "milliseconds")
-    let duration = moment.duration(fromTime)
-    let years = duration.years() / -1
-    let months = duration.months() / -1
-    let days = duration.days() / -1
-    if (years > 0) {
-        var Ys = years == 1 ? years + "y " : years + "y "
-        var Ms = months == 1 ? months + "m " : months + "m "
-        return Ys + Ms
-    } else {
-        if (months > 0)
-            return months == 1 ? months + "m " : months + "m "
-        else
-            return days == 1 ? days + "d " : days + "d "
+      if (!value) return ''
+      
+      let fromTime = moment(value).diff(moment(), "milliseconds")
+      let duration = moment.duration(fromTime)
+      let years = duration.years() / -1
+      let months = duration.months() / -1
+      let days = duration.days() / -1
+      if (years > 0) {
+          var Ys = years == 1 ? years + "y " : years + "y "
+          var Ms = months == 1 ? months + "m " : months + "m "
+          return Ys + Ms
+      } else {
+          if (months > 0)
+              return months == 1 ? months + "m " : months + "m "
+          else
+              return days == 1 ? days + "d " : days + "d "
+      }
+    },
+    dateFormatSimple: function (value){
+        if (!value) return ''
+        return moment(value).format("MM/DD/YYYY")
+
+
     }
   }
   }

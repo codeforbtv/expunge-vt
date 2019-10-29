@@ -328,7 +328,7 @@ function getPetitionerInfo(rawData) {
     //create all counts object
     parsedData = {
         "defName": defName,
-        "defDOB": defDOB,
+        "defDOB": parseDateFromDocket(defDOB),
         "defAddress": addressArray.join('\n'),
         "counts": getCountInfo(rawData),
     }
@@ -467,6 +467,7 @@ function processCountLine1(countLine1, countNum, rawData) {
         offenseDateLocationEnd = offenseDateLocation - 8
         allegedOffenseDate = offenseDateString.substring(offenseDateLocation, offenseDateLocationEnd);
         countObject["allegedOffenseDate"] = allegedOffenseDate.trim();
+        countObject["allegedOffenseDate"] = parseDateFromDocket(allegedOffenseDate.trim());
 
     }
     catch (err) {
@@ -482,11 +483,15 @@ function processCountLine1(countLine1, countNum, rawData) {
         arrestDateLocationEnd = arrestDateLocation - 8;
         arrestCitationDate = arrestDateString.substring(arrestDateLocation, arrestDateLocationEnd);
         countObject["arrestCitationDate"] = arrestCitationDate.trim();
+        countObject["arrestCitationDate"] = parseDateFromDocket(arrestCitationDate.trim());
     }
     catch (err) {
         countObject["arrestCitationDate"] = "Check Docket"
         console.log("Error:" + err)
     }
+}
+function parseDateFromDocket(date){
+    return moment(date, 'MM/DD/YYYY').format("YYYY-MM-DD");
 }
 
 function nthIndex(str, subStr, n) {
