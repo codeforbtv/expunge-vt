@@ -21,9 +21,12 @@
     <!-- font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
+    <!-- Moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
 </head>
 
-<body>
+<body id="filing-page">
 
     <!-- Begin Vue App -->
 
@@ -39,8 +42,8 @@
                         <label>Pro Se
                             <input type="checkbox" v-model="settings.proSe">
                         </label>
-                        <button id="js-print" class="btn btn-primary no-print">Print All</button>
-                        <button id="js-export" class="btn btn-primary no-print">Export to CSV</button>
+                        <button v-on:click="printDocument" class="btn btn-primary no-print">Print All</button>
+                        <button v-on:click="exportContent" class="btn btn-primary no-print">Export to CSV</button>
                     </div>
                 </div>
             </div>
@@ -119,8 +122,8 @@
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple }}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
                                                         <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
                                                             <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>

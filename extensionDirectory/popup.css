@@ -246,11 +246,14 @@ hr {
 }
 
 /* Count Cards */
-
+.card {
+    margin-bottom:0.5rem;
+}
 .card .card-header {
     padding:0.5rem;
     -webkit-appearance:none;
     cursor: pointer;
+
 }
 .card-header__column {
     position: relative;

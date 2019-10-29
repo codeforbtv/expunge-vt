@@ -23,7 +23,7 @@
 
 </head>
 
-<body>
+<body id="manage-counts">
 
     <!-- Begin Vue App -->
 
@@ -34,12 +34,10 @@
                     <h1>Counts for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
                         <button v-on:click="newCount" class="btn btn-primary">New Count</button>
-                        <button v-on:click="saveCounts" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </div>
                 <section v-for="group in saved.counts" v-bind:id="group" style="margin-top:40px;">
-                    <b>{{group}}</b>
                     <br>
                     County:
                     <select v-model="group.county">
@@ -57,7 +55,7 @@
                         <option>Washington</option>
                         <option>Windham</option>
                         <option>Windsor</option>
-                    </select> {{group.county}}<br>
+                    </select><br>
                     Docket Number: <input v-model="group.docketNum" placeholder="Docket Num"><br>
                     Docket Sheet Num: {{group.docketNum}}<br>
                     Alleged Offense Date: <input type="date" v-model="group.allegedOffenseDate" placeholder="Offense Date"><br>
