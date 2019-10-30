@@ -368,7 +368,7 @@ var app = new Vue({
     },
     allDocketNumsObject: function (counts){
       allDocketNums = counts.map(function(count) {
-        return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
+        return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + countyCodeFromCounty(count.county)}
       });
 
       //filter the docket number object array to make it unique
@@ -471,7 +471,7 @@ var app = new Vue({
       if (app.saved.counts === null) {return}
       for (countIndex in app.saved.counts) {
           var count = app.saved.counts[countIndex];
-          var descriptionFull = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
+          var descriptionFull = count.description + " (" + count.docketNum + " " + countyCodeFromCounty(count.county) +")";
           Vue.set(app.saved.counts[countIndex],"descriptionFull",descriptionFull);
       }
     },
