@@ -187,7 +187,7 @@
                                                 <template v-else>
                                                     by and through counsel,
                                                     <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
-                                                </template>, and hereby moves the Court to expunge the record of the following 
+                                                </template>, and hereby moves the Court to expunge the record of the following
                                                 <span v-if="filing.multipleCounts">charges</span><span v-else>charge</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B).</p>
                                                  <p>1. Petitioner was convicted of the following <span v-if="filing.multipleCounts">crimes</span><span v-else>crime</span>:</p>
                                             <table class="count-table">
@@ -355,7 +355,8 @@
                                                                     Petitioner's Address &amp; Phone Number:</p>
                                                                 <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
                                                                 <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
-                                                                    <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number">
+                                                                    <input id="no-print_phone" v-model="responses['phone']" placeholder="Petitioner Phone Number">
+                                                                    <!-- <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number"> -->
                                                                 </p>
                                                             </div>
                                                         </template>

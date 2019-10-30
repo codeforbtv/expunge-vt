@@ -26,6 +26,32 @@ function initTextAreaAutoExpand(){
   }, false);
 }
 
+// function getPhoneNumber(){
+//     notFilledArray = []
+//     let phoneValue = $("#no-print_phone");
+//     if (phoneValue.val().length == 0) {
+//       notFilledArray.push('Phone Number')
+//     }
+//     if (notFilledArray.length > 0){
+//       result = confirm("There are " + notFilledArray.length + " blank field(s): \n" + notFilledArray.toString());
+//     }else {
+//       result = true
+//     }
+//     return result
+// }
+
+// function initButtons(){
+//   document.addEventListener('click', function (event) {
+//     if (event.target.id === 'js-print') {
+//       getPhoneNumber();
+//       if (result){
+//         printDocument();
+//       }
+//     }
+//     if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
+//   }, false);
+// }
+
 function initButtons(){
   document.addEventListener('click', function (event) {
     if (event.target.id === 'js-print') printDocument();
@@ -109,7 +135,7 @@ function printDocument(){
 //Vue Components
 
 Vue.component('docket-caption', {
-  template: (`<div class="docket-caption"> 
+  template: (`<div class="docket-caption">
       <div class="docket-caption__names">
       <p class="docket-caption__party">State of Vermont,</p>
       <p>v.</p>
@@ -125,7 +151,7 @@ Vue.component('docket-caption', {
 });
 
 Vue.component('filing-nav', {
-  template: (`<div class="filing-nav no-print" id="filing-nav"> 
+  template: (`<div class="filing-nav no-print" id="filing-nav">
       <ol>
         <li v-for="group in filings" class="filing-nav__parent-link">
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
@@ -189,7 +215,7 @@ var app = new Vue({
     noAction: "",
     responses: {}
   },
-  watch: 
+  watch:
   {
     'responses': {
        handler(){
@@ -202,7 +228,7 @@ var app = new Vue({
         console.log("settings updated")
         app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts);
         app.saveSettings()
-        app.$nextTick(function () 
+        app.$nextTick(function ()
         {
         //call any vanilla js functions after update.
           initAfterFilingRefresh();
@@ -217,13 +243,13 @@ var app = new Vue({
         //test if we have any data
         if (result.expungevt === undefined) return;
         //load the data
-        
+
         var data = result.expungevt[0]
-        
-        var loadResponsesCallback = (function(){ 
-          app.saveAndParseData(data) 
+
+        var loadResponsesCallback = (function(){
+          app.saveAndParseData(data)
         });
-        
+
         var loadSettingsCallback = (function(){
           app.loadResponses(loadResponsesCallback);
         })
@@ -270,7 +296,7 @@ var app = new Vue({
         if (result.expungevtSettings !== undefined && result.expungevtSettings !== "") {
           //load the data
           var settings = result.expungevtSettings
-          app.settings = settings; 
+          app.settings = settings;
         }
         callback();
       });
@@ -281,7 +307,7 @@ var app = new Vue({
         if (result.expungevtResponses !== undefined) {
           //load the data
           var responses = result.expungevtResponses
-          app.responses = responses; 
+          app.responses = responses;
         } else {
           app.responses = {};
         }
@@ -289,23 +315,23 @@ var app = new Vue({
       });
     },
     groupCountsIntoFilings: function(counts, groupDockets = true){
-      
-      // get all counties that have counts associated with them 
+
+      // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts)
 
       console.log("there are "+filingCounties.length+" counties for " + counts.length +" counts");
-      
+
       //create an array to hold all county filing objects
       var groupedFilings = []
-      
+
       //iterate through all counties and create the filings
       for (var county in filingCounties){
-        
+
         var countyName = filingCounties[county]
-        
+
         //filter all counts to the ones only needed for this county
         var allEligibleCountsForThisCounty = counts.filter(count => count.county == countyName && this.isFileable(count.filingType))
-        
+
         //figure out the filing types needed for this county.
         var filingsForThisCounty = this.groupByFilingType(allEligibleCountsForThisCounty)
 
@@ -338,13 +364,13 @@ var app = new Vue({
 
           //create the filing object that will be added to the array for this county
           var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType);
-          
+
           //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
           //this is determined based on the state of the UI checkbox for grouping.
           if (groupDockets || filingObject.numDocketSheets == 1) {
               allFilingsForThisCountyObject.push(filingObject);
               this.createResponseObjectForFiling(filingObject.id);
-          
+
           } else {
             //break the filing object into multiple petitions
             for (var docketNumIndex in filingObject.docketSheetNums) {
@@ -378,8 +404,8 @@ var app = new Vue({
 
             var docketObjectsThisSegment = allDocketNums.slice(start, end);
 
-            var docketsThisSegment = docketObjectsThisSegment.map(function(docket){   
-              return docket.num   
+            var docketsThisSegment = docketObjectsThisSegment.map(function(docket){
+              return docket.num
             });
 
             var segment = counts.filter(f => docketsThisSegment.includes(f.docketNum));
@@ -446,10 +472,10 @@ var app = new Vue({
     },
     isStipulated: function(filingType){
       return (
-        filingType == "StipExC" || 
+        filingType == "StipExC" ||
         filingType == "StipExNC" ||
-        filingType == "StipExNCrim" || 
-        filingType == "StipSC" ||  
+        filingType == "StipExNCrim" ||
+        filingType == "StipSC" ||
         filingType == "StipSDui");
     },
     isEligible: function(filingType){
@@ -565,15 +591,15 @@ var app = new Vue({
       document.location.reload()
     },
     nl2br: function(rawStr) {
-      var breakTag = '<br>';      
-      return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
+      var breakTag = '<br>';
+      return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
     },
     linesBreaksFromArray: function(array) {
       var string = "";
       var delimiter = "\r\n";
       var i;
-      for (i = 0; i < array.length; i++) { 
-        if (i > 0 ) 
+      for (i = 0; i < array.length; i++) {
+        if (i > 0 )
           {
             string += delimiter;
           }
@@ -632,19 +658,19 @@ var app = new Vue({
 
       return app.saved.counts.map(function(count) {
         return {
-          Petitioner_Name: app.petitioner["name"], 
-          Petitioner_DOB: app.petitioner.dob, 
-          Petitioner_Address: app.petitioner.addressString, 
-          Petitioner_Phone: app.responses.phone, 
-          County: count.county, 
-          Docket_Sheet_Number:count.docketSheetNum, 
-          Count_Docket_Number:count.docketNum, 
-          Filing_Type:app.filingNameFromType(count.filingType), 
-          Count_Description:count.description, 
-          Count_Statute_Title: count.titleNum, 
-          Count_Statute_Section: count.sectionNum, 
-          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass), 
-          Offense_Disposition:count.offenseDisposition, 
+          Petitioner_Name: app.petitioner["name"],
+          Petitioner_DOB: app.petitioner.dob,
+          Petitioner_Address: app.petitioner.addressString,
+          Petitioner_Phone: app.responses.phone,
+          County: count.county,
+          Docket_Sheet_Number:count.docketSheetNum,
+          Count_Docket_Number:count.docketNum,
+          Filing_Type:app.filingNameFromType(count.filingType),
+          Count_Description:count.description,
+          Count_Statute_Title: count.titleNum,
+          Count_Statute_Section: count.sectionNum,
+          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass),
+          Offense_Disposition:count.offenseDisposition,
           Offense_Disposition_Date:count.dispositionDate}
       });
     }
