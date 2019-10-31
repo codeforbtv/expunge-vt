@@ -39,9 +39,10 @@
             </div>
                 <section v-for="(group, index) in saved.counts" v-bind:id="group" style="margin:40px;">
                     <h2>Count {{index + 1}}: <span v-if="group.description">{{group.description}}</span></h2>
+                    {{group.docketNum}} {{group.county | toCountyCode}}
                     <br>
-                    <button v-on:click="confirmDeleteCount($event,group.uid)">Delete Count</button>
-                    <br>
+                    Description: <input v-model="group.description" placeholder="Description"><br>
+
                     County:
                     <select v-model="group.county">
                         <option>Addison</option>
@@ -66,14 +67,15 @@
                     Disposition Date: <input type="date" v-model="group.dispositionDate" placeholder="Disposition Date"><br>
                     Offense Disposition Description: <input v-model="group.offenseDisposition" placeholder="Offense Disposition"><br>
                     Is Dismissed: <input v-model="group.isDismissed" type="checkbox"><br>
-                    Description: <input v-model="group.description" placeholder="Description"><br>
                     Offense Class:
                     <select v-model="group.offenseClass">
                         <option value="mis">Misdemeanor</option>
                         <option value="fel">Felony</option>
                     </select>
                     <br>
-                    V.S.C. Title & Section: <input v-model="group.titleNum" placeholder="Title"> &sect; <input v-model="group.sectionNum" placeholder="Section">
+                    <p>V.S.C. Title & Section: <input v-model="group.titleNum" placeholder="Title"> &sect; <input v-model="group.sectionNum" placeholder="Section"></p>
+                    <button v-on:click="confirmDeleteCount($event,group.uid)" class="btn btn-danger">Delete Count</button>
+
                     <hr>
                 </section>
             </div>
