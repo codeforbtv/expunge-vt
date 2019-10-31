@@ -729,6 +729,11 @@ var app = new Vue({
         return moment(value).format("MM/DD/YYYY")
 
 
+    },
+    toCountyCode: function(value){
+        if (!value) return ''
+        return countyCodeFromCounty(value)
+
     }
     
 

@@ -86,6 +86,7 @@
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
                         <div class="card-header__description btn btn-link btn-sm" >
+                            <p v-if="count.docketNum">{{count.docketNum}} {{count.county | toCountyCode }}</p>
                             <p v-if="count.description">{{count.description}}</p>
                          </div>
                          <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate | dateFormatSimple}} ({{count.dispositionDate | sinceNow}} ago)</p>
