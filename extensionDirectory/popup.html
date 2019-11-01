@@ -35,7 +35,7 @@
         </div>
         <div class="inset text-center button-div">
             <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="addAndOpenManagePage" class="edit-counts btn btn-primary">Add/Edit<i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="addAndOpenManagePage" class="edit-counts btn btn-primary">Add/Edit<i class="fas fa-edit"></i></button>
         </div>
         <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
         </p>
@@ -51,15 +51,15 @@
             </div>
             <div class="pet-item">
                 <p class="pet-label">Name:</p>
-                <input v-model="saved.defName">
+                <input type="text" class="form-control form-control-sm" v-model="saved.defName">
             </div>
             <div class="pet-item">
                 <p class="pet-label">DOB:</p>
-                <input type="date" v-model="saved.defDOB">
+                <input class="form-control form-control-sm" type="date" v-model="saved.defDOB">
             </div>
             <div class="pet-item">
                 <p class="pet-label">Address:</p>
-                <textarea v-model="saved.defAddress"></textarea>
+                <textarea class="form-control form-control-sm" v-model="saved.defAddress" placeholder="e.g. 123 Main Street"></textarea>
             </div>
         </div>
         <div id="logoDiv">
@@ -72,7 +72,7 @@
     <div class="popTop inset text-center bottom-div">
         <div class="inset text-center button-div">
             <button v-on:click="addDocketCounts" class="btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-plus-circle"></i></button>
+            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-edit"></i></button>
             <button v-on:click="openPetitionsPage" class="btn btn-success">Petitions <i class="fas fa-external-link-alt"></i></button>
         </div>
     </div>
@@ -80,8 +80,8 @@
     <div id="countCards" class="count-cards inset text-center">
     <!-- begin card -->
 
-        <div class="card" v-bind:id="count.uid" v-for="count in saved.counts">
-        <div class="card-header"  type="button">
+        <div class="card" v-bind:id="count.uid" v-for="(count, index) in saved.counts">
+        <div class="card-header">
                 <div class="card-header__column">
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
@@ -93,7 +93,7 @@
 
                         </div>
                         <div class="card-header__select">
-                            <select v-model="count.filingType" class="petitionSelect selectpicker">
+                            <select class="form-control form-control-sm" v-model="count.filingType" class="petitionSelect selectpicker">
                                 <option value="">No Filing</option>
                                 <option value="X">Ineligible</option>
                                 <option value="ExC">Expunge Conviction</option>
@@ -118,13 +118,15 @@
 
         <div class="collapse-section">
             <div class="card-body">
-                <p>County: {{count.county}}</p>
+                <p>County:&nbsp;<b>{{count.county}}</b></p>
 
-                <p v-if="count.titleNum || count.sectionNum">Statute: {{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
-                <p>Disposition: {{count.offenseDisposition}} <span v-if="!count.offenseDisposition">&nbsp;Check Docket Sheet</span></p>
-                <p>Alleged Offense Date: {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></p>
-                <p>Arrest / Citation Date: {{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</p>
-                <p>Disposition Date: {{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></p>
+                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;<b>{{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</b></p>
+                <p>Disposition:&nbsp;<b>{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></b></p>
+                <div class="row text-left">
+                <div class="col-4">Offense Date:<br> <b>{{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></b></div>
+                <div class="col-4">Arrest/Citation Date:<br> <b>{{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span></b></div>
+                <div class="col-4">Disposition Date:<br><b>{{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></b></div>
+              </div>
             </div>
         </div>
         </div>

@@ -33,18 +33,35 @@
                 <div class="header-bar">
                     <h1>Counts for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
-                        <button v-on:click="newCount" class="btn btn-primary">New Count</button>
+                        <button v-on:click="newCount" class="btn btn-primary">Add Count <i class="fas fa-plus-circle"></i></button> 
+                   
+                        <a href="filings.html" class="btn btn-success">View Petitions <i class="fas fa-external-link-alt"></i></a>
                     </div>
                 </div>
             </div>
-                <section v-for="(group, index) in saved.counts" v-bind:id="group" style="margin:40px;">
-                    <h2>Count {{index + 1}}: <span v-if="group.description">{{group.description}}</span></h2>
-                    {{group.docketNum}} {{group.county | toCountyCode}}
-                    <br>
-                    Description: <input v-model="group.description" placeholder="Description"><br>
+              <div style="margin:40px;">
+                <h2>Petitioner Information</h2>
 
-                    County:
-                    <select v-model="group.county">
+                <div><label>Name
+                <input class="form-control" v-model="saved.defName"></label>
+                <label class="pet-label">Date of Birth
+                <input class="form-control" type="date" v-model="saved.defDOB"></label></div>
+                <div>
+                <label class="pet-label">Address
+                <textarea class="form-control" v-model="saved.defAddress" placeholder="e.g. 123 Main Street"></textarea></label>
+                </div>
+              </div>
+                <section class="edit-count" v-for="(group, index) in saved.counts" v-bind:id="group" style="margin:40px;">
+                    <h3 class="edit-count__title">Count {{index + 1}}: <span v-if="group.description">{{group.description}}</span></h2>
+
+                    <p><b>{{group.docketNum}} {{group.county | toCountyCode}}</b></p>
+         
+                    <div>
+                    <label style="min-width:70%;">Count Description<input class="form-control" v-model="group.description" placeholder="Description"></label></div>
+                    <div>
+                    <label><span>Docket Number</span><input class="form-control" v-model="group.docketNum" placeholder="Docket Num"></label>
+                    <label><span>County</span>
+                    <select class="form-control" v-model="group.county">
                         <option>Addison</option>
                         <option>Bennington</option>
                         <option>Caledonia</option>
@@ -59,24 +76,48 @@
                         <option>Washington</option>
                         <option>Windham</option>
                         <option>Windsor</option>
-                    </select><br>
-                    Docket Number: <input v-model="group.docketNum" placeholder="Docket Num"><br>
-                    Docket Sheet Number: <input v-model="group.docketSheetNum" placeholder="Docket Num"><br>
-                    Alleged Offense Date: <input type="date" v-model="group.allegedOffenseDate" placeholder="Offense Date"><br>
-                    Arrest Citation Date: <input type="date" v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"><br>
-                    Disposition Date: <input type="date" v-model="group.dispositionDate" placeholder="Disposition Date"><br>
-                    Offense Disposition Description: <input v-model="group.offenseDisposition" placeholder="Offense Disposition"><br>
-                    Is Dismissed: <input v-model="group.isDismissed" type="checkbox"><br>
-                    Offense Class:
-                    <select v-model="group.offenseClass">
+                    </select></label>
+                    </div>
+                    <div><label><span>Alleged Offense Date</span><input class="form-control" type="date" v-model="group.allegedOffenseDate" placeholder="Offense Date"></label>
+                    <label><span>Arrest Citation Date</span><input class="form-control" type="date" v-model="group.arrestCitationDate" placeholder="Arrest Citation Date"></label>
+                    <label><span>Disposition Date</span><input class="form-control" type="date" v-model="group.dispositionDate" placeholder="Disposition Date"></label></div>
+                    <div>
+                    <label width="400px">Offense Disposition<input class="form-control" v-model="group.offenseDisposition" placeholder="e.g. Dismissed By State"></label>
+                  
+                    <label class="checkbox-inline"><input v-model="group.isDismissed" type="checkbox"><span> Is Dismissed</span></label>
+                    </div>
+                    
+                 
+                    <label for="vsc-title"><span>Statue Title</span><input id="vsc-title" class="form-control" v-model="group.titleNum" placeholder="Title"></label>
+                    <label for="vsc-section"><span>Statute Section</span><input id="vsc-section" class="form-control" v-model="group.sectionNum" placeholder="Section"></label>
+                    <label><span>Offense Class</span>
+                    <select class="form-control" v-model="group.offenseClass">
                         <option value="mis">Misdemeanor</option>
                         <option value="fel">Felony</option>
                     </select>
-                    <br>
-                    <p>V.S.C. Title & Section: <input v-model="group.titleNum" placeholder="Title"> &sect; <input v-model="group.sectionNum" placeholder="Section"></p>
+                  </label>
+                    <p v-if="group.titleNum || group.sectionNum || group.offenseClass"><b>{{group.titleNum || '-'}} V.S.A. &sect; {{group.sectionNum || '-'}} ({{group.offenseClass || '-'}})</b></b>
+                                 <div>
+                      <label>Filing for this count      
+                    <select class="form-control" v-model="group.filingType" class="petitionSelect selectpicker">
+                                <option value="">No Filing</option>
+                                <option value="X">Ineligible</option>
+                                <option value="ExC">Expunge Conviction</option>
+                                <option value="ExNC">Expunge Non-Conviction</option>
+                                <option value="ExNCrim">Expunge Non-Criminal</option>
+                                <option value="SC">Seal Conviction</option>
+                                <option value="SDui">Seal DUI</option>
+                                <option value="StipExC">(Stipulated) Expunge Conviction</option>
+                                <option value="StipExNC">(Stipulated) Expunge Non-Conviction</option>
+                                <option value="StipExNCrim">(Stipulated) Expunge Non-Criminal</option>
+                                <option value="StipSC">(Stipulated) Seal Conviction</option>
+                                <option value="StipSDui">(Stipulated) Seal DUI</option>
+                            </select>
+                          </label>
+                          </div>
+                  <div>
                     <button v-on:click="confirmDeleteCount($event,group.uid)" class="btn btn-danger">Delete Count</button>
-
-                    <hr>
+                  </div>
                 </section>
             </div>
         </div>

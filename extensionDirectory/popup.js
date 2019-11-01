@@ -13,8 +13,7 @@ function initListeners() {
             chrome.storage.local.set({
                 counts: combinedData
             });
-        $('body').addClass('active');
-        });
+\        });
     });
     $('body').on('click', 'select.petitionSelect', function(event) {
         //prevents the select in the petition cards from opening the accordion.
