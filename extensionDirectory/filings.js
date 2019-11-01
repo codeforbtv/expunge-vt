@@ -530,8 +530,7 @@ var app = new Vue({
         Vue.delete(app.saved.counts, index);
     },
     updatePageTitle: function(){
-      var title = "Filings for "+this.petitioner.name
-      document.title = title;
+      return
     },
     clearAll: function(){
 
