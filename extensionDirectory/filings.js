@@ -216,7 +216,6 @@ var app = new Vue({
           console.log(JSON.stringify(result))
           if (result.counts !== undefined) {
               app.saved = result.counts
-              app.addFullDescriptionToCounts()
           }
           if (result.settings !== undefined && result.settings !== "") {
             console.log("settings found")
@@ -465,14 +464,6 @@ var app = new Vue({
           return "Felony"
         default:
           return "";
-      }
-    },
-    addFullDescriptionToCounts: function(){
-      if (app.saved.counts === null) {return}
-      for (countIndex in app.saved.counts) {
-          var count = app.saved.counts[countIndex];
-          var descriptionFull = count.description + " (" + count.docketNum + " " + countyCodeFromCounty(count.county) +")";
-          Vue.set(app.saved.counts[countIndex],"descriptionFull",descriptionFull);
       }
     },
     filterAndMakeFilingObject: function(counts,county,filingType,docketSheetNum=""){
