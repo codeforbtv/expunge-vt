@@ -633,7 +633,7 @@ var app = new Vue({
     filings: function (){
       var shouldGroupCounts = true;
       if (this.settings.groupCounts !== undefined) {
-        group = this.settings.groupCounts;
+        shouldGroupCounts = this.settings.groupCounts;
       }
       return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
     },
