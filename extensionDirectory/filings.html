@@ -444,7 +444,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
@@ -456,7 +456,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
@@ -468,7 +468,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted...</th>
@@ -478,7 +478,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted...</th>
@@ -488,7 +488,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="ineligible.length > 0">
@@ -499,7 +499,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
