@@ -10,6 +10,9 @@
     font-style: italic;
 }
 
+a.btn {
+  margin-left:8px;
+}
 
 /* No filings message */
 
@@ -487,4 +490,19 @@ p.filing-dated-city {
 
     }
 
+}
+
+
+
+
+/*manage-counts page*/
+.edit-count {
+  border:1px solid #ddd;
+  padding:30px;
+  border-radius: 5px;
+  position: relative;
+}
+.edit-count__title {
+  max-width:60%;
+  overflow-wrap: break-word;
 }

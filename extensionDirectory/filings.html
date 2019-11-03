@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Filings Page</title>
+    <title>Petitions</title>
     <link href="filings.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery -->
@@ -21,15 +21,17 @@
     <!-- font awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 
+    <!-- Moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+
 </head>
 
-<body>
+<body id="filing-page">
 
     <!-- Begin Vue App -->
 
     <div id="filing-app">
-
-        <template v-if="filings || ineligible">
+        <template v-if="saved.counts.length > 0 && (filings || ineligible)">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
@@ -40,8 +42,9 @@
                         <label>Pro Se
                             <input type="checkbox" v-model="settings.proSe">
                         </label>
-                        <button id="js-print" class="btn btn-primary no-print">Print All</button>
-                        <button id="js-export" class="btn btn-primary no-print">Export to CSV</button>
+                        <button v-on:click="printDocument" class="btn btn-primary no-print">Print All</button>
+                        <button v-on:click="exportContent" class="btn btn-primary no-print">Export to CSV</button>
+                        <a href="manage-counts.html" class="edit-counts btn btn-primary">Add/Edit Counts <i class="fas fa-edit"></i></a> 
                     </div>
                 </div>
             </div>
@@ -93,10 +96,10 @@
                                             <p class="indent">
 
                                                 <template v-if="settings.proSe">
-                                                    NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}), appearing <span class="italic">pro se</span>, and hereby enters this notice of appearance in the above captioned action.
+                                                    NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), appearing <span class="italic">pro se</span>, and hereby enters this notice of appearance in the above captioned action.
                                                 </template>
                                                 <template v-else>
-                                                    NOW COMES <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">, by and on behalf of {{petitioner.name}} (DOB: {{petitioner.dob}}), and hereby enters this notice of appearance in the above captioned action.
+                                                    NOW COMES <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">, by and on behalf of {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), and hereby enters this notice of appearance in the above captioned action.
                                                 </template>
                                             </p>
                                         </div>
@@ -104,7 +107,7 @@
                                         <!-- (Stipulated) Petiton To Expunge Conviction -->
                                         <div class="filing-body" v-if="filing.type == 'ExC' || filing.type == 'StipExC'">
                                             <p class="indent">
-                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
                                                 <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
@@ -116,16 +119,17 @@
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Conviction Date</th>
-                                                    <th valign="middle" scope="col">Offense Description</th>
+                                                    <th valign="middle" colspan="2" scope="col">Offense Description</th>
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}} ({{count.docketNum}} {{count.county | toCountyCode}})</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
+                                                        <td class="no-print">{{count.docketNum}} {{count.county | toCountyCode}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -145,7 +149,7 @@
                                         <div class="filing-body" v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'">
 
                                             <p class="indent">
-                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
                                                 <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
@@ -156,16 +160,17 @@
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Date of Dismissal</th>
-                                                    <th valign="middle" scope="col">Charge<span v-if="filing.multipleCounts">s</span></th>
+                                                    <th colspan="2" valign="middle" scope="col">Charge<span v-if="filing.multipleCounts">s</span></th>
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}} ({{count.docketNum}} {{count.county | toCountyCode}})</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
+                                                        <td class="no-print">{{count.docketNum}} {{count.county | toCountyCode}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -181,7 +186,7 @@
                                         <div class="filing-body" v-if="filing.type == 'ExNCrim' || filing.type == 'StipExNCrim'">
 
                                             <p class="indent">
-                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
                                                 <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
@@ -193,16 +198,17 @@
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Conviction Date</th>
-                                                    <th valign="middle" scope="col">Charge<span v-if="filing.multipleCounts">s</span></th>
+                                                    <th colspan="2" valign="middle" scope="col">Charge<span v-if="filing.multipleCounts">s</span></th>
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}} ({{count.docketNum}} {{count.county | toCountyCode}})</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
+                                                        <td class="no-print">{{count.docketNum}} {{count.county | toCountyCode}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -218,7 +224,7 @@
                                         <div class="filing-body" v-if="filing.type == 'SC' || filing.type == 'StipSC'">
 
                                             <p class="indent">
-                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
                                                 <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
@@ -231,19 +237,19 @@
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Conviction Date</th>
-                                                    <th valign="middle" scope="col">Offense Description</th>
+                                                    <th valign="middle" colspan="2" scope="col">Offense Description</th>
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}} ({{count.docketNum}} {{count.county | toCountyCode}})</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
+                                                        <td class="no-print">{{count.docketNum}} {{count.county | toCountyCode}}</td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
 
                                             </table>
                                             <p>2. Petitioner was under 21 when the crime<span v-if="filing.multipleCounts">s
@@ -259,7 +265,7 @@
                                         <div class="filing-body" v-if="filing.type == 'SDui' || filing.type == 'StipSDui'">
 
                                             <p class="indent">
-                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob}}),
+                                                NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob }}),
                                                 <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
@@ -272,19 +278,19 @@
                                             <table class="count-table">
                                                 <thead class="count-table__header">
                                                     <th valign="middle" scope="col">Conviction Date</th>
-                                                    <th valign="middle" scope="col">Offense Description</th>
+                                                    <th valign="middle" colspan="2" scope="col">Offense Description</th>
                                                 </thead>
                                                 <tbody class="count-table__body">
                                                     <tr class="count-item" v-for="count in filing.counts">
-                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate}}</span>
-                                                            <input class="no-print" v-model="count.dispositionDate">
+                                                        <td class="count-item__date"><span class="no-visible">{{count.dispositionDate | dateFormatSimple}}</span>
+                                                            <input type="date" class="no-print" v-model="count.dispositionDate">
                                                         </td>
-                                                        <td class="count-item__description"><span class="no-visible">{{count.descriptionFull}}</span>
-                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.descriptionFull"></textarea>
+                                                        <td class="count-item__description"><span class="no-visible">{{count.description}} ({{count.docketNum}} {{count.county | toCountyCode}})</span>
+                                                            <textarea rows="1" class="no-print count-item__textarea" v-model="count.description"></textarea>
                                                         </td>
+                                                        <td class="no-print">{{count.docketNum}} {{count.county | toCountyCode}}</td>
                                                     </tr>
                                                 </tbody>
-                                                <!--<tfoot class="footer-space"><tr><td>&nbsp;</td></tr></tfoot>-->
 
                                             </table>
                                             <p>2. At least 10 years have elapsed since the date petitioner successfully completed their sentence.</p>
@@ -415,7 +421,7 @@
                                         <div class="filing__title">Clinic Checkout Sheet</div>
                                         <div class="filing-body">
                                             <div class="title petition__title"></div>
-                                            <h1>Filings for {{petitioner.name}} (DOB: {{petitioner.dob}})</h1>
+                                            <h1>Filings for {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}})</h1>
                                             <p class="filing-closing__petitioner-address" v-html="petitioner.address">
                                                 <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
                                                     <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number">
@@ -438,7 +444,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
@@ -450,7 +456,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
@@ -462,7 +468,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted...</th>
@@ -472,7 +478,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted...</th>
@@ -482,7 +488,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                                 <th scope="col" Colspan="3" v-if="ineligible.length > 0">
@@ -493,7 +499,7 @@
                                                                     </td>
                                                                     <td>{{filing.dispositionDate}}</td>
                                                                     <td>{{filing.offenseDisposition}}</td>
-                                                                    <td v-html="filing.docketNum + ' ' + filing.docketCounty">
+                                                                    <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -595,8 +601,9 @@
         </template>
         </div>
                     <!-- End Vue App -->
-
+        <script id='script' src="components.js"></script>
         <script id='script' src="filings.js"></script>
         <script id='script' src="csv.js"></script>
+
 
 </body>
