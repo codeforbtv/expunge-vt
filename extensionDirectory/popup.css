@@ -1,12 +1,11 @@
 
 body {
     width: 475px;
-    height:400px;
+    min-height:400px;
+    height:auto;
+
     padding:10px;
     box-sizing: border-box;
-}
-body.active {
-    height:auto;
 }
 body:before {
     content:"";
@@ -22,13 +21,6 @@ body:before {
 }
 button {
     outline: none;
-}
-
-body.active .empty-state, body .active-state {
-    display:none;
-}
-body .empty-state, body.active .active-state{
-    display:block;
 }
 
 .pet-label,.pet-details {
@@ -254,11 +246,14 @@ hr {
 }
 
 /* Count Cards */
-
+.card {
+    margin-bottom:0.5rem;
+}
 .card .card-header {
     padding:0.5rem;
     -webkit-appearance:none;
     cursor: pointer;
+
 }
 .card-header__column {
     position: relative;

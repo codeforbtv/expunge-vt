@@ -1,17 +1,17 @@
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true
 
-document.addEventListener("DOMContentLoaded", function () {
-    initButtons();
-    initTextAreaAutoExpand();
-    initSmoothScroll();
-    detectChangesInLocalStorage();
-}, false);
 
 function initAfterVue(){
   //sets intital height of all text areas to show all text.
-  setInitialExpandForTextAreas();
-  initScrollDetection()
+  console.log(document.getElementsByTagName('body')[0].id);
+  if (document.getElementsByTagName('body')[0].id === "filing-page"){
+      initScrollDetection()
+      setInitialExpandForTextAreas();
+      initTextAreaAutoExpand();
+      initSmoothScroll();
+
+  }
 }
 
 function initAfterFilingRefresh(){
@@ -26,12 +26,6 @@ function initTextAreaAutoExpand(){
   }, false);
 }
 
-function initButtons(){
-  document.addEventListener('click', function (event) {
-    if (event.target.id === 'js-print') printDocument();
-    if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
-  }, false);
-}
 
 function initSmoothScroll(){
   var scroll = new SmoothScroll('a[href*="#"]',{
@@ -42,22 +36,13 @@ function initSmoothScroll(){
 
 function detectChangesInLocalStorage(){
   chrome.storage.onChanged.addListener(function(changes, namespace) {
-  var storageChange = changes['expungevt'];
+  var storageChange = changes['counts'];
   if (storageChange === undefined) return;
-
   if (storageChange.newValue === undefined) {
       app.clearAll();
       return
   };
-
-  app.saveAndParseData(storageChange.newValue[0])
-  app.loadSettings(function(){})
-  app.loadResponses(function(){})
-
-
-
-
-
+    app.loadAll(function(){})
   });
 }
 
@@ -102,70 +87,45 @@ function autoExpand(field) {
   field.style.height = height + 'px';
 };
 
-function printDocument(){
-    window.print();
+
+function countyNameFromCountyCode(countyCode) {
+    counties = {
+        "Ancr": "Addison",
+        "Bncr": "Bennington",
+        "Cacr": "Caledonia",
+        "Cncr": "Chittenden",
+        "Excr": "Essex",
+        "Frcr": "Franklin",
+        "Gicr": "Grand Isle",
+        "Lecr": "Lamoille",
+        "Oecr": "Orange",
+        "Oscr": "Orleans",
+        "Rdcr": "Rutland",
+        "Wncr": "Washington",
+        "Wmcr": "Windham",
+        "Wrcr": "Windsor"
+    }
+    return counties[countyCode]
 }
-
-//Vue Components
-
-Vue.component('docket-caption', {
-  template: (`<div class="docket-caption"> 
-      <div class="docket-caption__names">
-      <p class="docket-caption__party">State of Vermont,</p>
-      <p>v.</p>
-      <p class="docket-caption__party">{{name}}</p>
-      <p class="docket-caption__label">Petitioner</p>
-      </div>
-      <div class="capParens">
-          )<br>)<br>)<br>)
-        </div>
-      </div>
-      `),
-  props: ['name']
-});
-
-Vue.component('filing-nav', {
-  template: (`<div class="filing-nav no-print" id="filing-nav"> 
-      <ol>
-        <li v-for="group in filings" class="filing-nav__parent-link">
-        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
-        <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
-          <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
-          </li>
-        </ol>
-        </li>
-        <li class="filing-nav__parent-link">
-          <a href="#extra-documents">Extra Documents</a>
-          <ol>
-            <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Clinic Summary Sheet</a>
-            </li>
-          </ol>
-        </li>
-      </ol>
-      </div>
-      `),
-  props: ['filings']
-});
-
-Vue.component('filing-footer', {
-  template: (`<div class="stipulated-closing" v-if="stipulated">
-                  <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
-                  <div class="filing-closing__signature-box">
-                      <p class="filing-closing__name">State's Attorney/Attorney General</p>
-                  </div>
-              </div>
-          </div>
-          `),
-  props: ['stipulated']
-});
-
-Vue.component('filing-dated-city', {
-  template: (`
-    <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
-  `)
-});
+function countyCodeFromCounty(county) {
+    countyCodes = {
+        "Addison": "Ancr",
+        "Bennington": "Bncr",
+        "Caledonia" : "Cacr",
+        "Chittenden" : "Cncr",
+        "Essex": "Excr",
+        "Franklin": "Frcr",
+        "Grand Isle" : "Gicr",
+        "Lamoille" : "Lecr",
+        "Orange" : "Oecr",
+        "Orleans" : "Oscr",
+        "Rutland" : "Rdcr",
+        "Washington": "Wncr",
+        "Windham" : "Wmcr",
+        "Windsor" : "Wrcr"
+    }
+    return countyCodes[county]
+}
 
 //Vue app
 var app = new Vue({
@@ -184,9 +144,6 @@ var app = new Vue({
     	defDOB: "",
     	counts: []
     },
-    filings: "",
-    ineligible:"",
-    noAction: "",
     responses: {}
   },
   watch: 
@@ -200,12 +157,23 @@ var app = new Vue({
     'settings': {
       handler(){
         console.log("settings updated")
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts);
-        app.saveSettings()
+        this.saveSettings()
         app.$nextTick(function () 
         {
         //call any vanilla js functions after update.
-          initAfterFilingRefresh();
+          //initAfterFilingRefresh();
+        })
+      },
+      deep:true
+    },
+    'saved': {
+      handler(){
+        console.log("counts updated")
+        this.saveCounts()
+        app.$nextTick(function () 
+        {
+        //call any vanilla js functions after update.
+          //initAfterFilingRefresh();
         })
       },
       deep:true
@@ -213,80 +181,61 @@ var app = new Vue({
   },
   mounted() {
   	console.log('App mounted!');
-  	chrome.storage.local.get('expungevt', function (result) {
-        //test if we have any data
-        if (result.expungevt === undefined) return;
-        //load the data
-        
-        var data = result.expungevt[0]
-        
-        var loadResponsesCallback = (function(){ 
-          app.saveAndParseData(data) 
-        });
-        
-        var loadSettingsCallback = (function(){
-          app.loadResponses(loadResponsesCallback);
-        })
-        console.log("beginning to load settings")
-        app.loadSettings(loadSettingsCallback);
-    });
+    this.loadAll();
+    detectChangesInLocalStorage();
+
   },
   methods:{
-    saveAndParseData: function(data) {
-        app.saved = data
-        app.addFullDescriptionToCounts()
-        console.log(app.saved)
-        //parse the data
-        app.filings = app.groupCountsIntoFilings(app.saved.counts, this.settings.groupCounts) //counts, groupCountsFromMultipleDockets=true
-        app.ineligible = app.groupIneligibleCounts(app.saved.counts);
-        app.noAction = app.groupNoAction(app.saved.counts);
-        app.$nextTick(function () {
-          app.updatePageTitle();
-          //call any vanilla js functions that need to run after vue is all done setting up.
-          initAfterVue();
-        })
-    },
     saveSettings: function(){
-      var settings = app.settings
       console.log("save settings", app.settings)
       chrome.storage.local.set({
-        expungevtSettings: settings
-
+        settings: app.settings
       });
     },
     saveResponses: function(){
-      var responses = app.responses
       console.log("save responses")
       chrome.storage.local.set({
-        expungevtResponses: responses
+        responses: app.responses
       });
     },
-    loadSettings: function(callback){
-      console.log("load settings")
-      chrome.storage.local.get('expungevtSettings', function (result) {
-        //test if we have any data
-          console.log("loading settings", result)
+    saveCounts: function(){
+      console.log("saving counts")
+        chrome.storage.local.set({
+          counts: app.saved
+        });
+    },
+    loadAll: function(callback){
 
-        if (result.expungevtSettings !== undefined && result.expungevtSettings !== "") {
-          //load the data
-          var settings = result.expungevtSettings
-          app.settings = settings; 
-        }
-        callback();
-      });
-    },
-    loadResponses: function(callback){
-      chrome.storage.local.get('expungevtResponses', function (result) {
+      if (callback === undefined){
+        callback = function(){}
+      }
+
+        chrome.storage.local.get(function (result) {
         //test if we have any data
-        if (result.expungevtResponses !== undefined) {
-          //load the data
-          var responses = result.expungevtResponses
-          app.responses = responses; 
-        } else {
-          app.responses = {};
-        }
-        callback();
-      });
+          console.log("loading all");
+          console.log(JSON.stringify(result))
+          if (result.counts !== undefined) {
+              app.saved = result.counts
+          }
+          if (result.settings !== undefined && result.settings !== "") {
+            console.log("settings found")
+            console.log(JSON.stringify(result.settings))
+            Vue.set(app, "settings", result.settings)
+          } else {
+            console.log("No settings found, saving default settings")
+            app.saveSettings()
+          }
+          if (result.responses !== undefined) {
+              app.responses = result.responses
+          }
+          
+          callback();
+          app.$nextTick(function () {
+            app.updatePageTitle();
+            //call any vanilla js functions that need to run after vue is all done setting up.
+            initAfterVue();
+          })
+        })
     },
     groupCountsIntoFilings: function(counts, groupDockets = true){
       
@@ -417,9 +366,8 @@ var app = new Vue({
       return allCounts.filter((v, i, a) => a.indexOf(v) === i)
     },
     allDocketNumsObject: function (counts){
-
       allDocketNums = counts.map(function(count) {
-        return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + count.docketCounty}
+        return {num:count.docketNum, county:count.docketCounty, string: count.docketNum + " " + countyCodeFromCounty(count.county)}
       });
 
       //filter the docket number object array to make it unique
@@ -518,13 +466,6 @@ var app = new Vue({
           return "";
       }
     },
-    addFullDescriptionToCounts: function(){
-      for (countIndex in app.saved.counts) {
-          var count = app.saved.counts[countIndex];
-          var descriptionFull = count.description + " (" + count.docketNum + " " + count.docketCounty +")";
-          Vue.set(app.saved.counts[countIndex],"descriptionFull",descriptionFull);
-      }
-    },
     filterAndMakeFilingObject: function(counts,county,filingType,docketSheetNum=""){
       var countsOnThisFiling = counts.filter(count => count.county == county && count.filingType == filingType && (docketSheetNum =="" ||  docketSheetNum == count.docketSheetNum));
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
@@ -557,12 +498,38 @@ var app = new Vue({
         counts: countsOnThisFiling,
       }
     },
+    newCount: function(event){
+      this.saved.counts.push({ description: 'New', filingType:"" })
+    },
+    confirmDeleteCount: function(event, countId) {
+      event.stopPropagation();
+        if (this.saved.counts.length > 1) {
+          var currentCount = this.saved.counts.filter(count => count.uid === countId)[0]
+          if (confirm(`Are you sure that you would like to delete the count \"${currentCount.description}\"?`))
+          {
+            this.deleteCount(countId)
+          } 
+          return;
+        }  
+        if (confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information."))
+        {
+          this.clearAll()
+        }
+    },
+    deleteCount: function(countId){
+        index = this.saved.counts.findIndex(x => x.uid === countId);
+        Vue.delete(app.saved.counts, index);
+    },
     updatePageTitle: function(){
-      var title = "Filings for "+this.petitioner.name
-      document.title = title;
+      return
     },
     clearAll: function(){
+
+        chrome.storage.local.remove(['counts','responses'], function(){
       document.location.reload()
+
+      })
+
     },
     nl2br: function(rawStr) {
       var breakTag = '<br>';      
@@ -588,49 +555,117 @@ var app = new Vue({
     },
     slugify: function(string) {
       return string.replace(/\s+/g, '-').toLowerCase();
+    },
+    openPetitionsPage: function() {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, tabs => {
+          let index = tabs[0].index;
+          chrome.tabs.create({
+              url: chrome.extension.getURL('./filings.html'),
+              index: index + 1,
+          })
+      })
+    },
+    addAndOpenManagePage: function(){
+      if (this.saved.counts.length == 0){
+        this.newCount()
+        Vue.set(app.saved,"defName","New Petitioner")
+
+      }
+      this.openManagePage()
+    },
+    openManagePage: function (element) {
+        chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        }, tabs => {
+            let index = tabs[0].index;
+            chrome.tabs.create({
+                url: chrome.extension.getURL('./manage-counts.html'),
+                index: index + 1,
+            })
+        })
+  },
+  
+  addDocketCounts: function() {
+    chrome.tabs.executeScript(null, { file: 'payload.js' });
+  },
+  confirmClearData: function () {
+
+    if (confirm("Are you sure you want to clear all data for this petitioner?"))
+    {
+      this.clearAll()
     }
   },
+  resetSettings: function(element) {
+    if (confirm("Are you sure you want to reset setting to the defaults?"))
+    {
+        chrome.storage.local.remove(['settings'])
+    }
+  },
+  
+  printDocument:function(){
+    window.print();
+  },
+  exportContent:function(){
+    downloadCSV({ data_array: app.csvData, filename: app.csvFilename })
+  }
+},
   computed: {
   	petitioner: function () {
       return {
   		name: this.saved.defName,
   		dob: this.saved.defDOB,
-  		address: this.nl2br(this.linesBreaksFromArray(this.saved.defAddress)),
-      addressString: this.saved.defAddress.join(", ")
+  		address: this.nl2br(this.saved.defAddress)
   	  }
+    },
+    filings: function (){
+      var shouldGroupCounts = true;
+      if (this.settings.groupCounts !== undefined) {
+        shouldGroupCounts = this.settings.groupCounts;
+      }
+      return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
+    },
+    ineligible: function(){
+      return this.groupIneligibleCounts(this.saved.counts);
+    },
+    noAction: function(){
+      return this.groupNoAction(app.saved.counts);
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
     },
-    countsExpungedNC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
+    countsExpungedNC: function () {
+      return this.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");
     },
-    countsExpungedC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
+    countsExpungedC: function () {
+      return this.saved.counts.filter(count => count.filingType === "ExC" || count.filingType === "StipExC");
     },
-    countsExpungedNCrim: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
+    countsExpungedNCrim: function () {
+      return this.saved.counts.filter(count => count.filingType === "ExNCrim" || count.filingType === "StipExNCrim");
     },
-    countsSealC: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
+    countsSealC: function () {
+      return this.saved.counts.filter(count => count.filingType === "SC" || count.filingType === "StipSC");
     },
-    countsSealDui: function (data) {
-      return data.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
+    countsSealDui: function () {
+      return this.saved.counts.filter(count => count.filingType === "SDui" || count.filingType === "StipSDui");
     },
     numDockets: function(){
-      var numDockets = app.saved.counts.filter((e, i) => {
-        return app.saved.counts.findIndex((x) => {
+      var numDockets = this.saved.counts.filter((e, i) => {
+        return this.saved.counts.findIndex((x) => {
         return x.docketNum == e.docketNum && x.county == e.county;}) == i;
       });
       return numDockets.length
     },
     csvFilename:function(){
       var date = new Date()
-      return app.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
+      return this.slugify("filings for "+app.petitioner.name + " " + date.toDateString() + ".csv");
     },
     csvData:function(){
 
-      return app.saved.counts.map(function(count) {
+      return this.saved.counts.map(function(count) {
         return {
           Petitioner_Name: app.petitioner["name"], 
           Petitioner_DOB: app.petitioner.dob, 
@@ -659,6 +694,38 @@ var app = new Vue({
       if (!value) return ''
       value = value.toString()
       return value.charAt(0).toLowerCase() + value.slice(1)
+    },
+    sinceNow: function (value) {
+      if (!value) return ''
+      
+      let fromTime = moment(value).diff(moment(), "milliseconds")
+      let duration = moment.duration(fromTime)
+      let years = duration.years() / -1
+      let months = duration.months() / -1
+      let days = duration.days() / -1
+      if (years > 0) {
+          var Ys = years == 1 ? years + "y " : years + "y "
+          var Ms = months == 1 ? months + "m " : months + "m "
+          return Ys + Ms
+      } else {
+          if (months > 0)
+              return months == 1 ? months + "m " : months + "m "
+          else
+              return days == 1 ? days + "d " : days + "d "
+      }
+    },
+    dateFormatSimple: function (value){
+        if (!value) return ''
+        return moment(value).format("MM/DD/YYYY")
+
+
+    },
+    toCountyCode: function(value){
+        if (!value) return ''
+        return countyCodeFromCounty(value)
+
     }
+    
+
   }
 });
