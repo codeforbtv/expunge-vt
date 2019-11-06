@@ -25,6 +25,28 @@ a.btn {
     padding:4rem;
 }
 
+.disclaimer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding:4rem;
+    max-width:800px;
+    margin:auto;
+}
+.disclaimer-message {
+        max-width: 65rem;
+        width:70%;
+        min-width:50rem;
+        height: 100%;
+        margin-left:17rem;
+        margin-right:auto;
+        margin-top:2rem;
+        position: relative;
+        padding:1.5rem;
+        background-color:#eee;
+}
+
 /* reset page font sizes */
 .page p, .page h1 {
     margin-bottom:0;
