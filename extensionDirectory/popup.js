@@ -13,7 +13,7 @@ function initListeners() {
             chrome.storage.local.set({
                 counts: combinedData
             });
-\        });
+        });
     });
     $('body').on('click', 'select.petitionSelect', function(event) {
         //prevents the select in the petition cards from opening the accordion.
@@ -36,18 +36,18 @@ function appendDataWithConfirmation(newData, oldData) {
 
     var returnData = oldData
     var newCounts = newData.counts
-
+    var totalNumMatchingExistingCounts = 0
     for (count in newCounts) {
         var currentCount = newCounts[count]
         console.log(currentCount.uid)
-        if (oldData.counts.filter(count => count.uid === currentCount.uid).length = 0) {
+        var numMatchingExistingCounts = oldData.counts.filter(count => count.uid === currentCount.uid).length
+        if (numMatchingExistingCounts == 0) {
             returnData.counts.push(currentCount)
+            totalNumMatchingExistingCounts += numMatchingExistingCounts
         }
     }
 
-    var totalMatchCount = (oldData.counts.length + newData.counts.length) - returnData.counts.length
-
-    if (totalMatchCount > 0) {
+    if (totalNumMatchingExistingCounts > 0) {
         alert(`${totalMatchCount} counts matched existing counts and were not added.`)
     }
 

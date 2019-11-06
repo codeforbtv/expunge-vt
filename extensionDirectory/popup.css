@@ -122,7 +122,7 @@ p.pet-detail {
     align-content: center;
     text-align: center;
     width: 100%;
-    margin-top: 70px;
+    margin-top: 40px;
 }
 
 #mainButtonDiv {
@@ -159,9 +159,9 @@ p.pet-detail {
     white-space: nowrap;
 }
 
-#vtCourtsOnline {
+.title-page__link {
     margin-top: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     width: 70%;
     text-align: center;
     margin-left: auto;

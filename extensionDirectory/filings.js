@@ -1,6 +1,14 @@
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true
 
+$(document).on('keydown', function(e) { 
+  if((e.ctrlKey || e.metaKey) && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
+      e.cancelBubble = true;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      app.printDocument();
+  }  
+});
 
 function initAfterVue(){
   //sets intital height of all text areas to show all text.
@@ -126,6 +134,8 @@ function countyCodeFromCounty(county) {
     }
     return countyCodes[county]
 }
+
+
 
 //Vue app
 var app = new Vue({
@@ -305,7 +315,6 @@ var app = new Vue({
             }
           }
         }
-
         //add all filings for this county to the returned filing object.
         groupedFilings.push(
           {county:countyName,
