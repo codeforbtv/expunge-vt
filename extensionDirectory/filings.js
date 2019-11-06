@@ -26,38 +26,61 @@ function initTextAreaAutoExpand(){
   }, false);
 }
 
-// function getPhoneNumber(){
-//     notFilledArray = []
-//     let phoneValue = $("#no-print_phone");
-//     if (phoneValue.val().length == 0) {
-//       notFilledArray.push('Phone Number')
-//     }
-//     if (notFilledArray.length > 0){
-//       result = confirm("There are " + notFilledArray.length + " blank field(s): \n" + notFilledArray.toString());
-//     }else {
-//       result = true
-//     }
-//     return result
-// }
+function getPhoneNumber(){
+    //This array will hold all of the values that are not filled
+    notFilledArray = []
 
-// function initButtons(){
-//   document.addEventListener('click', function (event) {
-//     if (event.target.id === 'js-print') {
-//       getPhoneNumber();
-//       if (result){
-//         printDocument();
-//       }
-//     }
-//     if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
-//   }, false);
-// }
+    //Variables
+    let phoneValue = $(".printValue");
+    let attorneyName = $(".attorneyNameValue");
+    let attorneyAddress = $(".attorneyAddressValue");
+    let filingsId = $(".filingsID");
+    let proSe = document.getElementById("proSeCheckBox").checked;
+
+    if (phoneValue.val().length == 0) {
+      notFilledArray.push('Phone Number')
+    }
+    if (filingsId.val().length == 0) {
+      notFilledArray.push('Filings Id')
+    }
+    //Checks when Pro Se Box is NOT checked
+    if (proSe == false){
+      if (attorneyName.val().length == 0){
+        notFilledArray.push('Attorney Name')
+      }
+      if (attorneyAddress.val().length == 0){
+        notFilledArray.push('Attorney Address')
+      }
+    }
+    //This line ensures that each string in the array is printed
+    //to a seperate line in the confirm box.
+    notFilledArraySeperateLines = notFilledArray.join("\n")
+    if (notFilledArray.length > 0){
+      result = confirm("There are " + notFilledArray.length + " blank field(s): \n" + notFilledArraySeperateLines.toString());
+    }else {
+      result = true
+    }
+    return result
+}
 
 function initButtons(){
   document.addEventListener('click', function (event) {
-    if (event.target.id === 'js-print') printDocument();
+    if (event.target.id === 'js-print') {
+      getPhoneNumber();
+      if (result){
+        printDocument();
+      }
+    }
     if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
   }, false);
 }
+
+// function initButtons(){
+//   document.addEventListener('click', function (event) {
+//     if (event.target.id === 'js-print') printDocument();
+//     if (event.target.id === 'js-export') downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
+//   }, false);
+// }
 
 function initSmoothScroll(){
   var scroll = new SmoothScroll('a[href*="#"]',{
