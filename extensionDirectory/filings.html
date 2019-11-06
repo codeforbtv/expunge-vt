@@ -30,6 +30,7 @@
 
     <!-- Begin Vue App -->
 
+
     <div id="filing-app">
         <template v-if="saved.counts.length > 0 && (filings || ineligible)">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
@@ -517,7 +518,7 @@
                                 <article class="page" id="client-checkout">
                                     <div class="filing-document">
                                         <div class="filing__title">Client Checkout Sheet</div>
-                                        <p v-if="settings.proSe" class="pro-se">ATTENTION: You are filing the petition(s) described below PRO SE. This means that you will have no attorney. You are responsible for responding or appearing in court if necessary.</p>
+                                        <p v-if="settings.proSe" class="pro-se">You are asking the court to clear your record without any more help from an attorney. You will have to respond to the court and the State on your own when asked to do so.</p>
                                         <div class="filing-body">
                                             <div class="title petition__title"></div>
                                             <div class="client-checkout-header filing-header">
@@ -530,11 +531,11 @@
                                                     </p>
                                                 </div>
                                                 <div class="client-checkout-header-right filing-header__half">
-                                                    This is a summary of all expungement or sealing activity carried out today. If action was not taken on any VT criminal counts, it is noted here as well. Please review carefully and be sure to follow up where needed. <b>NOTE, this sheet DOES NOT necessarily include your entire criminal history.</b> Contact Legal Aid if you have additional questions.
+                                                    The information describes our efforts to clear your record today. This includes information about records you can try to clear now and records that have to wait. We can't be sure that your entire criminal record is listed here. Contact Legal Aid at (800) 889-2047 if you have questions.
                                                 </div>
                                             </div>
                                                 <div class="county-header" v-for="group in filings">
-                                                    <b>We found and reviewed {{group.filings[0].numCounts}} count(s) in <u>{{group.county}}</u> County:</b>
+                                                    <b>{{group.county}} County<br>We found and reviewed {{group.filings[0].numCounts}} <template v-if="group.filings[0].numCounts > 1">counts</template><template v-else>count</template>:</b>
                                                 <div v-for="filing in group.filings" v-if="filing.type !='NoA'">
                                                     <filing-type-heading v-if="filing.numCounts > 0" v-bind:heading="filing.type"></filing-type-heading>
                                                     <ul>
@@ -546,27 +547,26 @@
                                                         </li>
                                                     </ul>
                                                     <div class="atty-note-box">
-                                                        Notes: <span><textarea class="no-print client-text" v-model="responses[filing.id + 'summary']" placeholder="Type here..."></textarea></span>
-                                                        <p class="no-visible" v-html="nl2br(responses[filing.id + 'summary'])"></p>
+                                                        <span><textarea class="no-print client-text" v-model="responses[filing.id + 'summary']" v-bind:placeholder="'Type checkout notes for '+ group.county + ' here...'"></textarea></span>
+                                                        <p class="no-visible">Notes: <span v-html="nl2br(responses[filing.id + 'summary']) || ' '"></span></p>
                                                     </div>
                                                 </div>
                                             </div>      
                                             <div scope="col" Colspan="3" v-if="ineligible.length > 0">
-                                                <p>
-                                                    <b>Ineligible / No Filing</b>
-                                                </p>
-                                                <p>
-                                                    You had {{ineligible.length}} count(s) that we did not file anything for today. Future filing may be possible under current law or later enacted laws. The notes section below may provide further explanation. The details of these count(s) are as follows:
+                                               
+                                                    <b>You had {{ineligible.length}} <template v-if="ineligible.length > 1">counts</template><template v-else>count</template> that we did not file anything for today:</b>
                                                 </p>
                                                 <ul>
-                                                    <li v-for="filing in ineligible">
-                                                        In <b>{{filing.county}}</b> county, you were charged with {{filing.description}}. On {{filing.dispositionDate}}, the docket notes "{{filing.offenseDisposition}}." (Docket#  {{filing.docketNum}} {{filing.docketCounty}})
+                                                    <li v-for="(count, index) in ineligible">
+                                                        In <b>{{count.county}}</b> county, you were charged with {{count.description}}. On {{count.dispositionDate}}, the docket notes "{{count.offenseDisposition}}." (Docket#  {{count.docketNum}} {{count.docketCounty}})
+                                                        <div>
+                                                            <textarea class="no-print client-text" v-model="responses['ineligiblesummary' + index]" placeholder="Type checkout notes for this ineligible count here..."></textarea>
+                                                                <p class="no-visible" v-html="nl2br(responses['ineligiblesummary' + index])"></p>
+                                                        
+                                                        </div>  
                                                     </li>
                                                 </ul> 
-                                                <div class="atty-note-box">
-                                                    Notes: <span><textarea class="no-print client-text" v-model="responses[ineligiblesummary]" placeholder="Type here..."></textarea></span>
-                                                        <p class="no-visible" v-html="nl2br(responses[ineligiblesummary])"></p>
-                                                </div>                                        
+                                                                                      
                                             </div>
                                         </div>
                                     </div>

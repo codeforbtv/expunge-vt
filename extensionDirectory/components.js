@@ -31,7 +31,10 @@ Vue.component('filing-nav', {
           <a href="#extra-documents">Extra Documents</a>
           <ol>
             <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Clinic Summary Sheet</a>
+              <a href="#clinic-checkout">Clinic Record</a>
+            </li>
+            <li class="filing-nav__child-link">
+              <a href="#client-checkout">Client Summary Sheet</a>
             </li>
           </ol>
         </li>
@@ -96,4 +99,32 @@ Vue.component('pills-row', {
       return duration.asDays()/365.25
     },
   }
+});
+
+Vue.component('filing-type-heading', {
+  methods: {
+  getCheckoutPhrases(fType) {
+    checkoutPhrases=[
+      {type: "ExC", stipType: "StipExC", phrase: "The following are prior conviction(s) for which we prepared a petition to expunge:"},
+      {type: "ExNC", stipType: "StipExNC", phrase: "The following are cases that DID NOT result in a conviction and we prepared a petition to expunge:"},
+      {type: "ExNCrim", stipType: "StipExNCrim", phrase: "The following are counts that are no longer crimes and we prepared a petition to expunge:"},
+      {type: "SC", stipType: "StipSC", phrase: "The following are prior convictions and we prepared a petition to seal:"},
+      {type: "SDui", stipType: "StipSDui", phrase: "The following is a prior DUI conviction and we filed a petition to seal:"}
+    ]
+
+    for (i = 0; i<checkoutPhrases.length; i++) {
+      if (checkoutPhrases[i]["type"] == fType || checkoutPhrases[i]["stipType"] == fType) {
+        return checkoutPhrases[i]["phrase"]
+      }
+    }
+    console.log(checkoutPhrases)
+  }},
+  template: (`
+  <div>
+      <p>
+        {{getCheckoutPhrases(heading)}}
+      </p>
+  </div>
+  `),
+  props: ['heading']
 });

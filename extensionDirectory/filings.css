@@ -344,7 +344,7 @@ p.filing-dated-city {
 
 .county-header {
     border-top: 3px solid black;
-    border-bottom: 1px solid black;
+    /*border-bottom: 1px solid black;*/
     margin-bottom: 3px;
 }
 
