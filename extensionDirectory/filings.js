@@ -10,13 +10,6 @@ $(document).on('keydown', function(e) {
   }  
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    initButtons();
-    initTextAreaAutoExpand();
-    initSmoothScroll();
-    detectChangesInLocalStorage();
-}, false);
-
 function initAfterVue(){
   //sets intital height of all text areas to show all text.
   console.log(document.getElementsByTagName('body')[0].id);
