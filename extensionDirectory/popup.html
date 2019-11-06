@@ -89,8 +89,8 @@
                     <div class="card-header__title-row">
                         <div id="description-date" class="card-header__meta-data">
                         <div class="card-header__description btn btn-link btn-sm" >
-                            <p v-if="count.docketNum">{{count.docketNum}} {{count.county | toCountyCode }}</p>
-                            <p v-if="count.description">{{count.description}}</p>
+                            <p v-if="count.docketNum"><b>{{count.docketNum}} {{count.county | toCountyCode }}</b></p>
+                            <p v-if="count.description"><b>{{count.description}}</b></p>
                          </div>
                          <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate | dateFormatSimple}} ({{count.dispositionDate | sinceNow}} ago)</p>
 
@@ -114,21 +114,20 @@
                     </div>
                     <div class="card-header__bottom-row">
                         <pills-row v-bind:count="count" v-bind:dob="saved.defDOB"></pills-row>
-                        <i class="fas fa-folder-minus" v-on:click="confirmDeleteCount($event,count.uid)"></i>
                     </div>
                 </div>
         </div>
 
         <div class="collapse-section">
             <div class="card-body">
-                <p>County:&nbsp;<b>{{count.county}}</b></p>
+                <p>County:&nbsp;{{count.county}}</p>
 
-                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;<b>{{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</b></p>
-                <p>Disposition:&nbsp;<b>{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></b></p>
+                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
+                <p>Disposition:&nbsp;{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></p>
                 <div class="row text-left">
-                <div class="col-4">Offense Date:<br> <b>{{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></b></div>
-                <div class="col-4">Arrest/Citation Date:<br> <b>{{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span></b></div>
-                <div class="col-4">Disposition Date:<br><b>{{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></b></div>
+                <div class="col-4">Offense Date:<br> {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></div>
+                <div class="col-4">Arrest/Citation Date:<br> {{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span></div>
+                <div class="col-4">Disposition Date:<br>{{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></div>
               </div>
             </div>
         </div>
