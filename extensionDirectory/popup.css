@@ -157,6 +157,7 @@ p.pet-detail {
 
 .card-header__disposition-date {
     white-space: nowrap;
+    font-size: 14px;
 }
 
 .title-page__link {
@@ -280,11 +281,11 @@ hr {
     padding:0;
 }
 .card-header__meta-data {
-    width:65%;
+    width:55%;
     hyphens: auto;
 }
 .card-header__select {
-    width:35%;
+    width:45%;
     margin-left:0.5rem;
 }
 .card-header__select select {
