@@ -32,7 +32,7 @@
 
 
     <div id="filing-app">
-        <template v-if="saved.counts.length > 0 && (filings || ineligible)">
+        <template v-if="numCountsToExpungeOrSeal > 0">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
@@ -596,8 +596,8 @@
         </template>
         <template v-else>
             <div class="no-filings">
-                <p>There are no filings to prepare. Please navigate to <a href="https://secure.vermont.gov/vtcdas/user">VT
-                    Courts Online</a> and open the Expunge VT extension to begin a new session.</p>
+                <p>There are no filings to prepare. <span v-if="numCountsNoAction > 0">Please open the ExpungeVT extension window and select a filing type for at least one of the loaded counts.</span><span v-else>Please navigate to <a href="https://secure.vermont.gov/vtcdas/user">VT
+                    Courts Online</a> and open the Expunge VT extension to begin a new session.</span></p>
             </div>
         </template>
         </div>
