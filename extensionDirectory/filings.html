@@ -45,7 +45,7 @@
                         </label>
                         <button v-on:click="printDocument" class="btn btn-primary no-print">Print All</button>
                         <button v-on:click="exportContent" class="btn btn-primary no-print">Export to CSV</button>
-                        <a href="manage-counts.html" class="edit-counts btn btn-primary">Add/Edit Counts <i class="fas fa-edit"></i></a> 
+                        <a href="manage-counts.html" class="edit-counts btn btn-primary">Add/Edit Counts <i class="fas fa-edit"></i></a>
                     </div>
                 </div>
             </div>
@@ -194,7 +194,7 @@
                                                 <template v-else>
                                                     by and through counsel,
                                                     <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
-                                                </template>, and hereby moves the Court to expunge the record of the following 
+                                                </template>, and hereby moves the Court to expunge the record of the following
                                                 <span v-if="filing.multipleCounts">charges</span><span v-else>charge</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B).</p>
                                                  <p>1. Petitioner was convicted of the following <span v-if="filing.multipleCounts">crimes</span><span v-else>crime</span>:</p>
                                             <table class="count-table">
@@ -311,7 +311,8 @@
                                         <template v-if="filing.type != 'NoA'">
                                             <div class="filing-body__response">
                                                 <p class="no-visible" v-html="nl2br(responses[filing.id])"></p>
-                                                <textarea class="no-print" v-model="responses[filing.id]" placeholder="Type here..."></textarea>
+                                                <!-- <textarea class="no-print" v-model="responses[filing.id]" placeholder="Type here..."></textarea> -->
+                                                <textarea class="no-print" v-model="responses['filing']" placeholder="Type here..."></textarea>
                                             </div>
                                         </template>
 
@@ -540,7 +541,7 @@
                                                     <filing-type-heading v-if="filing.numCounts > 0" v-bind:heading="filing.type"></filing-type-heading>
                                                     <ul>
                                                         <li v-for="count in filing.counts">
-                                                            You were charged with {{count.description}}. 
+                                                            You were charged with {{count.description}}.
                                                             <p>
                                                                 Docket note: "{{count.offenseDisposition}}" - {{count.dispositionDate}}. (Docket#  {{count.docketNum}} {{count.docketCounty}})
                                                             </p>
@@ -551,9 +552,9 @@
                                                         <p class="no-visible">Notes: <span v-html="nl2br(responses[filing.id + 'summary']) || ' '"></span></p>
                                                     </div>
                                                 </div>
-                                            </div>      
+                                            </div>
                                             <div scope="col" Colspan="3" v-if="ineligible.length > 0">
-                                               
+
                                                     <b>You had {{ineligible.length}} <template v-if="ineligible.length > 1">counts</template><template v-else>count</template> that we did not file anything for today:</b>
                                                 </p>
                                                 <ul>
@@ -562,11 +563,11 @@
                                                         <div>
                                                             <textarea class="no-print client-text" v-model="responses['ineligiblesummary' + index]" placeholder="Type checkout notes for this ineligible count here..."></textarea>
                                                                 <p class="no-visible" v-html="nl2br(responses['ineligiblesummary' + index])"></p>
-                                                        
-                                                        </div>  
+
+                                                        </div>
                                                     </li>
-                                                </ul> 
-                                                                                      
+                                                </ul>
+
                                             </div>
                                         </div>
                                     </div>

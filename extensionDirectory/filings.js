@@ -1,13 +1,13 @@
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true
 
-$(document).on('keydown', function(e) { 
+$(document).on('keydown', function(e) {
   if((e.ctrlKey || e.metaKey) && (e.key == "p" || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80) ){
       e.cancelBubble = true;
       e.preventDefault();
       e.stopImmediatePropagation();
       app.printDocument();
-  }  
+  }
 });
 
 function initAfterVue(){
@@ -156,7 +156,7 @@ var app = new Vue({
     },
     responses: {}
   },
-  watch: 
+  watch:
   {
     'responses': {
        handler(){
@@ -168,7 +168,7 @@ var app = new Vue({
       handler(){
         console.log("settings updated")
         this.saveSettings()
-        app.$nextTick(function () 
+        app.$nextTick(function ()
         {
         //call any vanilla js functions after update.
           //initAfterFilingRefresh();
@@ -180,7 +180,7 @@ var app = new Vue({
       handler(){
         console.log("counts updated")
         this.saveCounts()
-        app.$nextTick(function () 
+        app.$nextTick(function ()
         {
         //call any vanilla js functions after update.
           //initAfterFilingRefresh();
@@ -238,7 +238,7 @@ var app = new Vue({
           if (result.responses !== undefined) {
               app.responses = result.responses
           }
-          
+
           callback();
           app.$nextTick(function () {
             app.updatePageTitle();
@@ -248,23 +248,23 @@ var app = new Vue({
         })
     },
     groupCountsIntoFilings: function(counts, groupDockets = true){
-      
-      // get all counties that have counts associated with them 
+
+      // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts)
 
       console.log("there are "+filingCounties.length+" counties for " + counts.length +" counts");
-      
+
       //create an array to hold all county filing objects
       var groupedFilings = []
-      
+
       //iterate through all counties and create the filings
       for (var county in filingCounties){
-        
+
         var countyName = filingCounties[county]
-        
+
         //filter all counts to the ones only needed for this county
         var allEligibleCountsForThisCounty = counts.filter(count => count.county == countyName && this.isFileable(count.filingType))
-        
+
         //figure out the filing types needed for this county.
         var filingsForThisCounty = this.groupByFilingType(allEligibleCountsForThisCounty)
 
@@ -297,13 +297,13 @@ var app = new Vue({
 
           //create the filing object that will be added to the array for this county
           var filingObject = this.filterAndMakeFilingObject(counts,countyName,filingType);
-          
+
           //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
           //this is determined based on the state of the UI checkbox for grouping.
           if (groupDockets || filingObject.numDocketSheets == 1) {
               allFilingsForThisCountyObject.push(filingObject);
               this.createResponseObjectForFiling(filingObject.id);
-          
+
           } else {
             //break the filing object into multiple petitions
             for (var docketNumIndex in filingObject.docketSheetNums) {
@@ -336,8 +336,8 @@ var app = new Vue({
 
             var docketObjectsThisSegment = allDocketNums.slice(start, end);
 
-            var docketsThisSegment = docketObjectsThisSegment.map(function(docket){   
-              return docket.num   
+            var docketsThisSegment = docketObjectsThisSegment.map(function(docket){
+              return docket.num
             });
 
             var segment = counts.filter(f => docketsThisSegment.includes(f.docketNum));
@@ -403,10 +403,10 @@ var app = new Vue({
     },
     isStipulated: function(filingType){
       return (
-        filingType == "StipExC" || 
+        filingType == "StipExC" ||
         filingType == "StipExNC" ||
-        filingType == "StipExNCrim" || 
-        filingType == "StipSC" ||  
+        filingType == "StipExNCrim" ||
+        filingType == "StipSC" ||
         filingType == "StipSDui");
     },
     isEligible: function(filingType){
@@ -517,9 +517,9 @@ var app = new Vue({
           if (confirm(`Are you sure that you would like to delete the count \"${currentCount.description}\"?`))
           {
             this.deleteCount(countId)
-          } 
+          }
           return;
-        }  
+        }
         if (confirm("Are you sure that you would like to delete the last count, this will clear all petitioner information."))
         {
           this.clearAll()
@@ -541,15 +541,15 @@ var app = new Vue({
 
     },
     nl2br: function(rawStr) {
-      var breakTag = '<br>';      
-      return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');  
+      var breakTag = '<br>';
+      return (rawStr + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
     },
     linesBreaksFromArray: function(array) {
       var string = "";
       var delimiter = "\r\n";
       var i;
-      for (i = 0; i < array.length; i++) { 
-        if (i > 0 ) 
+      for (i = 0; i < array.length; i++) {
+        if (i > 0 )
           {
             string += delimiter;
           }
@@ -597,7 +597,7 @@ var app = new Vue({
             })
         })
   },
-  
+
   addDocketCounts: function() {
     chrome.tabs.executeScript(null, { file: 'payload.js' });
   },
@@ -614,9 +614,46 @@ var app = new Vue({
         chrome.storage.local.remove(['settings'])
     }
   },
-  
-  printDocument:function(){
-    window.print();
+
+  printDocument: function(){
+    // This array will hold all the values that the user has not filled out.
+    let notFilledArray = []
+    let phoneValue = this.responses['phone'];
+    let filingsValue = this.responses['filing'];
+    let attorney = this.settings['attorney'];
+    let attorneyAddress = this.settings['attorneyAddress'];
+    let attorneyPhone = this.settings['attorneyPhone']
+    console.log(this.responses)
+    //Checking to see which values have not been filled out.
+    if (phoneValue.length == 0 || phoneValue == null) {
+      notFilledArray.push('Petitioner Phone Number')
+    }
+    if (filingsValue.length == 0 || filingsValue == null) {
+      notFilledArray.push('Filings')
+    }
+    //Checks when Pro Se Box is NOT checked
+    if (this.settings.proSe == false){
+      if (attorney.length == 0 || attorney == null){
+        notFilledArray.push('Attorney Name')
+      }
+      if (attorneyAddress.length == 0 || attorneyAddress == null){
+        notFilledArray.push('Attorney Address')
+      }
+      if (attorneyPhone.length == 0 || attorneyPhone == null){
+        notFilledArray.push('Attorney Phone')
+      }
+    }
+    //This line ensures that each string in the array is printed
+    //to a seperate line in the confirm box.
+    notFilledArraySeperateLines = notFilledArray.join("\n")
+    if (notFilledArray.length > 0){
+      result = confirm("There are " + notFilledArray.length + " blank field(s): \n" + notFilledArraySeperateLines.toString());
+    }else {
+      result = true
+    }
+    if (result){
+      window.print();
+    }
   },
   exportContent:function(){
     downloadCSV({ data_array: app.csvData, filename: app.csvFilename })
@@ -676,19 +713,20 @@ var app = new Vue({
 
       return this.saved.counts.map(function(count) {
         return {
-          Petitioner_Name: app.petitioner["name"], 
-          Petitioner_DOB: app.petitioner.dob, 
-          Petitioner_Address: app.petitioner.addressString, 
-          Petitioner_Phone: app.responses.phone, 
-          County: count.county, 
-          Docket_Sheet_Number:count.docketSheetNum, 
-          Count_Docket_Number:count.docketNum, 
-          Filing_Type:app.filingNameFromType(count.filingType), 
-          Count_Description:count.description, 
-          Count_Statute_Title: count.titleNum, 
-          Count_Statute_Section: count.sectionNum, 
-          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass), 
-          Offense_Disposition:count.offenseDisposition, 
+          Petitioner_Name: app.petitioner["name"],
+          Petitioner_DOB: app.petitioner.dob,
+          Petitioner_Address: app.petitioner.addressString,
+          Petitioner_Phone: app.responses.phone,
+          Petitioner_Filing: app.responses.filing,
+          County: count.county,
+          Docket_Sheet_Number:count.docketSheetNum,
+          Count_Docket_Number:count.docketNum,
+          Filing_Type:app.filingNameFromType(count.filingType),
+          Count_Description:count.description,
+          Count_Statute_Title: count.titleNum,
+          Count_Statute_Section: count.sectionNum,
+          Offense_Class:app.offenseAbbreviationToFull(count.offenseClass),
+          Offense_Disposition:count.offenseDisposition,
           Offense_Disposition_Date:count.dispositionDate}
       });
     }
@@ -706,7 +744,7 @@ var app = new Vue({
     },
     sinceNow: function (value) {
       if (!value) return ''
-      
+
       let fromTime = moment(value).diff(moment(), "milliseconds")
       let duration = moment.duration(fromTime)
       let years = duration.years() / -1
@@ -734,7 +772,7 @@ var app = new Vue({
         return countyCodeFromCounty(value)
 
     }
-    
+
 
   }
 });
