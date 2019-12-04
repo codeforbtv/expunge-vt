@@ -38,5 +38,3 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 ## Usage instructions
 
 See a working draft of user documentation here: https://docs.google.com/document/d/1tsb6ATu75B6rkEfKKBy32mENy5KHYtM-_wrg36Plc50/edit?usp=sharing
-
-MORE FUNCTIONALITY AVAILABLE SOON!
