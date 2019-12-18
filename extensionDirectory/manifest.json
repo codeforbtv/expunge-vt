@@ -2,7 +2,7 @@
     "name": "ExpungeVT!",
     "version": "1.0",
     "description": "Expunge records found on VTCourtsOnline with ease!",
-    "permissions": ["activeTab", "declarativeContent", "storage","<all_urls>","downloads"],
+    "permissions": ["activeTab", "declarativeContent", "storage","downloads"],
     "background": {
       "scripts": ["background.js"],
       "persistent": false
