@@ -5,9 +5,7 @@ initListeners();
 function initListeners() {
     // Listen to messages from the payload.js script and write to popout.html
     chrome.runtime.onMessage.addListener(function(message) {
-        console.log("message: "+JSON.stringify(message))
         newData = getPetitionerInfo(message);
-        console.log("newData: "+ JSON.stringify(newData))
         chrome.storage.local.get('counts', function(result) {
             combinedData = appendDataWithConfirmation(newData, result.counts)
             chrome.storage.local.set({
@@ -67,8 +65,6 @@ function appendDataWithConfirmation(newData, oldData) {
 
 function getPetitionerInfo(rawData) {
 
-    console.log("gettingPetitionerInfo")
-    
     //Get Defendant Name
     nameLocation = nthIndex(rawData, "Defendant:", 1) + 15
     nameLocationEnd = nthIndex(rawData, "DOB:", 1) - 40
@@ -134,13 +130,21 @@ function getCountInfo(rawData) {
             countObject = {};
             processCountLine1(allCountsArray[i], i / 2, rawData)
         } else { //Catch Line 2 of each count
-            description = allCountsArray[i].trim()
-            console.log("description: "+description)
-            description = description.replace(/\//g, " / ")
-            description = description.replace(/\s\s/g, " ")
-            countObject["description"] = description
+            description = allCountsArray[i].trim();
+            console.log("description: "+description);
+            description = description.replace(/\//g, " / ");
+            description = description.replace(/\s\s/g, " ");
 
-            counts.push(countObject)
+            var parser = new DOMParser;
+            var dom = parser.parseFromString(
+                '<!doctype html><body>' + description,
+                'text/html');
+            var decodedString = dom.body.textContent;
+
+            console.log(decodedString);
+            countObject["description"] = decodedString;
+
+            counts.push(countObject);
         }
     }
     return counts
@@ -159,13 +163,18 @@ function processCountLine1(countLine1, countNum, rawData) {
     //find location of fel/mis
     felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
-    //get section string(s)
+    console.log(countLine1Array)
+    //get section string(s) beginnging at index 5 - after title
+    let offenseSection = ""
     for (j = 5; j < felMisLocation; j++) {
         if (j === 5) {
             offenseSection = countLine1Array[j]
         } else {
             offenseSection = offenseSection + " " + countLine1Array[j]
         }
+    }
+    if (felMisLocation === 5) {
+        offenseSection = "-"
     }
 
     // get disposition string
