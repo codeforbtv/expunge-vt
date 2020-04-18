@@ -421,7 +421,7 @@ p.filing-dated-city {
         display:none !important;
     }
     .page {
-        page-break-after: always;
+        page-break-after: always !important;
         position: relative;
         overflow: visible;
         background:#fff;
@@ -449,6 +449,7 @@ p.filing-dated-city {
         width:100%;
         margin-left:0.75in;
         margin-right:0.75in;
+        page-break-after: always;
     }
 
     .footer-space {
