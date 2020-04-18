@@ -23,10 +23,10 @@ Vue.component('filing-nav', {
           <a href="#extra-documents">Cover Sheet</a>
           <ol>
             <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Clinic Record</a>
+              <a href="#clinic-checkout">Cover Letter</a>
             </li>
             <li class="filing-nav__child-link">
-              <a href="#client-checkout">Client Summary Sheet</a>
+              <a href="#client-checkout">Checkout Sheet</a>
             </li>
           </ol>
         </li>
