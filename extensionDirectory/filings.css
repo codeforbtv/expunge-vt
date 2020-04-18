@@ -478,6 +478,13 @@ p.filing-dated-city {
     .footer__phone {
         margin:0;
     }
+    .footer-input {
+        width: 100%;
+    }
+    .footer-input textarea{
+        display: block;
+        margin:auto;
+    }
     .count-table {
         page-break-inside:auto;
     }

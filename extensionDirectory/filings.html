@@ -72,11 +72,12 @@
                                     <div class="filing-document">
                                         <div class="filing-body">
                                             <div class="title petition__title"></div>
-                                            <p>{{settings['attorney']}}</p>
-                                            <input class="no-print" v-model="responses['prepaddress']" placeholder="Preparer Address">
-                                            <br>
+                                            <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                            <p><textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea></p>
+                                            <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress'])"></p>
                                             <br>
                                             <p>{{todayDate}}</p>
+                                            <br>
                                             <h1>{{petitioner.name}}</h1>
                                             <p class="filing-closing__petitioner-address" v-html="petitioner.address">
                                                 <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
@@ -89,8 +90,11 @@
                                             <p>{{petitioner.name}}:</p>
                                             <p>Thank you for attending todays clinic.</p>
                                             <p>Sincerely,</p>
-                                            <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
-
+                                            <p>{{settings['attorney']}}</p>
+                                            <p class="footer-input">
+                                                <input class="no-print" v-model="settings['footer1']" placeholder="- Code for BTV -"></input>
+                                                <input class="no-print" v-model="settings['footer2']" placeholder="- Code for BTV -"></input>
+                                            </p>
                                         </div>
                                     </div>
                                 </article>
@@ -578,8 +582,8 @@
             
 
             <div class="footer">
-                <p class="footer__company">Vermont Legal Aid, Inc.</p>
-                <p class="footer__phone">(800) 889-2047</p>
+                <p class="footer__company">{{settings['footer1']}}</p>
+                <p class="footer__phone">{{settings['footer2']}}</p>
             </div>
             </div>
         </template>
