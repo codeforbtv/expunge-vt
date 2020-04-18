@@ -686,6 +686,7 @@ var app = new Vue({
           Petitioner_DOB: app.petitioner.dob, 
           Petitioner_Address: app.petitioner.addressString, 
           Petitioner_Phone: app.responses.phone, 
+          Preparer_Address: app.responses.prepaddress,
           County: count.county, 
           Docket_Sheet_Number:count.docketSheetNum, 
           Count_Docket_Number:count.docketNum, 
@@ -697,6 +698,10 @@ var app = new Vue({
           Offense_Disposition:count.offenseDisposition, 
           Offense_Disposition_Date:count.dispositionDate}
       });
+    },
+    todayDate: function(){
+      date = moment().format('MMMM Do[, ]YYYY')
+      return date
     }
   },
   filters: {

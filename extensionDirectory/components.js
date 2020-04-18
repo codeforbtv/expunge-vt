@@ -19,16 +19,8 @@ Vue.component('docket-caption', {
 Vue.component('filing-nav', {
   template: (`<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
-        <li v-for="group in filings" class="filing-nav__parent-link">
-        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
-        <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
-          <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
-          </li>
-        </ol>
-        </li>
         <li class="filing-nav__parent-link">
-          <a href="#extra-documents">Extra Documents</a>
+          <a href="#extra-documents">Cover Sheet</a>
           <ol>
             <li class="filing-nav__child-link">
               <a href="#clinic-checkout">Clinic Record</a>
@@ -37,6 +29,15 @@ Vue.component('filing-nav', {
               <a href="#client-checkout">Client Summary Sheet</a>
             </li>
           </ol>
+        </li>
+        <br>
+        <li v-for="group in filings" class="filing-nav__parent-link">
+        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+        <ol>
+          <li v-for="filing in group.filings" class="filing-nav__child-link"><a v-bind:href="'#'+filing.id">{{filing.title}}</a>
+          <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
+          </li>
+        </ol>
         </li>
       </ol>
       </div>
