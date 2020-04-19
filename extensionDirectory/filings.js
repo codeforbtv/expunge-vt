@@ -54,18 +54,6 @@ function detectChangesInChromeStorage(){
   });
 }
 
-function detectChangesInLocalStorage(){
-  // chrome.storage.onChanged.addListener(function(changes, namespace) {
-  // var storageChange = changes['counts'];
-  // if (storageChange === undefined) return;
-  // if (storageChange.newValue === undefined) {
-  //     app.clearAll();
-  //     return
-  // };
-  //   app.loadAll(function(){})
-  // });
-}
-
 function initScrollDetection() {
   //initates the scrollspy for the filing-nav module.
   var spy = new Gumshoe('#filing-nav a',{
@@ -180,7 +168,7 @@ var app = new Vue({
     },
     'settings': {
       handler(){
-        console.log("settings updated")
+        // console.log("settings updated")
         this.saveSettings()
         app.$nextTick(function () 
         {
@@ -207,11 +195,10 @@ var app = new Vue({
   	console.log('App mounted!');
     this.loadAll();
     detectChangesInChromeStorage();
-
   },
   methods:{
     saveSettings: function(){
-      console.log("save settings", app.settings)
+      // console.log("save settings", app.settings)
       settingString = JSON.stringify(this.settings)
       localStorage.setItem('localSettings',settingString);
     },
@@ -675,6 +662,15 @@ var app = new Vue({
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
+    },
+    numCountsStipulated: function () {
+      let stipCount = 0;
+      this.saved.counts.forEach(element => {
+        if (element.filingType.includes("Stip")) {
+          stipCount++
+        }
+      });
+      return stipCount
     },
     countsExpungedNC: function () {
       return this.saved.counts.filter(count => count.filingType === "ExNC" || count.filingType === "StipExNC");

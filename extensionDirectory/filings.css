@@ -327,6 +327,11 @@ p.filing-dated-city {
 }
 
 /* CHeckout sheet */
+.client-checkout-header {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1rem;
+}
 
 .client-checkout-header-left {
     width: 40%;
@@ -358,6 +363,11 @@ p.filing-dated-city {
 
 .summary-table td {
     padding: 3px !important;
+}
+
+.footer__input {
+    width: 100%;
+    text-align: center;
 }
 
 @media screen {
@@ -478,13 +488,7 @@ p.filing-dated-city {
     .footer__phone {
         margin:0;
     }
-    .footer-input {
-        width: 100%;
-    }
-    .footer-input textarea{
-        display: block;
-        margin:auto;
-    }
+
     .count-table {
         page-break-inside:auto;
     }

@@ -205,7 +205,7 @@ function processCountLine1(countLine1, countNum, rawData) {
         "offenseClass": countLine1Array[felMisLocation],
         "dispositionDate": parseDateFromDocket(dispositionDate),
         "offenseDisposition": offenseDisposition,
-        "filingType": "",
+        "filingType": "X",
         "docketSheetNum": docketSheetNum,
         "outstandingPayment": isSurchageDue(rawData),
         "isDismissed": isDismissed(offenseDisposition)
