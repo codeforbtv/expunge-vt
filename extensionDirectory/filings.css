@@ -225,7 +225,7 @@ p.document-meta-data__body {
 }
 
 .filing-header__docket-number {
-    text-align: left;
+    text-align: right;
     display:inline-block;
 }
 
