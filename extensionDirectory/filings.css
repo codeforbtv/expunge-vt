@@ -527,7 +527,10 @@ p.filing-dated-city {
 }
 
 
-
+/* cover letter */
+.custom-note {
+    width: 100%;
+}
 
 /*manage-counts page*/
 .edit-count {

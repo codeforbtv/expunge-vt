@@ -80,23 +80,30 @@
                                             <p>{{todayDate}}</p>
                                             <br>
                                             <h1>{{petitioner.name}}</h1>
-                                            <p class="filing-closing__petitioner-address" v-html="petitioner.address">
-                                                <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
-                                                    <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number">
-                                                </p>
+                                            <p>
+                                                <span class="filing-closing__petitioner-address" v-html="petitioner.address"></span><span class="no-visible"><br>{{responses['phone']}}</span>
+                                            </p>
+                                            
+                                            <p class="no-print" >
+                                                Phone: <input v-model="responses['phone']" placeholder="Petitioner Phone Number">
                                             </p>
                                             <br>
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>
                                             <p>{{petitioner.name}}:</p>
-                                            <p>Thank you for meeting regarding your sealing and expungement needs. We have prepared the following document(s) for you today:</p>
+                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if="filings.length > 0">documents</span><span v-else>document</span> for you today:</p>
                                             <ul> 
-                                                <li>Clinic Checkout Sheet (summarizing all activity)</li>
+                                                <li>Client Checkout Sheet</li>
                                                 <span v-for="group in filings" v-bind:id="group.county">
-                                                    <li>{{group.filings.length - 1}} petition for {{group.county}} county</li> 
+                                                    <li>
+                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county (<span>{{returnCountyContact(group.county)}}</span>)
+                                                    </li> 
                                                 </span>
                                             </ul>
-                                            <p>The information describes our efforts to clear your record today. This includes information about records you can try to clear now and records that have to wait. We can't be sure that your entire criminal record is listed here. Contact Legal Aid at (800) 889-2047 if you have questions.</p>
+                                            <p>The client checkout sheet provides greater detail on the criminal history we reviewed. We only reviewed the information available to us and this may not include your entire history.
+                                            </p>
+                                            <textarea class="custom-note no-print" v-model="settings['customNote']" placeholder="Enter custom text"></textarea>
+                                            <p class="no-visible" v-html="settings['customNote']"></p>
                                             <p v-if="settings.proSe"><b>You are asking the court to clear your record without any more help from an attorney. You will have to respond to the court and the State on your own when asked to do so.</b></p>
                                             <p>Please feel free to get in touch if you have any questions.</p>
                                             <p>Sincerely,</p>
@@ -147,7 +154,7 @@
                                                         </thead>
                                                         <tbody>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedC.length > 0">
-                                                                CONVICTION petitions drafted...
+                                                                CONVICTION petitions drafted:
                                                             </th>
                                                             <tr v-for="filing in countsExpungedC">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
@@ -159,7 +166,7 @@
                                                                 </td>
                                                             </tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
-                                                                NON-CONVICTION petitions drafted...
+                                                                NON-CONVICTION petitions drafted:
                                                             </th>
                                                             <tr v-for="filing in countsExpungedNC">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
@@ -171,7 +178,7 @@
                                                                 </td>
                                                             </tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
-                                                                NON-CRIME petitions drafted...
+                                                                NON-CRIME petitions drafted:
                                                             </th>
                                                             <tr v-for="filing in countsExpungedNCrim">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
@@ -182,7 +189,7 @@
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
                                                             </tr>
-                                                            <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted...</th>
+                                                            <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted:</th>
                                                             <tr v-for="filing in countsSealC">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
@@ -192,7 +199,7 @@
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
                                                             </tr>
-                                                            <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted...</th>
+                                                            <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted:</th>
                                                             <tr v-for="filing in countsSealDui">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
@@ -203,7 +210,7 @@
                                                                 </td>
                                                             </tr>
                                                             <th scope="col" Colspan="3" v-if="ineligible.length > 0">
-                                                                No action taken...</th>
+                                                                NO ACTION TAKEN:</th>
                                                             <tr v-for="filing in ineligible">
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
