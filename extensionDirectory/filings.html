@@ -88,16 +88,19 @@
                                                 </div>
                                             </div>
                                             <br>
-                                            <p>{{todayDate}}</p>
-                                            <br>
-                                            <h1>{{petitioner.name}}</h1>
-                                            <p>
-                                                <span class="filing-closing__petitioner-address" v-html="petitioner.address"></span><span class="no-visible"><br>{{responses['phone']}}</span>
-                                            </p>
+                                            <div class="to-date-block">
+                                                <div class="to-block">
+                                                    <h1>{{petitioner.name}}</h1>
+                                                    <p>
+                                                        <span class="filing-closing__petitioner-address" v-html="petitioner.address"></span><span class="no-visible"><br>{{responses['phone']}}</span>
+                                                    </p>
+                                                    <p class="no-print" >
+                                                        Phone: <input v-model="responses['phone']" placeholder="Petitioner Phone Number">
+                                                    </p>
+                                                </div>
+                                                <p class="date-block">{{todayDate}}</p>
+                                            </div>
                                             
-                                            <p class="no-print" >
-                                                Phone: <input v-model="responses['phone']" placeholder="Petitioner Phone Number">
-                                            </p>
                                             <br>
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>

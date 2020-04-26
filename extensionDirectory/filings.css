@@ -256,7 +256,7 @@ p.document-meta-data__body {
     width:100%;
 }
 
-.from-block {
+.from-block, .to-date-block {
     display: flex;
     flex-direction: row;
 }
@@ -265,6 +265,16 @@ p.document-meta-data__body {
     width: 8.5%;
     height: 8.5%;
     margin-right: 35px;
+}
+.to-date-block {
+    width: 100%;
+}
+.to-block {
+    width: 70%;
+}
+.date-block {
+    text-align: right;
+    width: 30%;
 }
 
 .count-table__header {
