@@ -73,9 +73,14 @@
                                     <div class="filing-document">
                                         <div class="filing-body">
                                             <div class="title petition__title"></div>
-                                            <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
-                                            <p><textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea></p>
-                                            <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress'])"></p>
+                                            <div class="from-block">
+                                                <img src="images/icon_128.png">
+                                                <div class="atty-block">
+                                                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <p><textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea></p>
+                                                    <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress'])"></p>
+                                                </div>
+                                            </div>
                                             <br>
                                             <p>{{todayDate}}</p>
                                             <br>
@@ -140,7 +145,7 @@
                                                 </div>
                                                 <div class="client-checkout-header-right">
                                                     <p v-if="numCountsStipulated > 0"><span><i
-                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol indicates that we prepared stipulated petitions. This means that if the State signs them, they agree to expunge or seal. This does not necessarily mean the Court will agree.
+                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol indicates that we prepared a stipulated petition for the listed count. This means that if the State signs the petition, it agrees to expunge or seal. This does not necessarily mean that the Court will agree.
                                                     </p>
                                                 </div>  
                                             </div>

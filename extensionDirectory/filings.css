@@ -253,6 +253,17 @@ p.document-meta-data__body {
     width:100%;
 }
 
+.from-block {
+    display: flex;
+    flex-direction: row;
+}
+
+.from-block img {
+    width: 8.5%;
+    height: 8.5%;
+    margin-right: 35px;
+}
+
 .count-table__header {
     border-top:1px solid #999;
     border-bottom:1px solid #999;
