@@ -37,11 +37,17 @@
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
+                        Role  
+                        <label class="card-header__select">  
+                            <select class="form-control form-control-sm" v-model="settings.role" class="roleSelect selectpicker">
+                                <option value="AttyConsult">Attorney: Consult Only</option>
+                                <option value="AttyAppear">Attorney: Appearing</option>
+                                <option value="AdminAssist">Administrative</option>
+                                <option value="StateAtty">State Preparer</option>
+                            </select>
+                        </label>
                         <label v-if="numDockets > 1">Consolidate Docket Sheets
                             <input type="checkbox" v-model="settings.groupCounts">
-                        </label>
-                        <label>Pro Se
-                            <input type="checkbox" v-model="settings.proSe">
                         </label>
                         <button v-on:click="printDocument" class="btn btn-primary no-print">Print All</button>
                         <button v-on:click="exportContent" class="btn btn-primary no-print">Export to CSV</button>
@@ -109,7 +115,10 @@
                                             </p>
                                             <textarea class="custom-note no-print" v-model="settings['customNote']" placeholder="Enter custom text"></textarea>
                                             <p class="no-visible" v-html="settings['customNote']"></p>
-                                            <p v-if="settings.proSe"><b>You are asking the court to clear your record without any more help from an attorney. You will have to respond to the court and the State on your own when asked to do so.</b></p>
+                                            <p v-if="settings.role == 'AttyConsult'">You are being represented by an Attorney ONLY in relation to reviewing your record and preparing your expungement or sealing petitions. Your communications with your attorney will be kept confidential except your attorney may provide personal information in your petitions unless you tell your attorney not to. While your attorney may agree to file any petitions listed here for you, they will NOT enter an appearance in the matter.You will have to respond to the court and the State on your own when asked to do so.</p>
+                                            <p v-if="settings.role == 'AttyAppear'">You are being represented by an Attorney  in relation to your matter. Your attorney will file the petitions listed here for you; will enter an appearance in your action; and keep you informed. Your communications with your attorney will be kept confidential except your attorney may provide information to the court as needed for your matter unless you tell your attorney not to. Your attorney can be reached using the contact info listed above.</p>
+                                            <p v-if="settings.role == 'AdminAssist'">The assistance received here in preparing your expungement or sealing petitions is administrative only. The person(s) assisting are not attorneys, and communications do not benefit from attorney client privilege. If you file any expungement or sealing petition, you are asking the court to clear your record without any representationfrom an attorney. You will have to respond to the court and the State on your own whenasked to do so.</p>
+                                            <p v-if="settings.role == 'StateAtty'">Person(s) assisting in your matter may be an attorney, but they represent the State and the State's interest in expunging or sealing your record. They are not your attorney and communications do not benefit from attorney client privilege. If you file any expungement or sealing petition, you are asking the court to clear your record without any representation from an attorney. You will have to respond to the court and the State on your own when asked to do so.</p>
                                             <p>Please feel free to get in touch if you have any questions.</p>
                                             <p>Sincerely,</p>
                                             <p>{{settings['attorney']}}</p>
@@ -292,7 +301,7 @@
                                         <div class="filing-body" v-if="filing.type == 'NoA'">
                                             <p class="indent">
 
-                                                <template v-if="settings.proSe">
+                                                <template v-if="proSeFromRole(settings.role)">
                                                     NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), appearing <span class="italic">pro se</span>, and hereby enters this notice of appearance in the above captioned action.
                                                 </template>
                                                 <template v-else>
@@ -305,7 +314,7 @@
                                         <div class="filing-body" v-if="filing.type == 'ExC' || filing.type == 'StipExC'">
                                             <p class="indent">
                                                 NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
-                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                <template v-if="proSeFromRole(settings.role)">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
@@ -347,7 +356,7 @@
 
                                             <p class="indent">
                                                 NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
-                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                <template v-if="proSeFromRole(settings.role)">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
@@ -385,7 +394,7 @@
 
                                             <p class="indent">
                                                 NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
-                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                <template v-if="proSeFromRole(settings.role)">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
@@ -423,7 +432,7 @@
 
                                             <p class="indent">
                                                 NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}),
-                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                <template v-if="proSeFromRole(settings.role)">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
@@ -464,7 +473,7 @@
 
                                             <p class="indent">
                                                 NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob }}),
-                                                <template v-if="settings.proSe">appearing <span class="italic">pro se</span>
+                                                <template v-if="proSeFromRole(settings.role)">appearing <span class="italic">pro se</span>
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
@@ -519,7 +528,7 @@
                                                 <div class="filing-closing__signature-area">
                                                     <div class="filing-closing__signature-box">
 
-                                                        <template v-if="settings.proSe">
+                                                        <template v-if="proSeFromRole(settings.role)">
 
                                                             <p class="filing-closing__name">{{petitioner.name}}, Petitioner</p>
                                                             <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
@@ -551,7 +560,7 @@
                                                 <div class="filing-closing__signature-area filing-closing--align-right">
                                                     <div class="filing-closing__signature-box">
 
-                                                        <template v-if="settings.proSe">
+                                                        <template v-if="proSeFromRole(settings.role)">
                                                             <p class="filing-closing__name">{{petitioner.name}}, Petitioner
                                                             </p>
                                                             <div class="filing-closing__contact-box">
