@@ -646,6 +646,7 @@ var app = new Vue({
   },
   returnCountyContact:function(cty){
     allCounties = this.countiesContact;
+    console.log("Number: "+ allCounties[cty])
     return allCounties[cty];
   }
 },

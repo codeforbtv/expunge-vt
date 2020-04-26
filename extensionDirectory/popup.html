@@ -121,7 +121,7 @@
             <div class="card-body">
                 <p>County:&nbsp;{{count.county}}</p>
 
-                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
+                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-html="'&nbsp;&sect; ' + count.sectionNum " v-if="count.sectionNum"></span>&nbsp;({{count.offenseClass}})</p>
                 <p>Disposition:&nbsp;{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></p>
                 <div class="row text-left">
                 <div class="col-4">Offense Date:<br> {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></div>

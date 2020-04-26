@@ -140,7 +140,7 @@
                                                 </div>
                                                 <div class="client-checkout-header-right">
                                                     <p v-if="numCountsStipulated > 0"><span><i
-                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol means that the State stipulated or agreed to expungement or sealing of the count. This does not necessarily mean the court will agree.
+                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol indicates that we prepared stipulated petitions. This means that if the State signs them, they agree to expunge or seal. This does not necessarily mean the Court will agree.
                                                     </p>
                                                 </div>  
                                             </div>
@@ -367,7 +367,8 @@
                                                 </tbody>
                                             </table>
 
-                                            <p>2. All dismissed charges are eligible for expungement pursuant to 13 V.S.A. &sect; 7603.</p>
+                                            <p>2. <span v-if="filing.multipleCounts">All
+                                                dismissed charges</span><span v-else>This charge is</span> eligible for expungement pursuant to 13 V.S.A. &sect; 7603.</p>
 
                                             <p>3. Expunging all record of <span v-if="filing.multipleCounts">these
                                                     dismissed charges</span><span v-else>this dismissed charge</span> serves the interest of justice, as</p>

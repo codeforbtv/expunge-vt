@@ -462,9 +462,6 @@ p.filing-dated-city {
         page-break-after: always;
     }
 
-    .footer-space {
-
-    }
     .footer-space__vertical-spacer {
         min-height:50px;
     }
