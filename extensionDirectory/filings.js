@@ -229,7 +229,7 @@ var app = new Vue({
           console.log(this.settings)
         } else {
           console.log("No settings found, saving default settings")
-          app.saveSettings()
+          this.saveSettings()
         }
       
         chrome.storage.local.get(function (result) {
