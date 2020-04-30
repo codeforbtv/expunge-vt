@@ -228,7 +228,7 @@ hr {
 .button-div {
     display:flex;
     flex-direction: row;
-    width: 100%;
+    width: auto;
     justify-content: center;
     margin: 25px 10px 5px 10px;  
     text-align: center;
@@ -239,7 +239,7 @@ hr {
 }
 
 .add-docket-info {
-    width: 150px;
+    width: 158px;
 }
 
 .create-documents {
