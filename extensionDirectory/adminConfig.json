@@ -1,7 +1,7 @@
 {
   "expungeHeadline": "<u><b>The next clinic will be on May 22. Training will be on the 19th.</b></u> Talk to Mairead for more information. And don't forget, you are a bright shining star in the criminal justice reform universe!",
   "letter": {
-        "p1": "Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 0'>documents</span><span v-else>document</span> for you today:"
+        "p1": "Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 1'>documents</span><span v-else>document</span> for you today:"
   },
   "roleText": {
         "attyConsult": "You are being represented by an Attorney ONLY in relation to reviewing your record and preparing your expungement or sealing petitions. Your communications with your attorney will be kept confidential except your attorney may provide personal information in your petitions unless you tell your attorney not to. While your attorney may agree to file any petitions listed here for you, they will NOT enter an appearance in the matter.You will have to respond to the court and the State on your own when asked to do so.",
