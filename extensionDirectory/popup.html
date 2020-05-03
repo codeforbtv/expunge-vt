@@ -41,8 +41,7 @@
             <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
             <button v-on:click="addAndOpenManagePage" class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-edit"></i></button>
         </div>
-        <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
-        </p>
+        <p id="introText" v-html="popupHeadline"></p>
         <a id="vtCourtsOnlineA" class="title-page__link" target="_blank" href="https://secure.vermont.gov/vtcdas/user">
             <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
         </a>

@@ -75,7 +75,7 @@ p.pet-detail {
     width: 100%;
     height: 100%;
     background-color: white;
-    position:fixed;
+    /* position:fixed; */
     padding:0;
     margin:0;
     box-sizing: border-box;
@@ -149,10 +149,11 @@ p.pet-detail {
 
 #introText {
     margin-top: 10px;
-    width: 70%;
+    width: 80%;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+    border:1px solid grey;
 }
 
 .card-header__disposition-date {

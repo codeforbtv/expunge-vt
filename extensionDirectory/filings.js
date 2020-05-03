@@ -159,6 +159,8 @@ var app = new Vue({
     },
     responses: {},
     countiesContact: {},
+    popupHeadline: {},
+    roleCoverLetterText: {}
   },
   watch: 
   {
@@ -216,7 +218,7 @@ var app = new Vue({
     },
     loadAll: function(callback){
 
-      this.getCountyContactInfo();
+      this.getAdminConfig();
 
       if (callback === undefined){
         callback = function(){}
@@ -634,11 +636,14 @@ var app = new Vue({
   exportContent:function(){
     downloadCSV({ data_array: app.csvData, filename: app.csvFilename })
   },
-  getCountyContactInfo:function(){
+  getAdminConfig:function(){
 
-    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expunge-vt/master/extensionDirectory/counties.json', function(data) {
-      this.countiesContact = data;
-      console.log(this.countiesContact)
+    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expunge-vt/master/extensionDirectory/adminConfig.json', function(data) {
+      this.countiesContact = data["countyContacts"];
+      this.popupHeadline = data["expungeHeadline"];
+      this.roleCoverLetterText = data["roleText"];
+
+      console.log("adminConfig data has been set ",data)
     }.bind(this));
 
   },
