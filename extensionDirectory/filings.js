@@ -136,6 +136,21 @@ function countyCodeFromCounty(county) {
 }
 
 
+var childLetter = new Vue({
+  el: "childLetterEl",
+  name: "childLetter",
+  template: '<p>'+parentLetterContent["p1"]+'</p>',
+  props: {
+    parentLetterContent: {
+      type: Object,
+      required: true,
+      default: function (){return {"p1":"did not work"}}
+    }
+  }
+})
+
+  
+
 
 //Vue app
 var app = new Vue({
@@ -160,7 +175,8 @@ var app = new Vue({
     responses: {},
     countiesContact: {},
     popupHeadline: {},
-    roleCoverLetterText: {}
+    roleCoverLetterText: {},
+    coverLetterContent: {}
   },
   watch: 
   {
@@ -193,6 +209,23 @@ var app = new Vue({
       deep:true
     }
   },
+  beforeCreate () {
+
+    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expunge-vt/master/extensionDirectory/adminConfig.json', function(data) {
+      this.countiesContact = data["countyContacts"];
+      this.popupHeadline = data["expungeHeadline"];
+      this.roleCoverLetterText = data["roleText"];
+      this.coverLetterContent = data["letter"];
+      console.log("adminConfig data has been set ",data)
+    }.bind(this))
+    // .then( function (result){
+    //   // $(".letter-body").append("<p>"+result["letter"]["p1"]+"</p>")
+    // });
+
+},
+ components: {
+  child:childLetter
+ },
   mounted() {
   	console.log('App mounted!');
     this.loadAll();
@@ -218,7 +251,6 @@ var app = new Vue({
     },
     loadAll: function(callback){
 
-      this.getAdminConfig();
 
       if (callback === undefined){
         callback = function(){}
@@ -636,17 +668,6 @@ var app = new Vue({
   exportContent:function(){
     downloadCSV({ data_array: app.csvData, filename: app.csvFilename })
   },
-  getAdminConfig:function(){
-
-    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expunge-vt/master/extensionDirectory/adminConfig.json', function(data) {
-      this.countiesContact = data["countyContacts"];
-      this.popupHeadline = data["expungeHeadline"];
-      this.roleCoverLetterText = data["roleText"];
-
-      console.log("adminConfig data has been set ",data)
-    }.bind(this));
-
-  },
   returnCountyContact:function(cty){
     allCounties = this.countiesContact;
     console.log("Number: "+ allCounties[cty])
@@ -748,7 +769,7 @@ var app = new Vue({
     todayDate: function(){
       date = moment().format('MMMM Do[, ]YYYY')
       return date
-    }
+    },
   },
   filters: {
     uppercase: function (value) {

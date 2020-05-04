@@ -108,7 +108,11 @@
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>
                                             <p>{{petitioner.name}}:</p>
-                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if="filings.length > 0">documents</span><span v-else>document</span> for you today:</p>
+                                            <child-letter v-bind:parentLetterContent="coverLetterContent"/>
+                                            <!-- <div class="letter-body">
+
+                                            </div> -->
+                                            <p v-html="coverLetterContent['p1']"></p>
                                             <ul> 
                                                 <li>Client Checkout Sheet</li>
                                                 <span v-for="group in filings" v-bind:id="group.county">
