@@ -3,13 +3,11 @@
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
       <div class="docket-caption__names">
-      <p class="docket-caption__party">State of Vermont,</p>
-      <p>v.</p>
-      <p class="docket-caption__party">{{name}}</p>
-      <p class="docket-caption__label">Petitioner</p>
-      </div>
-      <div class="capParens">
-          )<br>)<br>)<br>)
+        <p class="">STATE OF VERMONT,</p>
+        <p><i>Respondent</i></p>
+        <p>v.</p>
+        <p class="docket-caption__party">{{name}},</p>
+        <p class="docket-caption__label">Petitioner</p>
         </div>
       </div>
       `),

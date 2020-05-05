@@ -105,10 +105,11 @@ a.btn {
     height: calc(100vh - 60px);
     left:0;
     padding:1rem;
-    z-index: 100;
+    z-index: 9;
     background-color:#fff;
     width:15em;
     overflow-y:scroll;
+    padding-top:40px;
 }
 .filing-nav ol {
     padding:0;
@@ -214,9 +215,10 @@ p.document-meta-data__body {
 }
 .docket-caption {
     display: flex;
+    border-right: 1px solid black;
 }
 .docket-caption__names {
-    width: 90%;
+    width: 100%;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
@@ -261,11 +263,19 @@ p.document-meta-data__body {
     flex-direction: row;
 }
 
-.from-block img {
+.generic-logo {
     width: 8.5%;
     height: 8.5%;
     margin-right: 35px;
 }
+
+.vla-logo  {
+    width: auto;
+    height: 8.5%;
+    margin-right: 35px;
+    min-height: 50px;
+}
+
 .to-date-block {
     width: 100%;
 }
@@ -551,6 +561,14 @@ p.filing-dated-city {
 /* cover letter */
 .custom-note {
     width: 100%;
+    height: auto;
+}
+.atty-block {
+    width: 100%;
+    padding-top: 15px;
+}
+.atty-block input, .atty-block textarea{
+    width: 100%;
 }
 
 /*manage-counts page*/
@@ -563,4 +581,35 @@ p.filing-dated-city {
 .edit-count__title {
   max-width:60%;
   overflow-wrap: break-word;
+}
+
+/* MODAL SETTINGS */
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.modal-body textarea, .modal-body input, .modal-body .card-header__select{
+    width: 100%;
+}
+
+.modal-title {
+    font-weight: bolder;
+}
+.roleSelect{
+    width: 100%;
+    color: #222;
+}
+.modal-vla-check {
+    display: flex;
+    flex-direction: row; 
+}
+.modal-vla-title {
+    width: 100%;
+}
+.modal-vla-check input {
+    width: 20%;
+    width: 1.2em;
+    height: 1.2em;
+    margin-left: 20px;
 }

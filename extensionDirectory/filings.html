@@ -32,29 +32,78 @@
 <body id="filing-page">
 
     <!-- Begin Vue App -->
-
-
+    
     <div id="filing-app">
+      
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Settings</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <span class="modal-title">Attorney / Preparer Name:</span> 
+                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                </p>
+                <p>
+                    <span class="modal-title">Address:</span> 
+                    <textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea>
+                </p>
+                <p>
+                    <span class="modal-title">Phone:</span> 
+                    <input class="no-print" v-model="settings['attorneyPhone']" placeholder="Attorney Phone Number">
+                </p>
+                <label class="card-header__select">  
+                        <label class="card-header__select">  
+                <p>
+                    <label class="card-header__select roleSelect">  
+                        <span class="modal-title">Preparer Role:</span>  
+                        <select class="form-control form-control-sm" v-model="settings.role" class="selectpicker">
+                            <option value="AttyConsult">Attorney: Consult only with no appearance</option>
+                            <option value="AttyAppear">Attorney: Appearance to be entered</option>
+                            <option value="AdminAssist">Administrative assistance only</option>
+                            <option value="StateAtty">State's Attorney or AG Preparer</option>
+                        </select>
+                    </label>
+                </p>
+                <p>
+                    <label class="modal-vla-check">
+                        <span class="modal-title">VLA Logo & Footer:</span> 
+                        <input type="checkbox" v-model="settings.forVla">
+                    </label>
+                </p>
+                <div class="custom-footer-block" v-if="!settings.forVla">
+                    <span class="modal-title">Custom Footer:</span> 
+                    <input class="no-print footer__input" v-model="settings['footer1']" placeholder="- Code for BTV -"></input>
+                    <input class="no-print footer__input" v-model="settings['footer2']" placeholder="- Code for BTV -"></input>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
         <template v-if="numCountsToExpungeOrSeal > 0">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
                     <div class="header-bar__controls">
-                        Role  
-                        <label class="card-header__select">  
-                            <select class="form-control form-control-sm" v-model="settings.role" class="roleSelect selectpicker">
-                                <option value="AttyConsult">Attorney: Consult Only</option>
-                                <option value="AttyAppear">Attorney: Appearing</option>
-                                <option value="AdminAssist">Administrative</option>
-                                <option value="StateAtty">State Preparer</option>
-                            </select>
-                        </label>
-                        <label v-if="numDockets > 1">Consolidate Docket Sheets
+                        <label v-if="numDockets > 1">Consolidate Petitions
                             <input type="checkbox" v-model="settings.groupCounts">
                         </label>
                         <button v-on:click="printDocument" class="btn btn-primary no-print">Print All</button>
                         <button v-on:click="exportContent" class="btn btn-primary no-print">Export to CSV</button>
                         <a href="manage-counts.html" class="edit-counts btn btn-primary">Add/Edit Counts <i class="fas fa-edit"></i></a> 
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                            Settings
+                        </button>
                     </div>
                 </div>
             </div>
@@ -83,11 +132,10 @@
                                         <div class="filing-body">
                                             <div class="title petition__title"></div>
                                             <div class="from-block">
-                                                <img src="images/icon_128.png">
+                                                <img v-if="settings.forVla" class="vla-logo" src="images/VLA_logo-200-97px.png">
+                                                <img v-else class="generic-logo" src="images/icon_128.png">
                                                 <div class="atty-block">
-                                                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
-                                                    <p><textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea></p>
-                                                    <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress'])"></p>
+                                                    <p class= "filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress'])"></p>
                                                 </div>
                                             </div>
                                             <br>
@@ -108,16 +156,12 @@
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>
                                             <p>{{petitioner.name}}:</p>
-                                            <child-letter v-bind:parentLetterContent="coverLetterContent"/>
-                                            <!-- <div class="letter-body">
-
-                                            </div> -->
-                                            <p v-html="coverLetterContent['p1']"></p>
+                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 1'>documents</span><span v-else>document</span> for you today:</p>
                                             <ul> 
                                                 <li>Client Checkout Sheet</li>
                                                 <span v-for="group in filings" v-bind:id="group.county">
                                                     <li>
-                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county (<span>{{returnCountyContact(group.county)}}</span>)
+                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county<span v-if= "returnCountyContact(group.county)!=''"> ({{returnCountyContact(group.county)}})</span>
                                                     </li> 
                                                 </span>
                                             </ul>
@@ -132,9 +176,6 @@
                                             <p>Please feel free to get in touch if you have any questions.</p>
                                             <p>Sincerely,</p>
                                             <p>{{settings['attorney']}}</p>
-                                            <input class="no-print footer__input" v-model="settings['footer1']" placeholder="- Code for BTV -"></input>
-                                            <br>
-                                            <input class="no-print footer__input" v-model="settings['footer2']" placeholder="- Code for BTV -"></input>
                                         </div>
                                     </div>
                                 </article>
@@ -184,7 +225,14 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td class="date-list">
+                                                                    <div class= "label">Offense:    <span class="date">{{filing.dispositionDate | dateFormatSimple}}
+                                                                    </span></div>
+                                                                    <div class= "label">Arrest:   <span class="date">{{filing.dispositionDate | dateFormatSimple}}
+                                                                    </span></div>
+                                                                    <div class= "label">Disposed: <span class="date">{{filing.dispositionDate | dateFormatSimple}}
+                                                                    </span></div>
+                                                                </td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -196,7 +244,7 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -208,7 +256,7 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -218,7 +266,7 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -228,7 +276,7 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -239,7 +287,7 @@
                                                                 <td><span v-if="isStipulated(filing.filingType)"><i
                                                                     class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
                                                                 </td>
-                                                                <td>{{filing.dispositionDate}}</td>
+                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
                                                                 <td>{{filing.offenseDisposition}}</td>
                                                                 <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
                                                                 </td>
@@ -315,7 +363,7 @@
                                                     NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), appearing <span class="italic">pro se</span>, and hereby enters this notice of appearance in the above captioned action.
                                                 </template>
                                                 <template v-else>
-                                                    NOW COMES <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">, by and on behalf of {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), and hereby enters this notice of appearance in the above captioned action.
+                                                    NOW COMES <span>{{settings['attorney']}}</span>, by and on behalf of {{petitioner.name}} (DOB: {{petitioner.dob | dateFormatSimple}}), and hereby enters this notice of appearance in the above captioned action.
                                                 </template>
                                             </p>
                                         </div>
@@ -328,7 +376,7 @@
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
-                                                    <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <span>{{settings['attorney']}}</span>
                                                 </template>, and hereby moves the Court to expunge the record of the above-captioned conviction<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7602.</p>
 
                                             <p>1. Petitioner was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
@@ -370,7 +418,7 @@
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
-                                                    <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <span>{{settings['attorney']}}</span>
                                                 </template>, and hereby moves the Court to expunge the record of the following charge<span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7603.</p>
                                             <p>1. Petitioner was charged but never convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
                                             <table class="count-table">
@@ -408,7 +456,7 @@
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
-                                                    <span class="no-visible">{{settings['attorney']}}</span><input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <span>{{settings['attorney']}}</span>
                                                 </template>, and hereby moves the Court to expunge the record of the following 
                                                 <span v-if="filing.multipleCounts">charges</span><span v-else>charge</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(B).</p>
                                                  <p>1. Petitioner was convicted of the following <span v-if="filing.multipleCounts">crimes</span><span v-else>crime</span>:</p>
@@ -446,8 +494,7 @@
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
-                                                    <span class="no-visible">{{settings['attorney']}}</span>
-                                                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <span>{{settings['attorney']}}</span>
                                                 </template>, and hereby moves the Court to seal the record of the above-captioned conviction
                                                 <span v-if="filing.multipleCounts">s</span> pursuant to 33 V.S.A. &sect; 5119(g).</p>
                                             <p>1. Petitioner was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
@@ -487,8 +534,7 @@
                                                 </template>
                                                 <template v-else>
                                                     by and through counsel,
-                                                    <span class="no-visible">{{settings['attorney']}}</span>
-                                                    <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                    <span>{{settings['attorney']}}</span>
                                                 </template>, and hereby moves the Court to seal the record of the above-captioned conviction
                                                 <span v-if="filing.multipleCounts">s</span> pursuant to 13 V.S.A. &sect; 7602(a)(1)(C).</p>
                                             <p>1. Petitioner was convicted of the following crime<span v-if="filing.multipleCounts">s</span>:</p>
@@ -546,13 +592,10 @@
                                                         </template>
                                                         <template v-else>
                                                             <p class="filing-closing__name">
-                                                                <span class="no-visible">{{settings['attorney']}}</span>
-                                                                <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                                <span>{{settings['attorney']}}</span>
                                                             </p>
 
-                                                            <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorneyAddress'])"></p>
-                                                            <textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea>
-
+                                                            <p class= "filing-closing__petitioner-address" v-html="nl2br(settings['attorneyAddress'])"></p>
                                                         </template>
 
                                                     </div>
@@ -584,19 +627,12 @@
                                                         </template>
                                                         <template v-else>
                                                             <p class="filing-closing__name">
-                                                                <span class="no-visible">{{settings['attorney']}}</span>
-                                                                <input class="no-print" v-model="settings['attorney']" placeholder="Attorney Name">
+                                                                <span>{{settings['attorney']}}</span>
                                                             </p>
                                                             <div class="filing-closing__contact-box">
                                                                 <p class="filing-closing__contact-box-title bold">
                                                                     Attorney's Address &amp; Phone Number:</p>
-
-                                                                <p class="no-visible filing-closing__petitioner-address" v-html="nl2br(settings['attorneyAddress'])"></p>
-                                                                <textarea class="no-print" v-model="settings['attorneyAddress']" placeholder="Attorney Address"></textarea>
-
-                                                                <p class="filing-closing__phone">Phone: <span class="no-visible">{{settings['attorneyPhone']}}</span>
-                                                                    <input class="no-print" v-model="settings['attorneyPhone']" placeholder="Attorney Phone Number">
-                                                                </p>
+                                                                <p class=  "filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"></p>
                                                             </div>
                                                         </template>
                                                     </div>
@@ -625,7 +661,11 @@
 
             
 
-            <div class="footer">
+            <div v-if="settings.forVla" class="footer">
+                <p class="footer__company">Vermont Legal Aid, Inc.</p>
+                <p class="footer__phone">(800) 889-2047</p>
+            </div>
+            <div v-else class="footer">
                 <p class="footer__company">{{settings['footer1']}}</p>
                 <p class="footer__phone">{{settings['footer2']}}</p>
             </div>
@@ -633,8 +673,7 @@
         </template>
         <template v-else>
             <div class="no-filings">
-                <p>There are no filings to prepare. <span v-if="numCountsNoAction > 0">Please open the ExpungeVT extension window and select a filing type for at least one of the loaded counts.</span><span v-else>Please navigate to <a href="https://secure.vermont.gov/vtcdas/user">VT
-                    Courts Online</a> and open the Expunge VT extension to begin a new session.</span></p>
+                <p>There are no filings to prepare. <span v-if="numCountsNoAction > 0">Please open the ExpungeVT extension window and select a filing type for at least one of the loaded counts.</span><span v-else>Please navigate to <a href="https://secure.vermont.gov/vtcdas/user">VT Courts Online</a> and open the Expunge VT extension to begin a new session.</span></p>
             </div>
         </template>
         </div>
