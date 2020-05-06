@@ -127,3 +127,66 @@ Vue.component('filing-type-heading', {
   `),
   props: ['heading']
 });
+
+
+Vue.component('checkout-offense-row', {
+  methods: {
+    isStipulated: function(filingType){
+      return (
+        filingType == "StipExC" || 
+        filingType == "StipExNC" ||
+        filingType == "StipExNCrim" || 
+        filingType == "StipSC" ||  
+        filingType == "StipSDui");
+    },
+    dateFormatSimple: function (value){
+      if (!value) return ''
+      return moment(value).format("MM/DD/YYYY")
+    },
+    toCountyCode: function(value){
+      if (!value) return ''
+      return countyCodeFromCounty(value)
+    },
+  },
+  template: (`
+  <tr>
+    <td>
+      <span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;{{filing.description}}</span>{{filing.description}}
+    
+      <div class="date-list">
+          <div class= "label pill pill--rounded pill--outline-black">Offense: {{dateFormatSimple(filing.allegedOffenseDate)}}</div>
+          
+          <div class= "label pill pill--rounded pill--outline-black">Arrest: {{dateFormatSimple(filing.arrestCitationDate)}}</div>
+          
+          <div class= "label pill pill--rounded pill--outline-black">Disposed: {{dateFormatSimple(filing.dispositionDate)}}</div>
+          
+      </div>
+    </td>
+    <td>{{filing.offenseDisposition}}</td>
+    <td>{{filing.docketNum}} {{toCountyCode(filing.county)}}</td>
+  </tr>`),
+  props: ['filing']
+});
+
+
+
+function countyCodeFromCounty(county) {
+  countyCodes = {
+      "Addison": "Ancr",
+      "Bennington": "Bncr",
+      "Caledonia" : "Cacr",
+      "Chittenden" : "Cncr",
+      "Essex": "Excr",
+      "Franklin": "Frcr",
+      "Grand Isle" : "Gicr",
+      "Lamoille" : "Lecr",
+      "Orange" : "Oecr",
+      "Orleans" : "Oscr",
+      "Rutland" : "Rdcr",
+      "Washington": "Wncr",
+      "Windham" : "Wmcr",
+      "Windsor" : "Wrcr"
+  }
+  return countyCodes[county]
+}
+

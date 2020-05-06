@@ -83,9 +83,8 @@
                     <label><span>Disposition Date<b>*</b></span><input required="" class="form-control" type="date" v-model="group.dispositionDate" placeholder="Disposition Date"></label>
                     </div>
                             <label>Filing for this count<b>*</b>     
-                    <select required="" class="form-control" v-model="group.filingType" class="petitionSelect selectpicker">
-                                <option value="">No Filing</option>
-                                <option value="X">Ineligible</option>
+                    <select class="form-control" v-model="group.filingType" class="petitionSelect selectpicker">
+                                <option value="X">No Filing</option>
                                 <option value="ExC">Expunge Conviction</option>
                                 <option value="ExNC">Expunge Non-Conviction</option>
                                 <option value="ExNCrim">Expunge Non-Criminal</option>

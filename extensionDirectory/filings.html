@@ -156,12 +156,12 @@
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>
                                             <p>{{petitioner.name}}:</p>
-                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 1'>documents</span><span v-else>document</span> for you today:</p>
+                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 0'>documents</span><span v-else>document</span> for you today:</p>
                                             <ul> 
                                                 <li>Client Checkout Sheet</li>
                                                 <span v-for="group in filings" v-bind:id="group.county">
                                                     <li>
-                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county<span v-if= "returnCountyContact(group.county)!=''"> ({{returnCountyContact(group.county)}})</span>
+                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county<span v-if= "returnCountyContact(group.county) != null && returnCountyContact(group.county) != ''"> ({{returnCountyContact(group.county)}})</span>
                                                     </li> 
                                                 </span>
                                             </ul>
@@ -196,7 +196,7 @@
                                             <div class="title petition__title"></div>
                                             <div class="client-checkout-header filing-header">
                                                 <div class="client-checkout-header-left filing-header__half">
-                                                    Filings for {{petitioner.name}}
+                                                    {{petitioner.name}}
                                                     <br>
                                                     (DOB: {{petitioner.dob | dateFormatSimple}})
                                                     <br>
@@ -214,84 +214,29 @@
                                                     <col width="300">
                                                         <thead class="">
                                                             <th scope="col">Desc.</th>
-                                                            <th scope="col" Colspan="2">Disposition</th>
+                                                            <th scope="col" Colspan="1">Disposition</th>
                                                             <th scope="col">Docket #</th>
                                                         </thead>
                                                         <tbody>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedC.length > 0">
                                                                 CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr v-for="filing in countsExpungedC">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td class="date-list">
-                                                                    <div class= "label">Offense:    <span class="date">{{filing.dispositionDate | dateFormatSimple}}
-                                                                    </span></div>
-                                                                    <div class= "label">Arrest:   <span class="date">{{filing.dispositionDate | dateFormatSimple}}
-                                                                    </span></div>
-                                                                    <div class= "label">Disposed: <span class="date">{{filing.dispositionDate | dateFormatSimple}}
-                                                                    </span></div>
-                                                                </td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
                                                                 NON-CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr v-for="filing in countsExpungedNC">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedNC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
                                                                 NON-CRIME petitions drafted:
                                                             </th>
-                                                            <tr v-for="filing in countsExpungedNCrim">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedNCrim" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted:</th>
-                                                            <tr v-for="filing in countsSealC">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in countsSealC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted:</th>
-                                                            <tr v-for="filing in countsSealDui">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in countsSealDui" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="ineligible.length > 0">
                                                                 NO ACTION TAKEN:</th>
-                                                            <tr v-for="filing in ineligible">
-                                                                <td><span v-if="isStipulated(filing.filingType)"><i
-                                                                    class="fas fa-handshake"></i>&nbsp;</span>{{filing.description}}
-                                                                </td>
-                                                                <td>{{filing.dispositionDate | dateFormatSimple}}</td>
-                                                                <td>{{filing.offenseDisposition}}</td>
-                                                                <td>{{filing.docketNum}} {{filing.county | toCountyCode}}
-                                                                </td>
-                                                            </tr>
+                                                            <tr is="checkout-offense-row" v-for="filing in ineligible" v-bind:filing = "filing"></tr>
                                                         </tbody>
                                                 </table>
                                             </dl>
