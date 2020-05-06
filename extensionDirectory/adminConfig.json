@@ -1,5 +1,8 @@
 {
-  "expungeHeadline": "The next clinic will be on May 22. Training will be on the 19th. Talk to Mairead for more information. And don't forget, you are a bright shining star in the universe of criminal justice reform!",
+  "expungeHeadline": "<u><b>The next clinic will be on May 22. Training will be on the 19th.</b></u> Talk to Mairead for more information. And don't forget, you are a bright shining star in the criminal justice reform universe!",
+  "letter": {
+        "p1": ""
+  },
   "roleText": {
         "attyConsult": "You are being represented by an Attorney ONLY in relation to reviewing your record and preparing your expungement or sealing petitions. Your communications with your attorney will be kept confidential except your attorney may provide personal information in your petitions unless you tell your attorney not to. While your attorney may agree to file any petitions listed here for you, they will NOT enter an appearance in the matter.You will have to respond to the court and the State on your own when asked to do so.",
         "attyAppear": "You are being represented by an Attorney in relation to your matter. Your attorney will file the petitions listed here for you; will enter an appearance in your action; and keep you informed. Your communications with your attorney will be kept confidential except your attorney may provide information to the court as needed for your matter unless you tell your attorney not to. Your attorney can be reached using the contact info listed above.",
@@ -7,19 +10,19 @@
         "stateAssist": "Person(s) assisting in your matter may be an attorney, but they represent the State and the State's interest in expunging or sealing your record. They are not your attorney and communications do not benefit from attorney client privilege. If you file any expungement or sealing petition, you are asking the court to clear your record without any representation from an attorney. You will have to respond to the court and the State on your own when asked to do so."
   },
   "countyContacts": {
-    "Addison": "800-555-1111",
-    "Bennington": "800-555-2222",
-    "Caledonia": "800-555-3333",
+    "Addison": "",
+    "Bennington": "",
+    "Caledonia": "",
     "Chittenden": "802-651-1950",
-    "Essex": "800-555-1122",
-    "Franklin": "800-555-3344",
-    "Grand Isle": "800-555-2299",
-    "Lamoille": "800-555-5599",
-    "Orange": "800-555-7722",
-    "Orleans": "800-555-1154",
+    "Essex": "",
+    "Franklin": "",
+    "Grand Isle": "",
+    "Lamoille": "",
+    "Orange": "",
+    "Orleans": "",
     "Rutland": "802-786-5880",
-    "Washington": "800-555-9999",
-    "Windham": "800-555-0981",
-    "Windsor": "800-555-1212"
+    "Washington": "",
+    "Windham": "",
+    "Windsor": ""
   }
 }
