@@ -3,6 +3,7 @@
     "version": "2.0",
     "description": "Expunge records found on VTCourtsOnline with ease!",
     "permissions": ["storage",
+                    "declarativeContent",
                     "https://secure.vermont.gov/*",
                     "http://secure.vermont.gov/*",
                     "https://secure.vermont.gov/",

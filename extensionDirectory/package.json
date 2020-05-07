@@ -1,6 +1,6 @@
 {
-  "name": "extensionDirectory",
-  "version": "1.0.0",
+  "name": "expungevt",
+  "version": "2.0.0",
   "description": "",
   "main": "background.js",
   "dependencies": {
