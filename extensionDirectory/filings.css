@@ -399,6 +399,20 @@ p.filing-dated-city {
     padding: 3px !important;
 }
 
+.summary-table {
+    /* counter-reset: rowNumber; */
+}
+
+.summary-table .count-row {
+    counter-increment: rowNumber;
+}
+
+.summary-table .count-row td:first-child::before {
+    content: counter(rowNumber);
+    min-width: 1em;
+    margin-right: 0.5em;
+}
+
 .footer__input {
     width: 100%;
     text-align: center;
@@ -425,7 +439,7 @@ p.filing-dated-city {
 }
 
 .pill.pill--outline-black {
-    border: 2px solid #555;
+    border: 1px solid #555;
     color: #555;
     background-color: transparent;
 }

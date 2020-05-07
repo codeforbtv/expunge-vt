@@ -149,7 +149,7 @@ Vue.component('checkout-offense-row', {
     },
   },
   template: (`
-  <tr>
+  <tr class='count-row'>
     <td>
       <span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;{{filing.description}}</span>{{filing.description}}
     

@@ -684,10 +684,10 @@ var app = new Vue({
       return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts) //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function(){
-      return this.saved.counts.filter(count => count.filingType !== "").length
+      return this.saved.counts.filter(count => count.filingType !== "X").length
     },
     numCountsNoAction: function(){
-      return this.saved.counts.filter(count => count.filingType === "").length
+      return this.saved.counts.filter(count => count.filingType === "X").length
     },
     ineligible: function(){
       return this.groupIneligibleCounts(this.saved.counts);

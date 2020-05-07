@@ -90,7 +90,7 @@
         </div>
       </div>
 
-        <template v-if="numCountsToExpungeOrSeal > 0">
+        <template v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
             <div v-if="petitioner.name" class="header-bar-wrapper no-print">
                 <div class="header-bar">
                     <h1>Filings for {{petitioner.name}}</h1>
