@@ -221,22 +221,27 @@
                                                             <th scope="col" Colspan="3" v-if="countsExpungedC.length > 0">
                                                                 CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedC" v-bind:filing = "filing"></tr>
+                                                            <tr v-bind:key="countsExpungedC" is="checkout-offense-row" v-for="filing in countsExpungedC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
                                                                 NON-CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedNC" v-bind:filing = "filing"></tr>
+                                                            <tr v-bind:key="countsExpungedNC" is="checkout-offense-row" v-for="filing in countsExpungedNC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
                                                                 NON-CRIME petitions drafted:
                                                             </th>
-                                                            <tr is="checkout-offense-row" v-for="filing in countsExpungedNCrim" v-bind:filing = "filing"></tr>
-                                                            <th scope="col" Colspan="3" v-if="countsSealC.length > 0">SEALED petitions drafted:</th>
-                                                            <tr is="checkout-offense-row" v-for="filing in countsSealC" v-bind:filing = "filing"></tr>
-                                                            <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">SEALED DUI petitions drafted:</th>
-                                                            <tr is="checkout-offense-row" v-for="filing in countsSealDui" v-bind:filing = "filing"></tr>
+                                                            <tr v-bind:key="countsExpungedNCrim" is="checkout-offense-row" v-for="filing in countsExpungedNCrim" v-bind:filing = "filing"></tr>
+                                                            <th scope="col" Colspan="3" v-if="countsSealC.length > 0">
+                                                                SEALED petitions drafted:
+                                                            </th>
+                                                            <tr v-bind:key="countsSealC" is="checkout-offense-row" v-for="filing in countsSealC" v-bind:filing = "filing"></tr>
+                                                            <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">
+                                                                SEALED DUI petitions drafted:
+                                                            </th>
+                                                            <tr v-bind:key="countsSealDui" is="checkout-offense-row" v-for="filing in countsSealDui" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="ineligible.length > 0">
-                                                                NO ACTION TAKEN:</th>
-                                                            <tr is="checkout-offense-row" v-for="filing in ineligible" v-bind:filing = "filing"></tr>
+                                                                NO ACTION TAKEN:
+                                                            </th>
+                                                            <tr v-bind:key="ineligible" is="checkout-offense-row" v-for="filing in ineligible" v-bind:filing = "filing"></tr>
                                                         </tbody>
                                                 </table>
                                             </dl>

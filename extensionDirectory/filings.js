@@ -221,7 +221,7 @@ var app = new Vue({
     saveSettings: function(){
       // console.log("save settings", app.settings)
       settingString = JSON.stringify(this.settings)
-      localStorage.setItem('localSettings',settingString);
+      localStorage.setItem('localExpungeVTSettings',settingString);
     },
     saveResponses: function(){
       console.log("save responses")
@@ -241,8 +241,8 @@ var app = new Vue({
       if (callback === undefined){
         callback = function(){}
       }
-        console.log(localStorage.getItem('localSettings'))
-        localResult = JSON.parse(localStorage.getItem('localSettings'))
+        console.log(localStorage.getItem('localExpungeVTSettings'))
+        localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'))
         if (localResult !== undefined && localResult !== "" && localResult !== null) {
           console.log("settings found")
           this.settings=localResult
@@ -635,7 +635,7 @@ var app = new Vue({
   resetSettings: function(element) {
     if (confirm("Are you sure you want to reset setting to the defaults?"))
     {
-      localStorage. removeItem(['localSettings'])
+      localStorage. removeItem(['localExpungeVTSettings'])
       this.settings = {
         groupCounts: true,
         attorney:"",

@@ -151,14 +151,14 @@ Vue.component('checkout-offense-row', {
   template: (`
   <tr class='count-row'>
     <td>
-      <span v-if="isStipulated(filing.filingType)"><i class="fas fa-handshake"></i>&nbsp;{{filing.description}}</span>{{filing.description}}
+      <span v-if='isStipulated(filing.filingType)'><i class='fas fa-handshake'></i>&nbsp;{{filing.description}}</span>{{filing.description}}
     
-      <div class="date-list">
-          <div class= "label pill pill--rounded pill--outline-black">Offense: {{dateFormatSimple(filing.allegedOffenseDate)}}</div>
+      <div class='date-list'>
+          <div class= 'label pill pill--rounded pill--outline-black'>Offense: {{dateFormatSimple(filing.allegedOffenseDate)}}</div>
           
-          <div class= "label pill pill--rounded pill--outline-black">Arrest: {{dateFormatSimple(filing.arrestCitationDate)}}</div>
+          <div class= 'label pill pill--rounded pill--outline-black'>Arrest: {{dateFormatSimple(filing.arrestCitationDate)}}</div>
           
-          <div class= "label pill pill--rounded pill--outline-black">Disposed: {{dateFormatSimple(filing.dispositionDate)}}</div>
+          <div class= 'label pill pill--rounded pill--outline-black'>Disposed: {{dateFormatSimple(filing.dispositionDate)}}</div>
           
       </div>
     </td>

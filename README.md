@@ -16,12 +16,14 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 ## Requirements for using this extension
 
 - This tool is designed exclusively for VT Legal Aid.
-- Users must have an active subscription with [VT Courts Online](https://secure.vermont.gov/vtcdas/user)
-- This tool does not save or expand access to any data
+- Users must have an active subscription with [VT Courts Online](https://secure.vermont.gov/vtcdas/user).
+- This tool does not save or expand access to any data captured from court records.
 
 ## Setup for local development
 
 1. Clone the github repository to your machine
+
+1. In your terminal, navigate to the `extensionDirectory` folder and run NPM install.
 
 1. Open [chrome://extensions/](chrome://extensions/) on your chrome browser.
 
