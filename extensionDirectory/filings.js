@@ -200,7 +200,7 @@ var app = new Vue({
   },
   beforeCreate () {
 
-    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expunge-vt/master/extensionDirectory/adminConfig.json', function(data) {
+    $.getJSON('https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json', function(data) {
       this.countiesContact = data["countyContacts"];
       this.popupHeadline = data["expungeHeadline"];
       this.roleCoverLetterText = data["roleText"];
@@ -557,7 +557,7 @@ var app = new Vue({
     clearAll: function(){
 
         chrome.storage.local.remove(['counts','responses'], function(){
-      document.location.reload()
+        document.location.reload()
 
       })
 
