@@ -257,6 +257,7 @@ var app = new Vue({
           console.log("loading all");
           console.log(JSON.stringify(result))
           if (result.counts !== undefined) {
+            console.log(result.counts)
               app.saved = result.counts
           }
 
@@ -750,7 +751,7 @@ var app = new Vue({
       });
     },
     todayDate: function(){
-      date = moment().format('MMMM Do[, ]YYYY')
+      date = moment().format('MMMM D[, ]YYYY')
       return date
     },
   },

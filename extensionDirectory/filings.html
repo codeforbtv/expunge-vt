@@ -155,13 +155,13 @@
                                             <br>
                                             <p><b>&emsp;&emsp;Re: Expungement/Sealing Summary</b></p>
                                             <br>
-                                            <p>{{petitioner.name}}:</p>
-                                            <p>Thank you for meeting about your sealing and expungement options. We have prepared the following <span v-if='filings.length > 0'>documents</span><span v-else>document</span> for you today:</p>
+                                            <p>Dear {{petitioner.name}}:</p>
+                                            <p>Thank you for meeting with me to discuss your legal options for clearing your criminal record. We have prepared the following <span v-if='filings.length > 0'>documents</span><span v-else>document</span> for you today:</p>
                                             <ul> 
                                                 <li>Client Checkout Sheet</li>
                                                 <span v-for="group in filings" v-bind:id="group.county">
                                                     <li>
-                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} county<span v-if= "returnCountyContact(group.county) != null && returnCountyContact(group.county) != ''"> ({{returnCountyContact(group.county)}})</span>
+                                                        {{group.filings.length - 1}} <span v-if="group.filings.length > 2">petitions</span><span v-else>petition</span> for {{group.county}} County<span v-if= "returnCountyContact(group.county) != null && returnCountyContact(group.county) != ''"> ({{returnCountyContact(group.county)}})</span>
                                                     </li> 
                                                 </span>
                                             </ul>
@@ -205,7 +205,7 @@
                                                 </div>
                                                 <div class="client-checkout-header-right">
                                                     <p v-if="numCountsStipulated > 0"><span><i
-                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol indicates that we prepared a stipulated petition for the listed count. This means that if the State signs the petition, it agrees to expunge or seal. This does not necessarily mean that the Court will agree.
+                                                        class="fas fa-handshake"></i>&nbsp;</span>This symbol indicates that we prepared a “stipulated” petition for the listed count, which means that both parties agree to the petition. If the State’s Attorney signs the petition, they have agreed (or stipulated) to it. Just because a petition is stipulated does not always mean that the Court will grant an expungement or sealing request.
                                                     </p>
                                                 </div>  
                                             </div>
@@ -221,27 +221,27 @@
                                                             <th scope="col" Colspan="3" v-if="countsExpungedC.length > 0">
                                                                 CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr v-if="countsExpungedC.length > 0" v-bind:key="countsExpungedC + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedC" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="countsExpungedC.length > 0" v-bind:key="countsExpungedC + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNC.length > 0">
                                                                 NON-CONVICTION petitions drafted:
                                                             </th>
-                                                            <tr v-if="countsExpungedNC.length > 0" v-bind:key="countsExpungedNC + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedNC" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="countsExpungedNC.length > 0" v-bind:key="countsExpungedNC + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedNC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsExpungedNCrim.length > 0">
                                                                 NON-CRIME petitions drafted:
                                                             </th>
-                                                            <tr v-if="countsExpungedNCrim.length > 0" v-bind:key="countsExpungedNCrim + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedNCrim" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="countsExpungedNCrim.length > 0" v-bind:key="countsExpungedNCrim + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in countsExpungedNCrim" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsSealC.length > 0">
                                                                 SEALED petitions drafted:
                                                             </th>
-                                                            <tr v-if="countsSealC.length > 0" v-bind:key="countsSealC + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in countsSealC" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="countsSealC.length > 0" v-bind:key="countsSealC + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in countsSealC" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="countsSealDui.length > 0">
                                                                 SEALED DUI petitions drafted:
                                                             </th>
-                                                            <tr v-if="countsSealDui.length > 0" v-bind:key="countsSealDui + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in countsSealDui" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="countsSealDui.length > 0" v-bind:key="countsSealDui + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in countsSealDui" v-bind:filing = "filing"></tr>
                                                             <th scope="col" Colspan="3" v-if="ineligible.length > 0">
                                                                 NO ACTION TAKEN:
                                                             </th>
-                                                            <tr v-if="ineligible.length > 0" v-bind:key="ineligible + idx + uniqueId" is="checkout-offense-row" v-for="(filing, idx) in ineligible" v-bind:filing = "filing"></tr>
+                                                            <tr v-if="ineligible.length > 0" v-bind:key="ineligible + uniqueId + idx" is="checkout-offense-row" v-for="(filing, idx) in ineligible" v-bind:filing = "filing"></tr>
                                                         </tbody>
                                                 </table>
                                             </dl>
