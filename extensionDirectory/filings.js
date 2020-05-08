@@ -207,15 +207,15 @@ var app = new Vue({
       this.coverLetterContent = data["letter"];
       console.log("adminConfig data has been set ",data)
     }.bind(this))
-    // .then( function (result){
-    //   // $(".letter-body").append("<p>"+result["letter"]["p1"]+"</p>")
-    // });
 
 },
   mounted() {
   	console.log('App mounted!');
     this.loadAll();
     detectChangesInChromeStorage();
+
+    //This is to make sure dynamically created table are unique across tab in order to avoid errors
+    this.uniqueId = this._uid
   },
   methods:{
     saveSettings: function(){
@@ -266,7 +266,6 @@ var app = new Vue({
           
           callback();
           app.$nextTick(function () {
-            app.updatePageTitle();
             //call any vanilla js functions that need to run after vue is all done setting up.
             initAfterVue();
           })
@@ -553,9 +552,6 @@ var app = new Vue({
     deleteCount: function(countId){
         index = this.saved.counts.findIndex(x => x.uid === countId);
         Vue.delete(app.saved.counts, index);
-    },
-    updatePageTitle: function(){
-      return
     },
     clearAll: function(){
 
