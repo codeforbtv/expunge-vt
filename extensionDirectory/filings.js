@@ -163,7 +163,7 @@ var app = new Vue({
     },
     responses: {},
     countiesContact: {},
-    popupHeadline: {},
+    popupHeadline: "",
     roleCoverLetterText: {},
     coverLetterContent: {}
   },

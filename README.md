@@ -23,7 +23,7 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 
 1. Clone the github repository to your machine
 
-1. In your terminal, navigate to the `extensionDirectory` folder and run NPM install.
+1. In your terminal, navigate to the `extensionDirectory` folder and run "npm install".
 
 1. Open [chrome://extensions/](chrome://extensions/) on your chrome browser.
 

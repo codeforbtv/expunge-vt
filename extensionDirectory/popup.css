@@ -3,10 +3,9 @@ body {
     width: 475px;
     min-height:400px;
     height:auto;
-
-    padding:10px;
     box-sizing: border-box;
 }
+
 body:before {
     content:"";
         border: 2px solid grey;
