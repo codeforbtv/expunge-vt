@@ -4,25 +4,26 @@
     <link href="popup.css" rel="stylesheet" type="text/css">
 
     <!-- font awesome -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="./node_modules/@fortawesome/fontawesome-free/css/all.css">
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <!-- Vue -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll@15/dist/smooth-scroll.polyfills.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/gumshoe@4/dist/gumshoe.polyfills.min.js"></script>
+    <script src="./node_modules/vue/dist/vue.js"></script>
+
+    <!-- Smooth-Scroll -->
+    <script src="./node_modules/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+    
+    <!-- Gumshoe -->
+    <script src="./node_modules/gumshoejs/dist/gumshoe.polyfills.min.js"></script>
 
     <!-- Moment -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="./node_modules/moment/min/moment.min.js"></script>
 
 </head>
 
@@ -37,8 +38,8 @@
             <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
             <button v-on:click="addAndOpenManagePage" class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-edit"></i></button>
         </div>
-        <p id="introText">To begin, navigate to a court docket page relating to your client, and click the "Add Counts" button.
-        </p>
+        <p v-if="popupHeadline != ''" id="introText" v-html="popupHeadline"></p>
+        <p v-else></p>
         <a id="vtCourtsOnlineA" class="title-page__link" target="_blank" href="https://secure.vermont.gov/vtcdas/user">
             <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
         </a>
@@ -97,8 +98,7 @@
                         </div>
                         <div class="card-header__select">
                             <select class="form-control form-control-sm" v-model="count.filingType" class="petitionSelect selectpicker">
-                                <option value="">No Filing</option>
-                                <option value="X">Ineligible</option>
+                                <option value="X">No Filing</option>
                                 <option value="ExC">Expunge Conviction</option>
                                 <option value="ExNC">Expunge Non-Conviction</option>
                                 <option value="ExNCrim">Expunge Non-Criminal</option>
@@ -122,7 +122,7 @@
             <div class="card-body">
                 <p>County:&nbsp;{{count.county}}</p>
 
-                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-if="count.sectionNum">&nbsp;&sect; {{count.sectionNum}}</span>&nbsp;({{count.offenseClass}})</p>
+                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-html="'&nbsp;&sect; ' + count.sectionNum " v-if="count.sectionNum"></span>&nbsp;({{count.offenseClass}})</p>
                 <p>Disposition:&nbsp;{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></p>
                 <div class="row text-left">
                 <div class="col-4">Offense Date:<br> {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></div>

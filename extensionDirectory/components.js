@@ -3,13 +3,11 @@
 Vue.component('docket-caption', {
   template: (`<div class="docket-caption"> 
       <div class="docket-caption__names">
-      <p class="docket-caption__party">State of Vermont,</p>
-      <p>v.</p>
-      <p class="docket-caption__party">{{name}}</p>
-      <p class="docket-caption__label">Petitioner</p>
-      </div>
-      <div class="capParens">
-          )<br>)<br>)<br>)
+        <p class="">STATE OF VERMONT,</p>
+        <p><i>Respondent</i></p>
+        <p>v.</p>
+        <p class="docket-caption__party">{{name}},</p>
+        <p class="docket-caption__label">Petitioner</p>
         </div>
       </div>
       `),
@@ -19,6 +17,18 @@ Vue.component('docket-caption', {
 Vue.component('filing-nav', {
   template: (`<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
+        <li class="filing-nav__parent-link">
+          <a href="#extra-documents">Cover Sheet</a>
+          <ol>
+            <li class="filing-nav__child-link">
+              <a href="#clinic-checkout">Cover Letter</a>
+            </li>
+            <li class="filing-nav__child-link">
+              <a href="#client-checkout">Checkout Sheet</a>
+            </li>
+          </ol>
+        </li>
+        <br>
         <li v-for="group in filings" class="filing-nav__parent-link">
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
@@ -26,17 +36,6 @@ Vue.component('filing-nav', {
           <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
           </li>
         </ol>
-        </li>
-        <li class="filing-nav__parent-link">
-          <a href="#extra-documents">Extra Documents</a>
-          <ol>
-            <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Clinic Record</a>
-            </li>
-            <li class="filing-nav__child-link">
-              <a href="#client-checkout">Client Summary Sheet</a>
-            </li>
-          </ol>
         </li>
       </ol>
       </div>
@@ -128,3 +127,66 @@ Vue.component('filing-type-heading', {
   `),
   props: ['heading']
 });
+
+
+Vue.component('checkout-offense-row', {
+  methods: {
+    isStipulated: function(filingType){
+      return (
+        filingType == "StipExC" || 
+        filingType == "StipExNC" ||
+        filingType == "StipExNCrim" || 
+        filingType == "StipSC" ||  
+        filingType == "StipSDui");
+    },
+    dateFormatSimple: function (value){
+      if (!value) return ''
+      return moment(value).format("MM/DD/YYYY")
+    },
+    toCountyCode: function(value){
+      if (!value) return ''
+      return countyCodeFromCounty(value)
+    },
+  },
+  template: (`
+  <tr class='count-row'>
+    <td>
+      <span v-if='isStipulated(filing.filingType)'><i class='fas fa-handshake'></i>&nbsp;{{filing.description}}</span>{{filing.description}}
+    
+      <div class='date-list'>
+          <div class= 'label pill pill--rounded pill--outline-black'>Offense: {{dateFormatSimple(filing.allegedOffenseDate)}}</div>
+          
+          <div class= 'label pill pill--rounded pill--outline-black'>Arrest: {{dateFormatSimple(filing.arrestCitationDate)}}</div>
+          
+          <div class= 'label pill pill--rounded pill--outline-black'>Disposed: {{dateFormatSimple(filing.dispositionDate)}}</div>
+          
+      </div>
+    </td>
+    <td>{{filing.offenseDisposition}}</td>
+    <td>{{filing.docketNum}} {{toCountyCode(filing.county)}}</td>
+  </tr>`),
+  props: ['filing']
+});
+
+
+
+function countyCodeFromCounty(county) {
+  countyCodes = {
+      "Addison": "Ancr",
+      "Bennington": "Bncr",
+      "Caledonia" : "Cacr",
+      "Chittenden" : "Cncr",
+      "Essex": "Excr",
+      "Franklin": "Frcr",
+      "Grand Isle" : "Gicr",
+      "Lamoille" : "Lecr",
+      "Orange" : "Oecr",
+      "Orleans" : "Oscr",
+      "Rutland" : "Rdcr",
+      "Washington": "Wncr",
+      "Windham" : "Wmcr",
+      "Windsor" : "Wrcr"
+  }
+  return countyCodes[county]
+}
+
