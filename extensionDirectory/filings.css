@@ -395,10 +395,6 @@ p.filing-dated-city {
     padding: 3px !important;
 }
 
-.summary-table {
-    /* counter-reset: rowNumber; */
-}
-
 .summary-table .count-row {
     counter-increment: rowNumber;
 }
