@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <link href="popup.css" rel="stylesheet" type="text/css">
+  <head>
+    <link href="popup.css" rel="stylesheet" type="text/css" />
 
     <!-- font awesome -->
-    <link rel="stylesheet" href="./node_modules/@fortawesome/fontawesome-free/css/all.css">
+    <link
+      rel="stylesheet"
+      href="./node_modules/@fortawesome/fontawesome-free/css/all.css"
+    />
 
     <!-- jQuery -->
     <script src="./node_modules/jquery/dist/jquery.js"></script>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 
     <!-- Vue -->
@@ -18,131 +24,258 @@
 
     <!-- Smooth-Scroll -->
     <script src="./node_modules/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
-    
+
     <!-- Gumshoe -->
     <script src="./node_modules/gumshoejs/dist/gumshoe.polyfills.min.js"></script>
 
     <!-- Moment -->
     <script src="./node_modules/moment/min/moment.min.js"></script>
+  </head>
 
-</head>
-
-<body>
+  <body>
     <div id="filing-app">
-    <div id="coverDiv" class="empty-state" v-if="saved.counts.length == 0">
+      <div id="coverDiv" class="empty-state" v-if="saved.counts.length == 0">
         <div id="logoDivCover">
-            <img id="code4btv" src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
-            <img id="legal-aid" src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
+          <img
+            id="code4btv"
+            src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png"
+            alt="Home"
+            class="logos"
+          />
+          <img
+            id="legal-aid"
+            src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png"
+            alt="Home"
+            class="logos"
+          />
         </div>
         <div class="inset text-center button-div">
-            <button v-on:click="addDocketCounts" class="add-docket-info btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="addAndOpenManagePage" class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-edit"></i></button>
+          <button
+            v-on:click="addDocketCounts"
+            class="add-docket-info btn btn-primary"
+          >
+            Add From Page <i class="fas fa-plus-circle"></i>
+          </button>
+          <button
+            v-on:click="addAndOpenManagePage"
+            class="edit-counts btn btn-primary"
+          >
+            Add/Edit <i class="fas fa-edit"></i>
+          </button>
         </div>
         <p v-if="popupHeadline != ''" id="introText" v-html="popupHeadline"></p>
         <p v-else></p>
-        <a id="vtCourtsOnlineA" class="title-page__link" target="_blank" href="https://secure.vermont.gov/vtcdas/user">
-            <p id="vtCourtsOnline"><b>VT Courts Online <i class="fas fa-external-link-alt"></i></b></p>
+        <a
+          id="vtCourtsOnlineA"
+          class="title-page__link"
+          target="_blank"
+          href="https://secure.vermont.gov/vtcdas/user"
+        >
+          <p id="vtCourtsOnline">
+            <b>VT Courts Online <i class="fas fa-external-link-alt"></i></b>
+          </p>
         </a>
         <a target="_blank" href="disclaimer.html" class="title-page__link">
-            <p style="padding-bottom:30px;"><b>Terms &amp; Conditions <i class="fas fa-external-link-alt"></i></b></p>
+          <p style="padding-bottom: 30px;">
+            <b
+              >Terms &amp; Conditions <i class="fas fa-external-link-alt"></i
+            ></b>
+          </p>
         </a>
-    </div>
-<div class="active-state" v-else>
-    <div class="popTop">
-        <div id="defendantInfo">
+      </div>
+      <div class="active-state" v-else>
+        <div class="popTop">
+          <div id="defendantInfo">
             <div class="pet-item">
-                <p class="section-label">Petitioner Information</p>
+              <p class="section-label">Petitioner Information</p>
             </div>
             <div class="pet-item">
-                <p class="pet-label">Name:</p>
-                <input type="text" class="form-control form-control-sm" v-model="saved.defName">
+              <p class="pet-label">Name:</p>
+              <input
+                type="text"
+                class="form-control form-control-sm"
+                v-model="saved.defName"
+              />
             </div>
             <div class="pet-item">
-                <p class="pet-label">DOB:</p>
-                <input class="form-control form-control-sm" type="date" v-model="saved.defDOB">
+              <p class="pet-label">DOB:</p>
+              <input
+                class="form-control form-control-sm"
+                type="date"
+                v-model="saved.defDOB"
+              />
             </div>
             <div class="pet-item">
-                <p class="pet-label">Address:</p>
-                <textarea class="form-control form-control-sm" v-model="saved.defAddress" placeholder="e.g. 123 Main Street"></textarea>
+              <p class="pet-label">Address:</p>
+              <textarea
+                class="form-control form-control-sm"
+                v-model="saved.defAddress"
+                placeholder="e.g. 123 Main Street"
+              ></textarea>
             </div>
+          </div>
+          <div id="logoDiv">
+            <button
+              v-on:click="confirmClearData"
+              class="clear-data btn btn-outline-secondary"
+            >
+              Clear All
+            </button>
+            <img
+              src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png"
+              alt="Home"
+              class="logos"
+            />
+            <img
+              src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png"
+              alt="Home"
+              class="logos"
+            />
+          </div>
         </div>
-        <div id="logoDiv">
-            <button v-on:click="confirmClearData" class="clear-data btn btn-outline-secondary">Clear All</button>
-            <img src="http://www.codeforbtv.org/sites/default/files/code-for-btv-blue_300.png" alt="Home" class="logos">
-            <img src="https://www.vtlegalaid.org/sites/default/files/VLA_logo-200-97px.png" alt="Home" class="logos">
+
+        <div class="popTop inset text-center bottom-div">
+          <div class="inset text-center button-div">
+            <button v-on:click="addDocketCounts" class="btn btn-primary">
+              Add From Page <i class="fas fa-plus-circle"></i>
+            </button>
+            <button
+              v-on:click="openManagePage"
+              data-edit-counts
+              class="edit-counts btn btn-primary"
+            >
+              Add/Edit <i class="fas fa-edit"></i>
+            </button>
+            <button v-on:click="openPetitionsPage" class="btn btn-success">
+              Petitions <i class="fas fa-external-link-alt"></i>
+            </button>
+          </div>
         </div>
-            </div>
+        <p id="runningCount" class="section-label">
+          Counts ({{saved.counts.length}})
+        </p>
+        <div id="countCards" class="count-cards inset text-center">
+          <!-- begin card -->
 
-    <div class="popTop inset text-center bottom-div">
-        <div class="inset text-center button-div">
-            <button v-on:click="addDocketCounts" class="btn btn-primary">Add From Page <i class="fas fa-plus-circle"></i></button>
-            <button v-on:click="openManagePage" data-edit-counts class="edit-counts btn btn-primary">Add/Edit <i class="fas fa-edit"></i></button>
-            <button v-on:click="openPetitionsPage" class="btn btn-success">Petitions <i class="fas fa-external-link-alt"></i></button>
-        </div>
-    </div>
-    <p id="runningCount" class="section-label">Counts ({{saved.counts.length}})</p>
-    <div id="countCards" class="count-cards inset text-center">
-    <!-- begin card -->
-
-        <div class="card" v-bind:id="count.uid" v-for="(count, index) in saved.counts">
-        <div class="card-header">
-                <div class="card-header__column">
-                    <div class="card-header__title-row">
-                        <div id="description-date" class="card-header__meta-data">
-                        <div class="card-header__description btn btn-link btn-sm" >
-                            <p v-if="count.docketNum"><b>{{count.docketNum}} {{count.county | toCountyCode }}</b></p>
-                            <p v-if="count.description"><b>{{count.description}}</b></p>
-                         </div>
-                         <p class='card-header__disposition-date' v-if="count.dispositionDate">Est. Disposition: {{count.dispositionDate | dateFormatSimple}} ({{count.dispositionDate | sinceNow}} ago)</p>
-
-                        </div>
-                        <div class="card-header__select">
-                            <select class="form-control form-control-sm" v-model="count.filingType" class="petitionSelect selectpicker">
-                                <option value="X">No Filing</option>
-                                <option value="ExC">Expunge Conviction</option>
-                                <option value="ExNC">Expunge Non-Conviction</option>
-                                <option value="ExNCrim">Expunge Non-Criminal</option>
-                                <option value="SC">Seal Conviction</option>
-                                <option value="SDui">Seal DUI</option>
-                                <option value="StipExC">(Stip) Expunge Conviction</option>
-                                <option value="StipExNC">(Stip) Expunge Non-Conviction</option>
-                                <option value="StipExNCrim">(Stip) Expunge Non-Criminal</option>
-                                <option value="StipSC">(Stip) Seal Conviction</option>
-                                <option value="StipSDui">(Stip) Seal DUI</option>
-                            </select>
-                        </div>
+          <div
+            class="card"
+            v-bind:id="count.uid"
+            v-for="(count, index) in saved.counts"
+          >
+            <div class="card-header">
+              <div class="card-header__column">
+                <div class="card-header__title-row">
+                  <div id="description-date" class="card-header__meta-data">
+                    <div class="card-header__description btn btn-link btn-sm">
+                      <p v-if="count.docketNum">
+                        <b
+                          >{{count.docketNum}} {{count.county | toCountyCode
+                          }}</b
+                        >
+                      </p>
+                      <p v-if="count.description">
+                        <b>{{count.description}}</b>
+                      </p>
                     </div>
-                    <div class="card-header__bottom-row">
-                        <pills-row v-bind:count="count" v-bind:dob="saved.defDOB"></pills-row>
-                    </div>
+                    <p
+                      class="card-header__disposition-date"
+                      v-if="count.dispositionDate"
+                    >
+                      Est. Disposition: {{count.dispositionDate |
+                      dateFormatSimple}} ({{count.dispositionDate | sinceNow}}
+                      ago)
+                    </p>
+                  </div>
+                  <div class="card-header__select">
+                    <select
+                      class="form-control form-control-sm"
+                      v-model="count.filingType"
+                      class="petitionSelect selectpicker"
+                    >
+                      <option value="X">No Filing</option>
+                      <option value="ExC">Expunge Conviction</option>
+                      <option value="ExNC">Expunge Non-Conviction</option>
+                      <option value="ExNCrim">Expunge Non-Criminal</option>
+                      <option value="SC">Seal Conviction</option>
+                      <option value="SDui">Seal DUI</option>
+                      <option value="StipExC">(Stip) Expunge Conviction</option>
+                      <option value="StipExNC"
+                        >(Stip) Expunge Non-Conviction</option
+                      >
+                      <option value="StipExNCrim"
+                        >(Stip) Expunge Non-Criminal</option
+                      >
+                      <option value="StipSC">(Stip) Seal Conviction</option>
+                      <option value="StipSDui">(Stip) Seal DUI</option>
+                    </select>
+                  </div>
                 </div>
-        </div>
-
-        <div class="collapse-section">
-            <div class="card-body">
-                <p>County:&nbsp;{{count.county}}</p>
-
-                <p v-if="count.titleNum || count.sectionNum">Statute:&nbsp;{{count.titleNum}} V.S.A. <span v-html="'&nbsp;&sect; ' + count.sectionNum " v-if="count.sectionNum"></span>&nbsp;({{count.offenseClass}})</p>
-                <p>Disposition:&nbsp;{{count.offenseDisposition}} <span v-if="!count.offenseDisposition">Check Docket Sheet</span></p>
-                <div class="row text-left">
-                <div class="col-4">Offense Date:<br> {{count.allegedOffenseDate | dateFormatSimple}} <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span></div>
-                <div class="col-4">Arrest/Citation Date:<br> {{count.arrestCitationDate | dateFormatSimple}} <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span></div>
-                <div class="col-4">Disposition Date:<br>{{count.dispositionDate | dateFormatSimple}} <span v-if="!count.dispositionDate">&nbsp;Pending</span></div>
+                <div class="card-header__bottom-row">
+                  <pills-row
+                    v-bind:count="count"
+                    v-bind:dob="saved.defDOB"
+                  ></pills-row>
+                </div>
               </div>
             </div>
-        </div>
-        </div>
-    <!-- end card -->
 
-    </div>
-    <div id="bottomText" class="inset text-center bottom-div">
-        <p>ExpungeVT is a Code for BTV product developed in coordination with Vermont Legal Aid. <span class="reset-settings" v-on:click="resetSettings"><b>Reset Settings</b></span></p>
-    </div>
+            <div class="collapse-section">
+              <div class="card-body">
+                <p>County:&nbsp;{{count.county}}</p>
 
+                <p v-if="count.titleNum || count.sectionNum">
+                  Statute:&nbsp;{{count.titleNum}} V.S.A.
+                  <span
+                    v-html="'&nbsp;&sect; ' + count.sectionNum "
+                    v-if="count.sectionNum"
+                  ></span
+                  >&nbsp;({{count.offenseClass}})
+                </p>
+                <p>
+                  Disposition:&nbsp;{{count.offenseDisposition}}
+                  <span v-if="!count.offenseDisposition"
+                    >Check Docket Sheet</span
+                  >
+                </p>
+                <div class="row text-left">
+                  <div class="col-4">
+                    Offense Date:<br />
+                    {{count.allegedOffenseDate | dateFormatSimple}}
+                    <span v-if="!count.allegedOffenseDate"
+                      >&nbsp;Not Entered</span
+                    >
+                  </div>
+                  <div class="col-4">
+                    Arrest/Citation Date:<br />
+                    {{count.arrestCitationDate | dateFormatSimple}}
+                    <span v-if="!count.arrestCitationDate"
+                      >&nbsp;Not Entered</span
+                    >
+                  </div>
+                  <div class="col-4">
+                    Disposition Date:<br />{{count.dispositionDate |
+                    dateFormatSimple}}
+                    <span v-if="!count.dispositionDate">&nbsp;Pending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end card -->
+        </div>
+        <div id="bottomText" class="inset text-center bottom-div">
+          <p>
+            ExpungeVT is a Code for BTV product developed in coordination with
+            Vermont Legal Aid.
+            <span class="reset-settings" v-on:click="resetSettings"
+              ><b>Reset Settings</b></span
+            >
+          </p>
+        </div>
+      </div>
     </div>
-</div>
-    <script id='script' src="components.js"></script>
-    <script id='script' src="popup.js"></script>
-    <script id='script' src="filings.js"></script>
-</body>
+    <script id="script" src="components.js"></script>
+    <script id="script" src="popup.js"></script>
+    <script id="script" src="filings.js"></script>
+  </body>
 </html>

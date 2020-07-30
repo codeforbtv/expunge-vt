@@ -12,8 +12,12 @@
     "smooth-scroll": "^16.1.3",
     "vue": "^2.6.11"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  },
   "scripts": {
+    "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
+    "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
