@@ -4,10 +4,26 @@ initListeners();
 
 function initListeners() {
   // Listen to messages from the payload.js script and write to popout.html
-  chrome.runtime.onMessage.addListener(function (message) {
-    newData = getPetitionerInfo(message);
+  chrome.runtime.onMessage.addListener(function (rawDocketData) {
+    let parsedData;
+    switch (rawDocketData.domain) {
+      // VT COURTS ONLINE
+      case 'secure.vermont.gov': {
+        parsedData = getVTCOPetitionerInfo(rawDocketData.rawDocket);
+        break;
+      }
+      // ODYSSEY
+      case 'publicportal.courts.vt.gov': {
+        parsedData = getOdysseyPetitionerInfo(rawDocketData.rawDocket);
+        break;
+      }
+      default: {
+        // TODO: handle default case
+      }
+    }
+
     chrome.storage.local.get('counts', function (result) {
-      combinedData = appendDataWithConfirmation(newData, result.counts);
+      combinedData = appendDataWithConfirmation(parsedData, result.counts);
       chrome.storage.local.set({
         counts: combinedData,
       });
@@ -64,7 +80,24 @@ function appendDataWithConfirmation(newData, oldData) {
   }
 }
 
-function getPetitionerInfo(rawData) {
+/**
+ * Parses Odyssey docket html and returns object with parsed data
+ * @param {string} rawData The html of the Odyssey docket
+ */
+function getOdysseyPetitionerInfo(rawData) {
+  return {
+    defName: '',
+    defDOB: '',
+    defAddress: '',
+    counts: {},
+  };
+}
+
+/**
+ * Parses the VTCO docket data and returns object with parsed data
+ * @param {string} rawData The content of the 'pre' element that VTCO uses to wrap it's docket info
+ */
+function getVTCOPetitionerInfo(rawData) {
   //Get Defendant Name
   nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
   nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;

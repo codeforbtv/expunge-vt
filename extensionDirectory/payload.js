@@ -1,16 +1,24 @@
-// send the docket content as a chrome message back to the popup script. The data will be parsed there.
+let docketData = {
+  domain: window.location.hostname,
+  rawDocket: null,
+};
 
-let currentSite = window.location.hostname;
-console.log(currentSite);
-// conditionally parsing docket info from current site
-if (currentSite === 'secure.vermont.gov') {
-  // TODO:  verify current site is VTCO
-  console.log('... parsing VTCO');
-  docketBody = document.getElementsByTagName('pre')[0].innerHTML;
-  chrome.runtime.sendMessage(docketBody);
-} else if (currentSite === 'publicportal.courts.vt.gov') {
-  // TODO: verify current site is Odyssey
-  console.log('... parsing Odyssey');
-} else {
-  // TODO: don't forget about codeforbtv.org and setting a default 'else'
+// select data from the current site
+switch (docketData.domain) {
+  case 'secure.vermont.gov': {
+    docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
+    break;
+  }
+  case 'publicportal.courts.vt.gov': {
+    docketData.rawDocket = document.getElementById('roa-content').innerHTML;
+    debugger;
+    break;
+  }
+  default: {
+    // TODO: don't forget about codeforbtv.org and setting a default 'else'
+  }
 }
+
+// pass relevant content through from current site as a chrome message back to
+// the popup script. The data will be parsed there.
+chrome.runtime.sendMessage(docketData);
