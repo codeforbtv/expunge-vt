@@ -1,15 +1,10 @@
 {
     "name": "ExpungeVT!",
-    "version": "2.0",
-    "description": "Expunge records found on VTCourtsOnline with ease!",
+    "version": "2.2",
+    "description": "Expunge and seal records found on VTCourtsOnline with ease!",
     "permissions": ["storage",
                     "declarativeContent",
-                    "https://secure.vermont.gov/*",
-                    "http://secure.vermont.gov/*",
-                    "https://secure.vermont.gov/",
-                    "http://secure.vermont.gov/",
-                    "https://www.codeforbtv.org/*",
-                    "file://*/*",
+                    "activeTab",
                     "downloads"],
     "background": {
       "scripts": ["background.js"],

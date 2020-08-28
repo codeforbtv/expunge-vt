@@ -166,6 +166,7 @@ var app = new Vue({
     popupHeadline: '',
     roleCoverLetterText: {},
     coverLetterContent: {},
+    stipDef: {},
   },
   watch: {
     responses: {
@@ -203,6 +204,19 @@ var app = new Vue({
         this.popupHeadline = data['expungeHeadline'];
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
+        console.log('adminConfig data has been set ', data);
+      }.bind(this)
+    );
+  },
+  beforeCreate() {
+    $.getJSON(
+      'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
+      function (data) {
+        this.countiesContact = data['countyContacts'];
+        this.popupHeadline = data['expungeHeadline'];
+        this.roleCoverLetterText = data['roleText'];
+        this.coverLetterContent = data['letter'];
+        this.stipDef = data['stipDefinition'];
         console.log('adminConfig data has been set ', data);
       }.bind(this)
     );
