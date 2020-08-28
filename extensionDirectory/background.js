@@ -16,6 +16,9 @@ chrome.runtime.onInstalled.addListener(function () {
             pageUrl: { hostContains: 'secure.vermont.gov' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostContains: 'publicportal.courts.vt.gov' },
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { urlContains: 'chrome-extension://' },
           }),
         ],
