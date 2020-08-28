@@ -208,19 +208,6 @@ var app = new Vue({
       }.bind(this)
     );
   },
-  beforeCreate() {
-    $.getJSON(
-      'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
-      function (data) {
-        this.countiesContact = data['countyContacts'];
-        this.popupHeadline = data['expungeHeadline'];
-        this.roleCoverLetterText = data['roleText'];
-        this.coverLetterContent = data['letter'];
-        this.stipDef = data['stipDefinition'];
-        console.log('adminConfig data has been set ', data);
-      }.bind(this)
-    );
-  },
   mounted() {
     console.log('App mounted!');
     this.loadAll();
