@@ -82,14 +82,24 @@ function appendDataWithConfirmation(newData, oldData) {
 
 /**
  * Parses Odyssey docket html and returns object with parsed data
- * @param {string} rawData The html of the Odyssey docket
+ * @param {string} domString The html of the Odyssey docket
  */
-function getOdysseyPetitionerInfo(rawData) {
+function getOdysseyPetitionerInfo(domString) {
+  const docket = $($.parseHTML(domString));
+
+  // defName: in form of "       \n        Last, First Middle\n         "
+  const rawName = docket.find('.roa-party-row:last .roa-text-bold:last').text();
+  const name = rawName.trim();
+
+  // defDOB: todo: find example of dob in Odyssey and parse it
+
+  // defAddress: todo: find example of dob in Odyssey and parse it
+
   return {
-    defName: '',
+    defName: name,
     defDOB: '',
     defAddress: '',
-    counts: {},
+    counts: [],
   };
 }
 

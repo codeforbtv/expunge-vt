@@ -11,7 +11,6 @@ switch (docketData.domain) {
   }
   case 'publicportal.courts.vt.gov': {
     docketData.rawDocket = document.getElementById('roa-content').innerHTML;
-    debugger;
     break;
   }
   default: {
