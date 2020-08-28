@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener(function () {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            pageUrl: { hostContains: '' },
+            pageUrl: { hostContains: 'codeforbtv.org' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { hostContains: 'secure.vermont.gov' },

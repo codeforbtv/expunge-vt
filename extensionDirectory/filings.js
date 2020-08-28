@@ -696,16 +696,7 @@ var app = new Vue({
       );
     },
     addDocketCounts: function () {
-      // conditionally parsing docket info from current site
-      if (true) {
-        // TODO:  verify current site is VTCO
-        chrome.tabs.executeScript(null, { file: 'payload.js' });
-      } else if (false) {
-        // TODO: verify current site is Odyssey
-        chrome.tabs.executeScript(null, { file: 'parseOddysey.js' });
-      } else {
-        // TODO: don't forget about codeforbtv.org and setting a default 'else'
-      }
+      chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
     confirmClearData: function () {
       if (
