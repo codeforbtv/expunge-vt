@@ -81,6 +81,63 @@ function appendDataWithConfirmation(newData, oldData) {
 }
 
 /**
+ * This info is parsed out of the docket pages.
+ */
+class PetitionerInfo {
+  constructor(name, dob, address = '', counts = []) {
+    this.name = name; // defendent's name
+    this.dob = dob; // defendent's date of birth
+    this.address = address; // defendent's address (optional)
+    this.counts = counts; // an array of petitioner counts (see class below)
+  }
+}
+
+/**
+ * Each count should contain these properties
+ */
+class PetitionerCounts {
+  constructor(
+    allegedOffenseDate,
+    arrestCitationDate,
+    countNum,
+    county,
+    description,
+    dispositionDate,
+    docketCounty,
+    docketNum,
+    docketSheetNum,
+    filingType,
+    guid,
+    isDismissed,
+    offenseClass,
+    offenseDisposition,
+    outstandingPayment,
+    sectionNum,
+    titleNum,
+    uid
+  ) {
+    this.allegedOffenseDate = allegedOffenseDate; // eg: "2012-05-12"
+    this.arrestCitationDate = arrestCitationDate; // eg: "2012-05-12"
+    this.countNum = countNum; // eg: "1"
+    this.county = county; // eg: "Chittenden"
+    this.description = description; // eg: "DUI #1-INFLUENCE"
+    this.dispositionDate = dispositionDate; // eg: "2012-06-27"
+    this.docketCounty = docketCounty; // eg: "Cncr"
+    this.docketNum = docketNum; // eg: "1899-5-12"
+    this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
+    this.filingType = filingType; // eg: "X"
+    this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
+    this.isDismissed = isDismissed; // eg: true
+    this.offenseClass = offenseClass; // eg: "mis"
+    this.offenseDisposition = offenseDisposition; // eg: "Dismissed by state"
+    this.outstandingPayment = outstandingPayment; // eg: false
+    this.sectionNum = sectionNum; // eg: "1201(a)(2)"
+    this.titleNum = titleNum; // eg: "23"
+    this.uid = uid; // eg: "1899-5-12_Cncr11899-5-12Dismissed_by_state"
+  }
+}
+
+/**
  * Parses Odyssey docket html and returns object with parsed data
  * @param {string} domString The html of the Odyssey docket
  */
