@@ -1,7 +1,7 @@
 //Vue Components
 
 Vue.component('docket-caption', {
-  template: (`<div class="docket-caption"> 
+  template: `<div class="docket-caption"> 
       <div class="docket-caption__names">
         <p class="">STATE OF VERMONT,</p>
         <p><i>Respondent</i></p>
@@ -10,12 +10,12 @@ Vue.component('docket-caption', {
         <p class="docket-caption__label">Petitioner</p>
         </div>
       </div>
-      `),
-  props: ['name']
+      `,
+  props: ['name'],
 });
 
 Vue.component('filing-nav', {
-  template: (`<div class="filing-nav no-print" id="filing-nav"> 
+  template: `<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
         <li class="filing-nav__parent-link">
           <a href="#extra-documents">Cover Sheet</a>
@@ -39,30 +39,30 @@ Vue.component('filing-nav', {
         </li>
       </ol>
       </div>
-      `),
-  props: ['filings']
+      `,
+  props: ['filings'],
 });
 
 Vue.component('filing-footer', {
-  template: (`<div class="stipulated-closing" v-if="stipulated">
+  template: `<div class="stipulated-closing" v-if="stipulated">
                   <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
                   <div class="filing-closing__signature-box">
                       <p class="filing-closing__name">State's Attorney/Attorney General</p>
                   </div>
               </div>
           </div>
-          `),
-  props: ['stipulated']
+          `,
+  props: ['stipulated'],
 });
 
 Vue.component('filing-dated-city', {
-  template: (`
+  template: `
     <p class="filing-dated-city indent">Dated in <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
-  `)
+  `,
 });
 
 Vue.component('pills-row', {
-  template: (`<div class="card-header__pills-row">
+  template: `<div class="card-header__pills-row">
                 <span v-if="count.offenseClass =='mis'" class="pill pill--rounded pill--outline-green">
                         Mis
                 </span>
@@ -85,70 +85,99 @@ Vue.component('pills-row', {
                 <span v-if="count.outstandingPayment == true" class='pill pill--rounded pill--outline-black'>Surcharge</span>
 
             </div>
-          `),
-  props: ['count','dob'],
+          `,
+  props: ['count', 'dob'],
   methods: {
     decimalAgeInYears: function (value) {
-      if (!value) return ''
-      if (!this.dob) return ''
-      let fromTime = moment(value).diff(moment(this.dob))
-      let duration = moment.duration(fromTime)
+      if (!value) return '';
+      if (!this.dob) return '';
+      let fromTime = moment(value).diff(moment(this.dob));
+      let duration = moment.duration(fromTime);
 
-      console.log(value, this.dob)
-      return duration.asDays()/365.25
+      console.log(value, this.dob);
+      return duration.asDays() / 365.25;
     },
-  }
+  },
 });
 
 Vue.component('filing-type-heading', {
   methods: {
-  getCheckoutPhrases(fType) {
-    checkoutPhrases=[
-      {type: "ExC", stipType: "StipExC", phrase: "The following are prior conviction(s) for which we prepared a petition to expunge:"},
-      {type: "ExNC", stipType: "StipExNC", phrase: "The following are cases that DID NOT result in a conviction and we prepared a petition to expunge:"},
-      {type: "ExNCrim", stipType: "StipExNCrim", phrase: "The following are counts that are no longer crimes and we prepared a petition to expunge:"},
-      {type: "SC", stipType: "StipSC", phrase: "The following are prior convictions and we prepared a petition to seal:"},
-      {type: "SDui", stipType: "StipSDui", phrase: "The following is a prior DUI conviction and we filed a petition to seal:"}
-    ]
+    getCheckoutPhrases(fType) {
+      checkoutPhrases = [
+        {
+          type: 'ExC',
+          stipType: 'StipExC',
+          phrase:
+            'The following are prior conviction(s) for which we prepared a petition to expunge:',
+        },
+        {
+          type: 'ExNC',
+          stipType: 'StipExNC',
+          phrase:
+            'The following are cases that DID NOT result in a conviction and we prepared a petition to expunge:',
+        },
+        {
+          type: 'ExNCrim',
+          stipType: 'StipExNCrim',
+          phrase:
+            'The following are counts that are no longer crimes and we prepared a petition to expunge:',
+        },
+        {
+          type: 'SC',
+          stipType: 'StipSC',
+          phrase:
+            'The following are prior convictions and we prepared a petition to seal:',
+        },
+        {
+          type: 'SDui',
+          stipType: 'StipSDui',
+          phrase:
+            'The following is a prior DUI conviction and we filed a petition to seal:',
+        },
+      ];
 
-    for (i = 0; i<checkoutPhrases.length; i++) {
-      if (checkoutPhrases[i]["type"] == fType || checkoutPhrases[i]["stipType"] == fType) {
-        return checkoutPhrases[i]["phrase"]
+      for (i = 0; i < checkoutPhrases.length; i++) {
+        if (
+          checkoutPhrases[i]['type'] == fType ||
+          checkoutPhrases[i]['stipType'] == fType
+        ) {
+          return checkoutPhrases[i]['phrase'];
+        }
       }
-    }
-    console.log(checkoutPhrases)
-  }},
-  template: (`
+      console.log(checkoutPhrases);
+    },
+  },
+  template: `
   <div>
       <p>
         {{getCheckoutPhrases(heading)}}
       </p>
   </div>
-  `),
-  props: ['heading']
+  `,
+  props: ['heading'],
 });
-
 
 Vue.component('checkout-offense-row', {
   methods: {
-    isStipulated: function(filingType){
+    isStipulated: function (filingType) {
       return (
-        filingType == "StipExC" || 
-        filingType == "StipExNC" ||
-        filingType == "StipExNCrim" || 
-        filingType == "StipSC" ||  
-        filingType == "StipSDui");
+        filingType == 'StipExC' ||
+        filingType == 'StipExNC' ||
+        filingType == 'StipExNCrim' ||
+        filingType == 'StipSC' ||
+        filingType == 'StipSDui'
+      );
     },
-    dateFormatSimple: function (value){
-      if (!value) return ''
-      return moment(value).format("MM/DD/YYYY")
+    dateFormatSimple: function (value) {
+      if (!value) return '';
+      return moment(value).format('MM/DD/YYYY');
     },
-    toCountyCode: function(value){
-      if (!value) return ''
-      return countyCodeFromCounty(value)
+    toCountyCode: function (value) {
+      if (!value) return '';
+      return countyCodeFromCounty(value);
     },
   },
-  template: (`
+  template: `
   <tr class='count-row'>
     <td>
       <span v-if='isStipulated(filing.filingType)'><i class='fas fa-handshake'></i>&nbsp;{{filing.description}}</span>{{filing.description}}
@@ -164,29 +193,26 @@ Vue.component('checkout-offense-row', {
     </td>
     <td>{{filing.offenseDisposition}}</td>
     <td>{{filing.docketNum}} {{toCountyCode(filing.county)}}</td>
-  </tr>`),
-  props: ['filing']
+  </tr>`,
+  props: ['filing'],
 });
-
-
 
 function countyCodeFromCounty(county) {
   countyCodes = {
-      "Addison": "Ancr",
-      "Bennington": "Bncr",
-      "Caledonia" : "Cacr",
-      "Chittenden" : "Cncr",
-      "Essex": "Excr",
-      "Franklin": "Frcr",
-      "Grand Isle" : "Gicr",
-      "Lamoille" : "Lecr",
-      "Orange" : "Oecr",
-      "Orleans" : "Oscr",
-      "Rutland" : "Rdcr",
-      "Washington": "Wncr",
-      "Windham" : "Wmcr",
-      "Windsor" : "Wrcr"
-  }
-  return countyCodes[county]
+    Addison: 'Ancr',
+    Bennington: 'Bncr',
+    Caledonia: 'Cacr',
+    Chittenden: 'Cncr',
+    Essex: 'Excr',
+    Franklin: 'Frcr',
+    'Grand Isle': 'Gicr',
+    Lamoille: 'Lecr',
+    Orange: 'Oecr',
+    Orleans: 'Oscr',
+    Rutland: 'Rdcr',
+    Washington: 'Wncr',
+    Windham: 'Wmcr',
+    Windsor: 'Wrcr',
+  };
+  return countyCodes[county];
 }
-
