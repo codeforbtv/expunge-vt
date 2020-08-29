@@ -45,6 +45,7 @@ function appendDataWithConfirmation(newData, oldData) {
     return oldData;
   }
 
+  // TODO: fix nested "count" data from Odyssey
   var returnData = oldData;
   var newCounts = newData.counts;
   var totalNumMatchingExistingCounts = 0;
@@ -143,14 +144,37 @@ class PetitionerCounts {
  */
 function getOdysseyPetitionerInfo(domString) {
   const docket = $($.parseHTML(domString));
+  const partyInfo = docket
+    .find('#party-info')
+    .parent()
+    .find('.roa-section-content')
+    .find('td')
+    .filter(function () {
+      return $(this).find(":contains('Defendant')").length > 0;
+    })
+    .next();
+
   let currentDocket = new PetitionerInfo();
 
-  // defName: in form of "       \n        Last, First Middle\n         "
-  const rawName = docket.find('.roa-party-row:last .roa-text-bold:last').text();
-  currentDocket.name = rawName.trim();
+  // parse address
+  let addressArray = partyInfo
+    .find("[ng-if='::party.Addresses.length']")
+    .find('.ng-binding')
+    .map(function () {
+      return $(this).text().trim();
+    })
+    .get();
+  addressArray.forEach(function (line, index) {
+    if (index < addressArray.length - 3) {
+      currentDocket.address += line;
+      currentDocket.address += '\n';
+    } else if (index >= addressArray.length - 3) {
+      currentDocket.address += line;
+    }
+  });
 
-  currentDocket.dob = '1980-01-01';
-  currentDocket.address = '5 Main St.';
+  currentDocket.name = partyInfo.find('td:first-of-type').html().trim();
+  currentDocket.dob = partyInfo.find("[label='DOB:'] .roa-value").text().trim();
   currentDocket.counts = parseOdysseyCounts(docket);
   return currentDocket;
 }
