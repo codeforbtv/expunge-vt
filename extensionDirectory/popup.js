@@ -143,21 +143,16 @@ class PetitionerCounts {
  */
 function getOdysseyPetitionerInfo(domString) {
   const docket = $($.parseHTML(domString));
+  let currentDocket = new PetitionerInfo();
 
   // defName: in form of "       \n        Last, First Middle\n         "
   const rawName = docket.find('.roa-party-row:last .roa-text-bold:last').text();
-  const name = rawName.trim();
+  currentDocket.name = rawName.trim();
 
-  // defDOB: todo: find example of dob in Odyssey and parse it
-
-  // defAddress: todo: find example of dob in Odyssey and parse it
-
-  return {
-    defName: name,
-    defDOB: '',
-    defAddress: '',
-    counts: parseOdysseyCounts(docket),
-  };
+  currentDocket.dob = '1980-01-01';
+  currentDocket.address = '5 Main St.';
+  currentDocket.counts = parseOdysseyCounts(docket);
+  return currentDocket;
 }
 
 /**
