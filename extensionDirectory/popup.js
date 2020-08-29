@@ -156,8 +156,38 @@ function getOdysseyPetitionerInfo(domString) {
     defName: name,
     defDOB: '',
     defAddress: '',
-    counts: [],
+    counts: parseOdysseyCounts(docket),
   };
+}
+
+/**
+ * Function to parse out the criminal counts visible on a docket
+ * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
+ * @returns {array} An array of criminal count objects
+ */
+function parseOdysseyCounts(docket) {
+  return [
+    {
+      allegedOffenseDate: '2012-05-12',
+      arrestCitationDate: '2012-05-12',
+      countNum: '1',
+      county: 'Chittenden',
+      description: 'DUI #1-INFLUENCE',
+      dispositionDate: '2012-06-27',
+      docketCounty: 'Cncr',
+      docketNum: '1899-5-12',
+      docketSheetNum: '1899-5-12 Cncr',
+      filingType: 'X',
+      guid: '3abef45f-187d-b0e4-9e2c-969c158acded',
+      isDismissed: true,
+      offenseClass: 'mis',
+      offenseDisposition: 'Dismissed by state',
+      outstandingPayment: false,
+      sectionNum: '1201(a)(2)',
+      titleNum: '23',
+      uid: '1899-5-12_Cncr11899-5-12Dismissed_by_state',
+    },
+  ];
 }
 
 /**
