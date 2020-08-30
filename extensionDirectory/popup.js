@@ -29,8 +29,9 @@ function initListeners() {
       });
     });
   });
+
+  //prevents the select in the petition cards from opening the accordion.
   $('body').on('click', 'select.petitionSelect', function (event) {
-    //prevents the select in the petition cards from opening the accordion.
     event.stopPropagation();
   });
 }
@@ -86,9 +87,9 @@ function appendDataWithConfirmation(newData, oldData) {
  */
 class PetitionerInfo {
   constructor(name, dob, address = '', counts = []) {
-    this.name = name; // defendent's name
-    this.dob = dob; // defendent's date of birth
-    this.address = address; // defendent's address (optional)
+    this.defName = name; // defendent's name
+    this.defDOB = dob; // defendent's date of birth
+    this.defAddress = address; // defendent's address (optional)
     this.counts = counts; // an array of petitioner counts (see class below)
   }
 }
@@ -166,16 +167,22 @@ function getOdysseyPetitionerInfo(domString) {
     .get();
   addressArray.forEach(function (line, index) {
     if (index < addressArray.length - 3) {
-      currentDocket.address += line;
-      currentDocket.address += '\n';
+      currentDocket.defAddress += line;
+      currentDocket.defAddress += '\n';
     } else if (index >= addressArray.length - 3) {
-      currentDocket.address += line;
+      currentDocket.defAddress += line;
     }
   });
 
-  currentDocket.name = partyInfo.find('td:first-of-type').html().trim();
-  currentDocket.dob = partyInfo.find("[label='DOB:'] .roa-value").text().trim();
-  currentDocket.counts = parseOdysseyCounts(docket);
+  currentDocket.defName = partyInfo.find('td:first-of-type').html().trim();
+  currentDocket.defDOB = partyInfo
+    .find("[label='DOB:'] .roa-value")
+    .text()
+    .trim();
+  currentDocket.defDOB = formatDate(
+    partyInfo.find("[label='DOB:'] .roa-value").text().trim()
+  );
+  currentDocket.counts = getOdysseyCountInfo(docket);
   return currentDocket;
 }
 
@@ -184,7 +191,7 @@ function getOdysseyPetitionerInfo(domString) {
  * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
  * @returns {array} An array of criminal count objects
  */
-function parseOdysseyCounts(docket) {
+function getOdysseyCountInfo(docket) {
   return [
     {
       allegedOffenseDate: '2012-05-12',
@@ -247,15 +254,15 @@ function getVTCOPetitionerInfo(rawData) {
   //create all counts object
   parsedData = {
     defName: defName,
-    defDOB: parseDateFromDocket(defDOB),
+    defDOB: formatDate(defDOB),
     defAddress: addressArray.join('\n'),
-    counts: getCountInfo(rawData),
+    counts: getVTCOCountInfo(rawData),
   };
 
   return parsedData;
 }
 
-function getCountInfo(rawData) {
+function getVTCOCountInfo(rawData) {
   divider =
     '================================================================================';
 
@@ -354,7 +361,7 @@ function processCountLine1(countLine1, countNum, rawData) {
     titleNum: countLine1Array[4],
     sectionNum: offenseSection,
     offenseClass: countLine1Array[felMisLocation],
-    dispositionDate: parseDateFromDocket(dispositionDate),
+    dispositionDate: formatDate(dispositionDate),
     offenseDisposition: offenseDisposition,
     filingType: 'X',
     docketSheetNum: docketSheetNum,
@@ -374,9 +381,7 @@ function processCountLine1(countLine1, countNum, rawData) {
       offenseDateLocation,
       offenseDateLocationEnd
     );
-    countObject['allegedOffenseDate'] = parseDateFromDocket(
-      allegedOffenseDate.trim()
-    );
+    countObject['allegedOffenseDate'] = formatDate(allegedOffenseDate.trim());
   } catch (err) {
     countObject['allegedOffenseDate'] = '';
     console.log('Error:' + err);
@@ -394,15 +399,18 @@ function processCountLine1(countLine1, countNum, rawData) {
       arrestDateLocation,
       arrestDateLocationEnd
     );
-    countObject['arrestCitationDate'] = parseDateFromDocket(
-      arrestCitationDate.trim()
-    );
+    countObject['arrestCitationDate'] = formatDate(arrestCitationDate.trim());
   } catch (err) {
     countObject['arrestCitationDate'] = '';
     console.log('Error:' + err);
   }
 }
-function parseDateFromDocket(date) {
+/**
+ * A utility function to convert dates into a standard format
+ * used consistently throughout this extension.
+ * @param {string} date A date in the format 'MM/DD/YYYY'
+ */
+function formatDate(date) {
   return moment(date, 'MM/DD/YYYY').format('YYYY-MM-DD');
 }
 function isDismissed(offenseDisposition) {
