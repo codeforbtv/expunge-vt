@@ -36,6 +36,12 @@ function initListeners() {
   });
 }
 
+/**
+ * Combines newly parsed docket info with previously parsed data. Also
+ * displays a confirmation to user if the defendant's name does not match.
+ * @param {PetitionerInfo} newData An object of data parsed from a docket
+ * @param {PetitionerInfo} oldData Previously parsed data
+ */
 function appendDataWithConfirmation(newData, oldData) {
   //if there is no old data, then the new data is what we'll use
   if (oldData === undefined) {
@@ -46,7 +52,6 @@ function appendDataWithConfirmation(newData, oldData) {
     return oldData;
   }
 
-  // TODO: fix nested "count" data from Odyssey
   var returnData = oldData;
   var newCounts = newData.counts;
   var totalNumMatchingExistingCounts = 0;
@@ -192,28 +197,41 @@ function getOdysseyPetitionerInfo(domString) {
  * @returns {array} An array of criminal count objects
  */
 function getOdysseyCountInfo(docket) {
-  return [
-    {
-      allegedOffenseDate: '2012-05-12',
-      arrestCitationDate: '2012-05-12',
-      countNum: '1',
-      county: 'Chittenden',
-      description: 'DUI #1-INFLUENCE',
-      dispositionDate: '2012-06-27',
-      docketCounty: 'Cncr',
-      docketNum: '1899-5-12',
-      docketSheetNum: '1899-5-12 Cncr',
-      filingType: 'X',
-      guid: '3abef45f-187d-b0e4-9e2c-969c158acded',
-      isDismissed: true,
-      offenseClass: 'mis',
-      offenseDisposition: 'Dismissed by state',
-      outstandingPayment: false,
-      sectionNum: '1201(a)(2)',
-      titleNum: '23',
-      uid: '1899-5-12_Cncr11899-5-12Dismissed_by_state',
-    },
-  ];
+  // grab the offense table from docket
+  const caseOffenseTable = docket
+    .find('[data-header-text="Case Information"]')
+    .parent()
+    .find('.roa-section-content .roa-table');
+
+  // parse each offense
+  let offenseArray = [];
+  const offenseRows = caseOffenseTable.find(' tbody > tr').each(function (i) {
+    const jqRow = $(this);
+
+    // skip empty table rows
+    if (jqRow.children.length == 0) {
+      return;
+    }
+    // skip redundant 'hide-gt-sm' rows
+    else if (jqRow.hasClass('hide-gt-sm')) {
+      return;
+    }
+    // parse the '.hide-xs.hide-sm' row, and the row immedately following it
+    else if (jqRow.hasClass('hide-xs') && jqRow.hasClass('hide-sm')) {
+      const offenseHeading = jqRow.text().trim(); // TODO: parse further
+      const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
+      offenseArray.push({
+        offenseNumber: parseInt(jqRow.find('td:first').text().trim()), // force parse '1.' as number 1
+        unparsedOffenseHeading: offenseHeading,
+        unparsedOffenseData: offenseData,
+      });
+    }
+  });
+
+  // return parsed offenses
+  console.log('Parsed Offenses: ');
+  console.log(offenseArray);
+  return offenseArray;
 }
 
 /**
