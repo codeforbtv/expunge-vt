@@ -205,7 +205,7 @@ function getOdysseyCountInfo(docket) {
 
   // parse each offense
   let offenseArray = [];
-  const offenseRows = caseOffenseTable.find(' tbody > tr').each(function (i) {
+  caseOffenseTable.find(' tbody > tr').each(function (i) {
     const jqRow = $(this);
 
     // skip empty table rows
@@ -220,12 +220,38 @@ function getOdysseyCountInfo(docket) {
     else if (jqRow.hasClass('hide-xs') && jqRow.hasClass('hide-sm')) {
       const offenseHeading = jqRow.text().trim(); // TODO: parse further
       const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
-      offenseArray.push({
-        offenseNumber: parseInt(jqRow.find('td:first').text().trim()), // force parse '1.' as number 1
+      const countNum = parseInt(jqRow.find('td:first').text().trim(), 10); // force parse '1.' as number 1
+      offenseArray[countNum] = {
+        countNumber: countNum,
         unparsedOffenseHeading: offenseHeading,
         unparsedOffenseData: offenseData,
-      });
+      };
     }
+  });
+
+  // grab the disposition section from docket
+  const dispositionDivs = docket
+    .find('[data-header-text="Dispositions"]')
+    .parent()
+    .find('.roa-section-content md-content > div');
+
+  // parse each plea event and add to offenseArray
+  dispositionDivs.find('.roa-event-plea-event').each(function (i) {
+    const jqPlea = $(this);
+    const countText = jqPlea
+      .find('.roa-event-content > div > div > div:nth-child(2)')
+      .text()
+      .trim();
+    const countNum = parseInt(countText.substr(0, 1), 10);
+    const pleaDate = jqPlea.find('.roa-event-date-col').text().trim();
+    const decision = jqPlea
+      .find('.roa-event-content > div > div > div:nth-child(3)')
+      .text()
+      .trim();
+    offenseArray[countNum].plea = {
+      decision: decision,
+      date: formatDate(pleaDate),
+    };
   });
 
   // return parsed offenses
