@@ -123,24 +123,24 @@ class PetitionerCounts {
     titleNum,
     uid
   ) {
-    this.allegedOffenseDate = allegedOffenseDate; // eg: "2012-05-12"
-    this.arrestCitationDate = arrestCitationDate; // eg: "2012-05-12"
-    this.countNum = countNum; // eg: "1"
-    this.county = county; // eg: "Chittenden"
-    this.description = description; // eg: "DUI #1-INFLUENCE"
-    this.dispositionDate = dispositionDate; // eg: "2012-06-27"
-    this.docketCounty = docketCounty; // eg: "Cncr"
-    this.docketNum = docketNum; // eg: "1899-5-12"
-    this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
-    this.filingType = filingType; // eg: "X"
-    this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
-    this.isDismissed = isDismissed; // eg: true
-    this.offenseClass = offenseClass; // eg: "mis"
-    this.offenseDisposition = offenseDisposition; // eg: "Dismissed by state"
-    this.outstandingPayment = outstandingPayment; // eg: false
-    this.sectionNum = sectionNum; // eg: "1201(a)(2)"
-    this.titleNum = titleNum; // eg: "23"
-    this.uid = uid; // eg: "1899-5-12_Cncr11899-5-12Dismissed_by_state"
+    this.allegedOffenseDate = allegedOffenseDate; // TODO (eg: "2012-05-12")
+    this.arrestCitationDate = arrestCitationDate; // TODO (eg: "2012-05-12")
+    this.countNum = countNum; // TODO (eg: "1")
+    this.county = county; // TODO (eg: "Chittenden")
+    this.description = description; // TODO (eg: "DUI #1-INFLUENCE")
+    this.dispositionDate = dispositionDate; // TODO (eg: "2012-06-27")
+    this.docketCounty = docketCounty; // TODO (eg: "Cncr")
+    this.docketNum = docketNum; // TODO (eg: "1899-5-12")
+    this.docketSheetNum = docketSheetNum; // TODO (eg: "1899-5-12 Cncr")
+    this.filingType = filingType; // TODO (eg: "X")
+    this.guid = guid; // TODO (eg: "3abef45f-187d-b0e4-9e2c-969c158acded")
+    this.isDismissed = isDismissed; // TODO (eg: true)
+    this.offenseClass = offenseClass; // TODO (eg: "mis")
+    this.offenseDisposition = offenseDisposition; // TODO (eg: "Dismissed by state")
+    this.outstandingPayment = outstandingPayment; // TODO (eg: false)
+    this.sectionNum = sectionNum; // TODO (eg: "1201(a)(2)")
+    this.titleNum = titleNum; // TODO (eg: "23")
+    this.uid = uid; // TODO (eg: "1899-5-12_Cncr11899-5-12Dismissed_by_state")
   }
 }
 
@@ -203,6 +203,16 @@ function getOdysseyCountInfo(docket) {
     .parent()
     .find('.roa-section-content .roa-table');
 
+  // parse docket number & county (eg, "1899-5-12 Cncr")
+  const caseNumSpans = docket.find('#roa-header span').get();
+  const isCaseNumberSpan = caseNumSpans[1].textContent.trim().includes('Case');
+  const docketSheetNum = isCaseNumberSpan
+    ? caseNumSpans[2].textContent.trim()
+    : null;
+  const [docketNum, docketCounty] = isCaseNumberSpan
+    ? docketSheetNum.split(' ')
+    : [null, null];
+
   // parse each offense
   let offenseArray = [];
   caseOffenseTable.find(' tbody > tr').each(function (i) {
@@ -226,6 +236,9 @@ function getOdysseyCountInfo(docket) {
         guid: guid,
         uid: guid, // TODO: update uid to match VTCO pattern
         countNumber: countNum,
+        docketCounty: docketCounty,
+        docketNum: docketNum,
+        docketSheetNum: docketSheetNum,
         unparsedOffenseHeading: offenseHeading,
         unparsedOffenseData: offenseData,
       });
