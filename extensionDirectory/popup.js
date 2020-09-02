@@ -222,13 +222,13 @@ function getOdysseyCountInfo(docket) {
       const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
       const countNum = parseInt(jqRow.find('td:first').text().trim(), 10); // force parse '1.' as number 1
       const guid = Math.floor((1 + Math.random()) * 0x10000).toString(16);
-      offenseArray[countNum] = {
+      offenseArray.push({
         guid: guid,
         uid: guid, // TODO: update uid to match VTCO pattern
         countNumber: countNum,
         unparsedOffenseHeading: offenseHeading,
         unparsedOffenseData: offenseData,
-      };
+      });
     }
   });
 
@@ -240,6 +240,7 @@ function getOdysseyCountInfo(docket) {
 
   // parse each plea event and add to offenseArray
   dispositionDivs.find('.roa-event-plea-event').each(function (i) {
+    // parse plea information
     const jqPlea = $(this);
     const countText = jqPlea
       .find('.roa-event-content > div > div > div:nth-child(2)')
@@ -251,7 +252,10 @@ function getOdysseyCountInfo(docket) {
       .find('.roa-event-content > div > div > div:nth-child(3)')
       .text()
       .trim();
-    offenseArray[countNum].plea = {
+
+    // find and update this offense in the offenseArray
+    const index = offenseArray.findIndex((o) => o.countNumber === countNum);
+    offenseArray[index].plea = {
       decision: decision,
       date: formatDate(pleaDate),
     };
@@ -261,25 +265,32 @@ function getOdysseyCountInfo(docket) {
   dispositionDivs
     .find('.roa-event-criminal-disposition-event')
     .each(function (i) {
+      // parse disposition information
       const jqDisp = $(this);
+      const dispDate = jqDisp.find('.roa-event-date-col').text().trim();
       const countText = jqDisp
         .find('.roa-event-content > div > div > div:first')
         .text()
         .trim();
       const countNum = parseInt(countText.substr(0, 1), 10);
-      const dispDate = jqDisp.find('.roa-event-date-col').text().trim();
       let decision = jqDisp
         .find('.roa-event-content > div > div > div:nth-child(2)')
         .text()
         .trim();
+
+      // find array index of this offense
+      const index = offenseArray.findIndex((o) => o.countNumber === countNum);
+
+      // conditionally modify the decision text
       if (
         (decision.toLowerCase().includes('guilty') ||
           decision.toLowerCase().includes('nolo')) &&
-        offenseArray[countNum].plea.decision !== null
+        offenseArray[index].plea.decision !== null
       ) {
-        decision = 'Plea: ' + offenseArray[countNum].plea.decision;
+        decision = 'Plea: ' + offenseArray[index].plea.decision;
       }
-      offenseArray[countNum].disposition = decision;
+      // update offense
+      offenseArray[index].disposition = decision;
     });
 
   // return parsed offenses
