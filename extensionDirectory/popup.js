@@ -221,7 +221,10 @@ function getOdysseyCountInfo(docket) {
       const offenseHeading = jqRow.text().trim(); // TODO: parse further
       const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
       const countNum = parseInt(jqRow.find('td:first').text().trim(), 10); // force parse '1.' as number 1
+      const guid = Math.floor((1 + Math.random()) * 0x10000).toString(16);
       offenseArray[countNum] = {
+        guid: guid,
+        uid: guid, // TODO: update uid to match VTCO pattern
         countNumber: countNum,
         unparsedOffenseHeading: offenseHeading,
         unparsedOffenseData: offenseData,
@@ -253,6 +256,31 @@ function getOdysseyCountInfo(docket) {
       date: formatDate(pleaDate),
     };
   });
+
+  // parse each disposition event and add to offenseArray
+  dispositionDivs
+    .find('.roa-event-criminal-disposition-event')
+    .each(function (i) {
+      const jqDisp = $(this);
+      const countText = jqDisp
+        .find('.roa-event-content > div > div > div:first')
+        .text()
+        .trim();
+      const countNum = parseInt(countText.substr(0, 1), 10);
+      const dispDate = jqDisp.find('.roa-event-date-col').text().trim();
+      let decision = jqDisp
+        .find('.roa-event-content > div > div > div:nth-child(2)')
+        .text()
+        .trim();
+      if (
+        (decision.toLowerCase().includes('guilty') ||
+          decision.toLowerCase().includes('nolo')) &&
+        offenseArray[countNum].plea.decision !== null
+      ) {
+        decision = 'Plea: ' + offenseArray[countNum].plea.decision;
+      }
+      offenseArray[countNum].disposition = decision;
+    });
 
   // return parsed offenses
   console.log('Parsed Offenses: ');
