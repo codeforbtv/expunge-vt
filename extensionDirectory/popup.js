@@ -128,16 +128,17 @@ class PetitionerCounts {
     this.docketCounty = docketCounty; // eg: "Cncr"
     this.docketNum = docketNum; // eg: "1899-5-12"
     this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
+    this.dispositionDate = dispositionDate; // eg: "2012-06-27"
+    this.offenseDisposition = offenseDisposition; // eg: "Dismissed by state"
+    this.isDismissed = isDismissed; // eg: true
 
+    // TODO: parse these fields..
     this.allegedOffenseDate = allegedOffenseDate; // TODO (eg: "2012-05-12")
     this.arrestCitationDate = arrestCitationDate; // TODO (eg: "2012-05-12")
     this.description = description; // TODO (eg: "DUI #1-INFLUENCE")
-    this.dispositionDate = dispositionDate; // TODO (eg: "2012-06-27")
     this.filingType = filingType; // TODO (eg: "X")
     this.guid = guid; // TODO (eg: "3abef45f-187d-b0e4-9e2c-969c158acded")
-    this.isDismissed = isDismissed; // TODO (eg: true)
     this.offenseClass = offenseClass; // TODO (eg: "mis")
-    this.offenseDisposition = offenseDisposition; // TODO (eg: "Dismissed by state")
     this.outstandingPayment = outstandingPayment; // TODO (eg: false)
     this.sectionNum = sectionNum; // TODO (eg: "1201(a)(2)")
     this.titleNum = titleNum; // TODO (eg: "23")
@@ -298,15 +299,18 @@ function getOdysseyCountInfo(docket) {
       const index = offenseArray.findIndex((o) => o.countNum === countNum);
 
       // conditionally modify the decision text
+      let modifiedDecision = '';
       if (
         (decision.toLowerCase().includes('guilty') ||
           decision.toLowerCase().includes('nolo')) &&
         offenseArray[index].plea.decision !== null
       ) {
-        decision = 'Plea: ' + offenseArray[index].plea.decision;
+        modifiedDecision = 'Plea: ' + offenseArray[index].plea.decision;
       }
       // update offense
-      offenseArray[index].disposition = decision;
+      offenseArray[index].offenseDisposition = modifiedDecision;
+      offenseArray[index].dispositionDate = formatDate(dispDate);
+      offenseArray[index].isDismissed = isDismissed(decision);
     });
 
   // return parsed offenses
@@ -505,16 +509,20 @@ function processCountLine1(countLine1, countNum, rawData) {
   }
 }
 /**
- * A utility function to convert dates into a standard format
+ * A helper function to convert dates into a standard format
  * used consistently throughout this extension.
  * @param {string} date A date in the format 'MM/DD/YYYY'
  */
 function formatDate(date) {
   return moment(date, 'MM/DD/YYYY').format('YYYY-MM-DD');
 }
+
+/**
+ * Determines whether a count was dismissed
+ * @param {string} offenseDisposition The text of the disposition decision
+ */
 function isDismissed(offenseDisposition) {
   var dispositionNormalized = offenseDisposition.toLowerCase().trim();
-  console.log('dis:' + dispositionNormalized);
   if (
     dispositionNormalized === 'dismissed by state' ||
     dispositionNormalized === 'dismissed by court'
