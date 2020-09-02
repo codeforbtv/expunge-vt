@@ -123,14 +123,14 @@ class PetitionerCounts {
     titleNum,
     uid
   ) {
-    this.countNum = countNum; // TODO (eg: "1")
+    this.countNum = countNum; // eg: "1"
+    this.county = county; // eg: "Chittenden"
     this.docketCounty = docketCounty; // eg: "Cncr"
     this.docketNum = docketNum; // eg: "1899-5-12"
     this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
 
     this.allegedOffenseDate = allegedOffenseDate; // TODO (eg: "2012-05-12")
     this.arrestCitationDate = arrestCitationDate; // TODO (eg: "2012-05-12")
-    this.county = county; // TODO (eg: "Chittenden")
     this.description = description; // TODO (eg: "DUI #1-INFLUENCE")
     this.dispositionDate = dispositionDate; // TODO (eg: "2012-06-27")
     this.filingType = filingType; // TODO (eg: "X")
@@ -213,6 +213,7 @@ function getOdysseyCountInfo(docket) {
   const [docketNum, docketCounty] = isCaseNumberSpan
     ? docketSheetNum.split(' ')
     : [null, null];
+  const county = countyNameFromCountyCode(docketCounty);
 
   // parse each offense
   let offenseArray = [];
@@ -237,6 +238,7 @@ function getOdysseyCountInfo(docket) {
         guid: guid,
         uid: guid, // TODO: update uid to match VTCO pattern
         countNum: countNum,
+        county: county,
         docketCounty: docketCounty,
         docketNum: docketNum,
         docketSheetNum: docketSheetNum,
