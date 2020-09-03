@@ -225,15 +225,21 @@ function getOdysseyCountInfo(docket) {
     if (jqRow.children.length == 0) {
       return;
     }
-    // skip redundant 'hide-gt-sm' rows
+    // skip mobile-only 'hide-gt-sm' rows
     else if (jqRow.hasClass('hide-gt-sm')) {
       return;
     }
     // parse the '.hide-xs.hide-sm' row, and the row immedately following it
     else if (jqRow.hasClass('hide-xs') && jqRow.hasClass('hide-sm')) {
-      const offenseHeading = jqRow.text().trim(); // TODO: parse further
-      const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
       const countNum = parseInt(jqRow.find('td:first').text().trim(), 10); // force parse '1.' as number 1
+      const description = jqRow.find('td:nth-child(2)').text().trim();
+      const degree = jqRow
+        .find('td:nth-child(5) .roa-inline div:last')
+        .text()
+        .trim();
+      const offenseDate = jqRow.find('td:nth-child(6)').text().trim();
+      const filedDate = jqRow.find('td:nth-child(7)').text().trim();
+      const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
       const guid = Math.floor((1 + Math.random()) * 0x10000).toString(16);
       offenseArray.push({
         guid: guid,
@@ -243,7 +249,10 @@ function getOdysseyCountInfo(docket) {
         docketCounty: docketCounty,
         docketNum: docketNum,
         docketSheetNum: docketSheetNum,
-        unparsedOffenseHeading: offenseHeading,
+        allegedOffenseDate: formatDate(offenseDate),
+        arrestCitationDate: formatDate(filedDate),
+        description: description,
+        filingType: degree,
         unparsedOffenseData: offenseData,
       });
     }
