@@ -151,46 +151,55 @@ class PetitionerCounts {
  * @param {string} domString The html of the Odyssey docket
  */
 function getOdysseyPetitionerInfo(domString) {
-  const docket = $($.parseHTML(domString));
-  const partyInfo = docket
-    .find('#party-info')
-    .parent()
-    .find('.roa-section-content')
-    .find('td')
-    .filter(function () {
-      return $(this).find(":contains('Defendant')").length > 0;
-    })
-    .next();
+  try {
+    const docket = $($.parseHTML(domString));
+    const partyInfo = docket
+      .find('#party-info')
+      .parent()
+      .find('.roa-section-content')
+      .find('td')
+      .filter(function () {
+        return $(this).find(":contains('Defendant')").length > 0;
+      })
+      .next();
 
-  let currentDocket = new PetitionerInfo();
+    let currentDocket = new PetitionerInfo();
 
-  // parse address
-  let addressArray = partyInfo
-    .find("[ng-if='::party.Addresses.length']")
-    .find('.ng-binding')
-    .map(function () {
-      return $(this).text().trim();
-    })
-    .get();
-  addressArray.forEach(function (line, index) {
-    if (index < addressArray.length - 3) {
-      currentDocket.defAddress += line;
-      currentDocket.defAddress += '\n';
-    } else if (index >= addressArray.length - 3) {
-      currentDocket.defAddress += line;
-    }
-  });
+    // parse address
+    let addressArray = partyInfo
+      .find("[ng-if='::party.Addresses.length']")
+      .find('.ng-binding')
+      .map(function () {
+        return $(this).text().trim();
+      })
+      .get();
 
-  currentDocket.defName = partyInfo.find('td:first-of-type').html().trim();
-  currentDocket.defDOB = partyInfo
-    .find("[label='DOB:'] .roa-value")
-    .text()
-    .trim();
-  currentDocket.defDOB = formatDate(
-    partyInfo.find("[label='DOB:'] .roa-value").text().trim()
-  );
-  currentDocket.counts = getOdysseyCountInfo(docket);
-  return currentDocket;
+    addressArray.forEach(function (line, index) {
+      if (index < addressArray.length - 3) {
+        currentDocket.defAddress += line;
+        currentDocket.defAddress += '\n';
+      } else if (index === addressArray.length - 3) {
+        currentDocket.defAddress += line;
+      } else if (index === addressArray.length - 2) {
+        currentDocket.defAddress += " " + line;
+      } else if (index === addressArray.length - 1) {
+        currentDocket.defAddress += "  " + line;
+      }
+    });
+
+    currentDocket.defName = partyInfo.find('td:first-of-type').html().trim();
+    currentDocket.defDOB = partyInfo
+      .find("[label='DOB:'] .roa-value")
+      .text()
+      .trim();
+    currentDocket.defDOB = formatDate(
+      partyInfo.find("[label='DOB:'] .roa-value").text().trim()
+    );
+    currentDocket.counts = getOdysseyCountInfo(docket);
+    return currentDocket;
+  } catch (err) {
+    alert("Petitioner Info Error: "+err)
+  }
 }
 
 /**
