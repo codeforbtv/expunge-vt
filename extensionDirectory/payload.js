@@ -1,4 +1,4 @@
-let docketData = {
+docketData = {
   domain: window.location.hostname,
   rawDocket: null,
 };
