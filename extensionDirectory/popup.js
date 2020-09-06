@@ -249,10 +249,11 @@ function getOdysseyCountInfo(docket) {
         docketCounty: docketCounty,
         docketNum: docketNum,
         docketSheetNum: docketSheetNum,
+        offenseClass: degree.toLocaleLowerCase(),
         allegedOffenseDate: formatDate(offenseDate),
         arrestCitationDate: formatDate(filedDate),
         description: description,
-        filingType: degree,
+        filingType: 'X',
         unparsedOffenseData: offenseData,
       });
     }
