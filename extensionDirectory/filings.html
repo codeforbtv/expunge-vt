@@ -93,18 +93,18 @@
                       v-model="settings.role"
                       class="selectpicker"
                     >
-                      <option value="AttyConsult"
-                        >Attorney: Consult only with no appearance</option
-                      >
-                      <option value="AttyAppear"
-                        >Attorney: Appearance to be entered</option
-                      >
-                      <option value="AdminAssist"
-                        >Administrative assistance only</option
-                      >
-                      <option value="StateAtty"
-                        >State's Attorney or AG Preparer</option
-                      >
+                      <option value="AttyConsult">
+                        Attorney: Consult only with no appearance
+                      </option>
+                      <option value="AttyAppear">
+                        Attorney: Appearance to be entered
+                      </option>
+                      <option value="AdminAssist">
+                        Administrative assistance only
+                      </option>
+                      <option value="StateAtty">
+                        State's Attorney or AG Preparer
+                      </option>
                     </select>
                   </label>
                 </p>
@@ -1003,60 +1003,67 @@
                       </template>
 
                       <!-- Begin Closings -->
-                      <template v-if="filing.type == 'NoA'">
+                      <template v-if="filing.type != 'NoA'">
                         <div class="filing-closing">
-                          <filing-dated-city></filing-dated-city>
-                          <div
-                            class="filing-closing__signature-area filing-closing--align-right"
-                          >
-                            <div class="filing-closing__signature-box">
-                              <template v-if="proSeFromRole(settings.role)">
-                                <p class="filing-closing__name">
-                                  {{petitioner.name}}, Petitioner
-                                </p>
-                                <div class="filing-closing__contact-box">
-                                  <p
-                                    class="filing-closing__contact-box-title bold"
-                                  >
-                                    Petitioner's Address &amp; Phone Number:
-                                  </p>
-                                  <p
-                                    class="filing-closing__petitioner-address"
-                                    v-html="petitioner.address"
-                                  ></p>
-                                  <p class="filing-closing__phone">
-                                    Phone:
-                                    <span class="no-visible"
-                                      >{{responses['phone']}}</span
-                                    >
-                                    <input
-                                      class="no-print"
-                                      v-model="responses['phone']"
-                                      placeholder="Petitioner Phone Number"
-                                    />
-                                  </p>
+                            <p class="filing-closing__salutation">
+                                Respectfully requested,
+                            </p>
+                            <div class="filing-closing__signature-area">
+                                <div class="filing-closing__signature-box">
+
+                                    <template v-if="proSeFromRole(settings.role)">
+
+                                        <p class="filing-closing__name">{{petitioner.name}}, Petitioner</p>
+                                        <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
+
+                                    </template>
+                                    <template v-else>
+                                        <p class="filing-closing__name">
+                                            <span>{{settings['attorney']}}</span>
+                                        </p>
+
+                                        <p class= "filing-closing__petitioner-address" v-html="nl2br(settings['attorneyAddress'])"></p>
+                                    </template>
+
                                 </div>
-                              </template>
-                              <template v-else>
-                                <p class="filing-closing__name">
-                                  <span>{{settings['attorney']}}</span>
-                                </p>
-                                <div class="filing-closing__contact-box">
-                                  <p
-                                    class="filing-closing__contact-box-title bold"
-                                  >
-                                    Attorney's Address &amp; Phone Number:
-                                  </p>
-                                  <p
-                                    class="filing-closing__petitioner-address"
-                                    v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"
-                                  ></p>
+                                <div class="filing-closing__date-box">
+                                    <p>Date</p>
                                 </div>
-                              </template>
                             </div>
-                          </div>
+
+                            <filing-footer v-bind:type="filing.type" v-bind:stipulated="filing.isStipulated"></filing-footer>
                         </div>
-                      </template>
+                    </template>
+                    <template v-if="filing.type == 'NoA'">
+                        <div class="filing-closing">
+                            <filing-dated-city></filing-dated-city>
+                            <div class="filing-closing__signature-area filing-closing--align-right">
+                                <div class="filing-closing__signature-box">
+                                    <template v-if="proSeFromRole(settings.role)">
+                                        <p class="filing-closing__name">{{petitioner.name}}, Petitioner
+                                        </p>
+                                        <div class="filing-closing__contact-box">
+                                            <p class="filing-closing__contact-box-title bold">
+                                                Petitioner's Address &amp; Phone Number:</p>
+                                            <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
+                                            <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
+                                                <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number">
+                                            </p>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <p class="filing-closing__name">
+                                            <span>{{settings['attorney']}}</span>
+                                        </p>
+                                        <div class="filing-closing__contact-box">
+                                            <p class="filing-closing__contact-box-title bold">
+                                                Attorney's Address &amp; Phone Number:</p>
+                                            <p class=  "filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"></p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                    </template>
 
                       <!-- End Closings -->
                     </div>
