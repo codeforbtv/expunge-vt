@@ -123,25 +123,38 @@ class PetitionerCount {
     titleNum,
     uid
   ) {
-    this.countNum = countNum; // eg: "1"
-    this.county = county; // eg: "Chittenden"
+    // uid is unique, but consisten for a given docket count
+    this.uid = uid; // eg: "1899-5-12_Cncr_Count1_DUI_#2-INFLUENCE_Dismissed_by_state"
+
+    // guid is a globally unique string
+    this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
+
+    // a variety of docket info
+    this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
     this.docketCounty = docketCounty; // eg: "Cncr"
     this.docketNum = docketNum; // eg: "1899-5-12"
-    this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
+    this.county = county; // eg: "Chittenden"
+
+    // the count's number within the docket (usually not unique across dockets)
+    this.countNum = countNum; // eg: "1"
+
+    // the plain-english description of the offense
+    this.description = description; // eg: "DUI #1-INFLUENCE"
+
+    // some info about the disposition
     this.dispositionDate = dispositionDate; // eg: "2012-06-27"
     this.offenseDisposition = offenseDisposition; // eg: "Dismissed by state"
-    this.isDismissed = isDismissed; // eg: true
-    this.allegedOffenseDate = allegedOffenseDate; // eg: "2012-05-12"
-    this.arrestCitationDate = arrestCitationDate; // eg: "2012-05-12"
-    this.description = description; // eg: "DUI #1-INFLUENCE"
-    this.filingType = filingType; // eg: "X"
-    this.offenseClass = offenseClass; // eg: "mis"
-    this.uid = uid; // eg: "1899-5-12_Cncr_Count1_DUI_#2-INFLUENCE_Dismissed_by_state"
-    this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
 
     // section and title of statutue
     this.sectionNum = sectionNum; // eg: "1201(a)(2)"
     this.titleNum = titleNum; // eg: "23"
+
+    // other fields
+    this.allegedOffenseDate = allegedOffenseDate; // eg: "2012-05-12"
+    this.arrestCitationDate = arrestCitationDate; // eg: "2012-05-12"
+    this.isDismissed = isDismissed; // eg: true
+    this.filingType = filingType; // eg: "X"
+    this.offenseClass = offenseClass; // eg: "mis"
 
     // TODO: parse these fields..
     this.outstandingPayment = outstandingPayment; // TODO (eg: false)
@@ -183,9 +196,9 @@ function getOdysseyPetitionerInfo(domString) {
       } else if (index === addressArray.length - 3) {
         currentDocket.defAddress += line;
       } else if (index === addressArray.length - 2) {
-        currentDocket.defAddress += " " + line;
+        currentDocket.defAddress += ' ' + line;
       } else if (index === addressArray.length - 1) {
-        currentDocket.defAddress += "  " + line;
+        currentDocket.defAddress += '  ' + line;
       }
     });
 
@@ -200,7 +213,7 @@ function getOdysseyPetitionerInfo(domString) {
     currentDocket.counts = getOdysseyCountInfo(docket);
     return currentDocket;
   } catch (err) {
-    alert("Petitioner Info Error: "+err)
+    alert('Petitioner Info Error: ' + err);
   }
 }
 
