@@ -102,7 +102,7 @@ class PetitionerInfo {
 /**
  * Each count should contain these properties
  */
-class PetitionerCounts {
+class PetitionerCount {
   constructor(
     allegedOffenseDate,
     arrestCitationDate,
@@ -131,18 +131,18 @@ class PetitionerCounts {
     this.dispositionDate = dispositionDate; // eg: "2012-06-27"
     this.offenseDisposition = offenseDisposition; // eg: "Dismissed by state"
     this.isDismissed = isDismissed; // eg: true
+    this.allegedOffenseDate = allegedOffenseDate; // eg: "2012-05-12"
+    this.arrestCitationDate = arrestCitationDate; // eg: "2012-05-12"
+    this.description = description; // eg: "DUI #1-INFLUENCE"
+    this.filingType = filingType; // eg: "X"
+    this.offenseClass = offenseClass; // eg: "mis"
+    this.uid = uid; // eg: "1899-5-12_Cncr_Count1_DUI_#2-INFLUENCE_Dismissed_by_state"
+    this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
 
     // TODO: parse these fields..
-    this.allegedOffenseDate = allegedOffenseDate; // TODO (eg: "2012-05-12")
-    this.arrestCitationDate = arrestCitationDate; // TODO (eg: "2012-05-12")
-    this.description = description; // TODO (eg: "DUI #1-INFLUENCE")
-    this.filingType = filingType; // TODO (eg: "X")
-    this.guid = guid; // TODO (eg: "3abef45f-187d-b0e4-9e2c-969c158acded")
-    this.offenseClass = offenseClass; // TODO (eg: "mis")
     this.outstandingPayment = outstandingPayment; // TODO (eg: false)
     this.sectionNum = sectionNum; // TODO (eg: "1201(a)(2)")
     this.titleNum = titleNum; // TODO (eg: "23")
-    this.uid = uid; // TODO (eg: "1899-5-12_Cncr11899-5-12Dismissed_by_state")
   }
 }
 
@@ -249,10 +249,7 @@ function getOdysseyCountInfo(docket) {
       const offenseDate = jqRow.find('td:nth-child(6)').text().trim();
       const filedDate = jqRow.find('td:nth-child(7)').text().trim();
       const offenseData = jqRow.next().text().trim(); // TODO: parse further (if necessary)
-      const guid = Math.floor((1 + Math.random()) * 0x10000).toString(16);
       offenseArray.push({
-        guid: guid,
-        uid: guid, // TODO: update uid to match VTCO pattern
         countNum: countNum,
         county: county,
         docketCounty: docketCounty,
@@ -331,6 +328,12 @@ function getOdysseyCountInfo(docket) {
       offenseArray[index].dispositionDate = formatDate(dispDate);
       offenseArray[index].isDismissed = isDismissed(decision);
     });
+
+  // generate uid & guids for each offense
+  offenseArray.map((offense) => {
+    offense.uid = generateCountUID(offense);
+    offense.guid = guid();
+  });
 
   // return parsed offenses
   console.log('Parsed Offenses: ');
@@ -597,6 +600,25 @@ function nthIndex(str, subStr, n) {
   return i;
 }
 
+/**
+ * The uid combined key that is unique, and consistent, for each count.
+ *  (eg: "1899-5-12_Cncr_Count1_DUI_#2-INFLUENCE_Dismissed_by_state")
+ * @param {PetitionerCount} offense  An object of type PetitionerCount
+ * @returns string
+ */
+function generateCountUID(offense) {
+  const uid =
+    offense.docketSheetNum +
+    `_Count${offense.countNum}_` +
+    `${offense.description}_` +
+    checkDisposition(offense.offenseDisposition);
+  return uid.split(' ').join('_');
+}
+
+/**
+ * Generates a unique string (eg "8179fe60-1162-8d63-7fda-eda81e2bc3fa")
+ * @returns string
+ */
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
