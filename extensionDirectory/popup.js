@@ -139,10 +139,12 @@ class PetitionerCount {
     this.uid = uid; // eg: "1899-5-12_Cncr_Count1_DUI_#2-INFLUENCE_Dismissed_by_state"
     this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
 
+    // section and title of statutue
+    this.sectionNum = sectionNum; // eg: "1201(a)(2)"
+    this.titleNum = titleNum; // eg: "23"
+
     // TODO: parse these fields..
     this.outstandingPayment = outstandingPayment; // TODO (eg: false)
-    this.sectionNum = sectionNum; // TODO (eg: "1201(a)(2)")
-    this.titleNum = titleNum; // TODO (eg: "23")
   }
 }
 
@@ -242,6 +244,12 @@ function getOdysseyCountInfo(docket) {
     else if (jqRow.hasClass('hide-xs') && jqRow.hasClass('hide-sm')) {
       const countNum = parseInt(jqRow.find('td:first').text().trim(), 10); // force parse '1.' as number 1
       const description = jqRow.find('td:nth-child(2)').text().trim();
+      const statute = jqRow
+        .find('td:nth-child(4) .roa-inline div:last')
+        .text()
+        .trim();
+      const statuteTitle = statute.match(/^\d+/);
+      const statuteSection = statute.match(/\d+(?:\(\w+\))+?$/);
       const degree = jqRow
         .find('td:nth-child(5) .roa-inline div:last')
         .text()
@@ -260,6 +268,8 @@ function getOdysseyCountInfo(docket) {
         arrestCitationDate: formatDate(filedDate),
         description: description,
         filingType: 'X',
+        titleNum: statuteTitle[0],
+        sectionNum: statuteSection[0],
         unparsedOffenseData: offenseData,
       });
     }
