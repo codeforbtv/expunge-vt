@@ -155,9 +155,7 @@ class PetitionerCount {
     this.isDismissed = isDismissed; // eg: true
     this.filingType = filingType; // eg: "X"
     this.offenseClass = offenseClass; // eg: "mis"
-
-    // TODO: parse these fields..
-    this.outstandingPayment = outstandingPayment; // TODO (eg: false)
+    this.outstandingPayment = outstandingPayment; // eg: false
   }
 }
 
@@ -352,6 +350,29 @@ function getOdysseyCountInfo(docket) {
       offenseArray[index].isDismissed = isDismissed(decision);
     });
 
+  // parse Financial Information (if present)
+  const feeDiv = docket
+    .find('[data-header-text="Financial Information"]')
+    .parent()
+    .find('.roa-finance-case-fees');
+  if (feeDiv.length == 1) {
+    const rawBalance = feeDiv
+      .find('div.roa-finance-row.roa-text-bold:last')
+      .text()
+      .trim();
+    if (rawBalance.startsWith('Balance Due')) {
+      const asOfArr = rawBalance.match(/as of (\d+\/\d+\/\d+)/);
+      const asOf = asOfArr.length >= 2 ? asOfArr[1] : null; // not sure if we need the date, but here it is anyway
+      const balanceArr = rawBalance.match(/\d+\.\d\d$/);
+      const balance = balanceArr.length >= 1 ? balanceArr[0] : null;
+      if (balance != null) {
+        offenseArray.map((offense) => {
+          offense.outstandingPayment = true;
+        });
+      }
+    }
+  }
+
   // generate uid & guids for each offense
   offenseArray.map((offense) => {
     offense.uid = generateCountUID(offense);
@@ -513,7 +534,7 @@ function processCountLine1(countLine1, countNum, rawData) {
     offenseDisposition: offenseDisposition,
     filingType: 'X',
     docketSheetNum: docketSheetNum,
-    outstandingPayment: isSurchageDue(rawData),
+    outstandingPayment: isVCOLSurchageDue(rawData),
     isDismissed: isDismissed(offenseDisposition),
   };
 
@@ -590,16 +611,18 @@ function isFelOrMisd(element) {
   }
   return false;
 }
-function isSurchageDue(rawData) {
-  //if a surchage is entered in the record there is at least one def-pay section
-  //if the surchage was due and has been paid, there is a finpay section.
-  //if there is a defpay record and no fin pay record, then a surchage is due.
-  //if there is no defpay and no finpay, then no surchage is due.
 
-  var isSurchageDue = surchargeCreated() && !finalPayment();
-
-  return isSurchageDue;
-
+/**
+ * Helper method to determine whether there is a surcharge due for a VCOL docket
+ * - if a surchage is entered in the record there is at least one def-pay section
+ * - if the surchage was due and has been paid, there is a finpay section.
+ * - if there is a defpay record and no fin pay record, then a surchage is due.
+ * - if there is no defpay and no finpay, then no surchage is due.
+ *
+ * @param {string} rawData The entire chunk of raw docket text
+ * @returns boolean
+ */
+function isVCOLSurchageDue(rawData) {
   function surchargeCreated() {
     return (
       rawData.includes('defpay') ||
@@ -611,6 +634,9 @@ function isSurchageDue(rawData) {
   function finalPayment() {
     return rawData.includes('finpay') || rawData.includes('paid in full');
   }
+
+  var isSurchageDue = surchargeCreated() && !finalPayment();
+  return isSurchageDue;
 }
 
 function nthIndex(str, subStr, n) {
