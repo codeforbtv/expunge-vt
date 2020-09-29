@@ -204,6 +204,7 @@ var app = new Vue({
         this.popupHeadline = data['expungeHeadline'];
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
+        this.stipDef = data['stipDefinition'];
         console.log('adminConfig data has been set ', data);
       }.bind(this)
     );
