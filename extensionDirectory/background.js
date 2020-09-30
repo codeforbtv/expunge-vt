@@ -10,6 +10,10 @@ chrome.runtime.onInstalled.addListener(function () {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
+            // Allow opening popup on all. Domains below available if this is turned off.
+            pageUrl: { hostContains: '' },
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
             // Code for BTV has demo dockets for practicing
             pageUrl: { hostContains: 'codeforbtv.org' },
           }),
