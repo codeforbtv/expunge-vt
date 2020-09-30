@@ -1,6 +1,6 @@
 {
     "name": "ExpungeVT!",
-    "version": "2.2",
+    "version": "3.0 Odisee Edition",
     "description": "Expunge and seal Vermont records with ease!",
     "permissions": ["storage",
                     "declarativeContent",
