@@ -336,10 +336,12 @@ function getOdysseyCountInfo(docket) {
       const index = offenseArray.findIndex((o) => o.countNum === countNum);
 
       // conditionally modify the decision text
-      let modifiedDecision = '';
+      let modifiedDecision = decision;
       if (
-        (decision.toLowerCase().includes('guilty') ||
-          decision.toLowerCase().includes('nolo')) &&
+        ((decision.toLowerCase().includes('guilty') &&
+          !decision.toLowerCase().includes('jury')) ||
+          decision.toLowerCase().includes('nolo')) && // Nolo == not admitting guilt, equivalant to guilty
+        typeof offenseArray[index].plea !== 'undefined' &&
         offenseArray[index].plea.decision !== null
       ) {
         modifiedDecision = 'Plea: ' + offenseArray[index].plea.decision;
