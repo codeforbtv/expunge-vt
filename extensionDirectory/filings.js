@@ -145,7 +145,6 @@ var app = new Vue({
   el: '#filing-app',
   data: {
     settings: {
-      groupCounts: true,
       attorney: '',
       attorneyAddress: '',
       attorneyPhone: '',
@@ -161,6 +160,7 @@ var app = new Vue({
       defDOB: '',
       counts: [],
     },
+    groupCounts: false,
     responses: {},
     countiesContact: {},
     popupHeadline: '',
@@ -700,7 +700,6 @@ var app = new Vue({
       if (confirm('Are you sure you want to reset setting to the defaults?')) {
         localStorage.removeItem(['localExpungeVTSettings']);
         this.settings = {
-          groupCounts: true,
           attorney: '',
           attorneyAddress: '',
           attorneyPhone: '',
@@ -741,8 +740,8 @@ var app = new Vue({
     },
     filings: function () {
       var shouldGroupCounts = true;
-      if (this.settings.groupCounts !== undefined) {
-        shouldGroupCounts = this.settings.groupCounts;
+      if (this.groupCounts !== undefined) {
+        shouldGroupCounts = this.groupCounts;
       }
       return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
