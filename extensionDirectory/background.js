@@ -21,6 +21,11 @@ chrome.runtime.onInstalled.addListener(function () {
           new chrome.declarativeContent.PageStateMatcher({
             pageUrl: { urlContains: 'chrome-extension://' },
           }),
+
+          // Activate extention on new tabs (helpful for navigating to VCOL and Odyssey)
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { urlContains: 'chrome://newtab/' },
+          }),
         ],
         actions: [new chrome.declarativeContent.ShowPageAction()],
       },

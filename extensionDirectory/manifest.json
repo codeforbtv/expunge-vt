@@ -1,7 +1,7 @@
 {
     "name": "ExpungeVT!",
     "version": "2.2",
-    "description": "Expunge and seal records found on VTCourtsOnline with ease!",
+    "description": "Expunge and seal Vermont records with ease!",
     "permissions": ["storage",
                     "declarativeContent",
                     "activeTab",
