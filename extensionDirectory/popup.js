@@ -259,8 +259,8 @@ function getOdysseyCountInfo(docket) {
         .find('td:nth-child(4) .roa-inline div:last')
         .text()
         .trim();
-      const statuteTitle = statute.match(/^\S+/) || "err";
-      const statuteSection = statute.match(/\S+$/) || "err";
+      const statuteTitle = statute.match(/^\S+/) || 'err';
+      const statuteSection = statute.match(/\S+$/) || 'err';
       const degree = jqRow
         .find('td:nth-child(5) .roa-inline div:last')
         .text()

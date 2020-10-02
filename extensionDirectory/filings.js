@@ -24,6 +24,7 @@ function initAfterVue() {
   }
 }
 
+// TODO: implement or delete
 function initAfterFilingRefresh() {
   setInitialExpandForTextAreas();
   initScrollDetection();
