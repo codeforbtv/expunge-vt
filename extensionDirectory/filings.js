@@ -24,6 +24,7 @@ function initAfterVue() {
   }
 }
 
+// TODO: implement or delete
 function initAfterFilingRefresh() {
   setInitialExpandForTextAreas();
   initScrollDetection();
@@ -145,7 +146,6 @@ var app = new Vue({
   el: '#filing-app',
   data: {
     settings: {
-      groupCounts: true,
       attorney: '',
       attorneyAddress: '',
       attorneyPhone: '',
@@ -161,6 +161,7 @@ var app = new Vue({
       defDOB: '',
       counts: [],
     },
+    groupCounts: false,
     responses: {},
     countiesContact: {},
     popupHeadline: '',
@@ -195,18 +196,6 @@ var app = new Vue({
       },
       deep: true,
     },
-  },
-  beforeCreate() {
-    $.getJSON(
-      'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
-      function (data) {
-        this.countiesContact = data['countyContacts'];
-        this.popupHeadline = data['expungeHeadline'];
-        this.roleCoverLetterText = data['roleText'];
-        this.coverLetterContent = data['letter'];
-        console.log('adminConfig data has been set ', data);
-      }.bind(this)
-    );
   },
   beforeCreate() {
     $.getJSON(
@@ -696,6 +685,9 @@ var app = new Vue({
       );
     },
     addDocketCounts: function () {
+      // TODO: consider using content_scripts instead to avoid loading payload.js every time the
+      // 'Add From Page' button is clicked.
+      // see: https://stackoverflow.com/a/42989406/263900
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
     confirmClearData: function () {
@@ -709,7 +701,6 @@ var app = new Vue({
       if (confirm('Are you sure you want to reset setting to the defaults?')) {
         localStorage.removeItem(['localExpungeVTSettings']);
         this.settings = {
-          groupCounts: true,
           attorney: '',
           attorneyAddress: '',
           attorneyPhone: '',
@@ -750,8 +741,8 @@ var app = new Vue({
     },
     filings: function () {
       var shouldGroupCounts = true;
-      if (this.settings.groupCounts !== undefined) {
-        shouldGroupCounts = this.settings.groupCounts;
+      if (this.groupCounts !== undefined) {
+        shouldGroupCounts = this.groupCounts;
       }
       return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
