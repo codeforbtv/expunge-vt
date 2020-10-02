@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener(function () {
       {
         conditions: [
           new chrome.declarativeContent.PageStateMatcher({
-            // Allow opening popup on all. Domains below available if this is turned off.
+            // Allow opening popup on all domains. (Overrides following matchers.)
             pageUrl: { hostContains: '' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
