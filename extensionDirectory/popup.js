@@ -516,10 +516,10 @@ function processCountLine1(countLine1, countNum, rawData) {
     docketSheetNum +
     countLine1Array[0] +
     countLine1Array[1] +
-    checkDisposition(disposition);
+    beautifyDisposition(disposition);
   uid = uid.split(' ').join('_');
 
-  offenseDisposition = checkDisposition(disposition);
+  offenseDisposition = beautifyDisposition(disposition);
   dispositionDate = countLine1Array[felMisLocation + 1];
   //Create count object with all count line 1 items
   countObject = {
@@ -649,6 +649,22 @@ function nthIndex(str, subStr, n) {
     if (i < 0) break;
   }
   return i;
+}
+
+/**
+ * Helper function to clean up the disposition text, if possible
+ * @param {string} text The text to try to replace
+ */
+function beautifyDisposition(text) {
+  switch (text.trim()) {
+    // common truncation on VCOL
+    case 'Plea guilty by wai':
+      return 'Plea guilty by waiver';
+
+    // otherwise return the trimmed original text
+    default:
+      return text;
+  }
 }
 
 /**
