@@ -600,13 +600,7 @@ function isDismissed(offenseDisposition) {
     return false;
   }
 }
-function checkDisposition(string) {
-  if (string.trim() == '') {
-    return 'Pending';
-  } else {
-    return string;
-  }
-}
+
 function isFelOrMisd(element) {
   if (element === 'mis' || element === 'fel') {
     return element;
@@ -657,6 +651,10 @@ function nthIndex(str, subStr, n) {
  */
 function beautifyDisposition(text) {
   switch (text.trim()) {
+    // replace empty disposition strings with 'pending'
+    case '':
+      return 'Pending';
+
     // common truncation on VCOL
     case 'Plea guilty by wai':
       return 'Plea guilty by waiver';
