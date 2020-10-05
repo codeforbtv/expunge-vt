@@ -477,7 +477,7 @@ function getVTCOCountInfo(rawData) {
   return counts;
 }
 
-//Break line one of a count into its individual fields
+// When parsing VCOL data, break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum, rawData) {
   //Break into array and remove spaces
   countLine1Array = countLine1.split(' ');
@@ -488,6 +488,7 @@ function processCountLine1(countLine1, countNum, rawData) {
   //find location of fel/mis
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
+  // TODO: conditionally display console.log content
   console.log(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
