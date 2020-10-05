@@ -178,8 +178,10 @@
                     <div class="card-header__description btn btn-link btn-sm">
                       <p v-if="count.docketNum">
                         <b
-                          >{{count.docketNum}} {{count.county | toCountyCode
-                          }}</b
+                          ><a v-bind:href="count.url" target="_blank">
+                            {{count.docketNum}} {{count.county | toCountyCode
+                            }}</a
+                          ></b
                         >
                       </p>
                       <p v-if="count.description">

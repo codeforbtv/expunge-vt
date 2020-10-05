@@ -1,5 +1,6 @@
 docketData = {
   domain: window.location.hostname,
+  url: window.location.href,
   rawDocket: null,
 };
 
