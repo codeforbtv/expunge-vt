@@ -585,6 +585,7 @@ function processCountLine1(countLine1, countNum, rawData) {
  * @param {any} data Data to log to the console
  */
 function devLog(data) {
+  // see https://developer.chrome.com/extensions/management#method-getSelf
   chrome.management.getSelf(function (self) {
     if (self.installType == 'development') {
       console.log(data);
