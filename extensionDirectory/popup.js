@@ -468,7 +468,7 @@ function getVTCOCountInfo(rawData) {
       );
       var decodedString = dom.body.textContent;
 
-      console.log(decodedString);
+      devLog(decodedString);
       countObject['description'] = decodedString;
 
       counts.push(countObject);
@@ -576,6 +576,22 @@ function processCountLine1(countLine1, countNum, rawData) {
     console.log('Error:' + err);
   }
 }
+
+/**
+ * Replaces console.log() statements with a wrapper that prevents the extension from logging
+ * to the console unless it was installed by a developer. This will keep the console clean; a
+ * practice recommended for chrome extensions.
+ *
+ * @param {any} data Data to log to the console
+ */
+function devLog(data) {
+  chrome.management.getSelf(function (self) {
+    if (self.installType == 'development') {
+      console.log(data);
+    }
+  });
+}
+
 /**
  * A helper function to convert dates into a standard format
  * used consistently throughout this extension.
