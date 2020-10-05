@@ -13,9 +13,26 @@ $(document).on('keydown', function (e) {
   }
 });
 
+/**
+ * Replaces console.log() statements with a wrapper that prevents the extension from logging
+ * to the console unless it was installed by a developer. This will keep the console clean; a
+ * practice recommended for chrome extensions.
+ *
+ * @param {any} data Data to log to the console
+ * @todo find a way to make this reusuable, then delete the duplicate fn() in popup.js
+ */
+function devLog(data) {
+  // see https://developer.chrome.com/extensions/management#method-getSelf
+  chrome.management.getSelf(function (self) {
+    if (self.installType == 'development') {
+      console.log(data);
+    }
+  });
+}
+
 function initAfterVue() {
   //sets intital height of all text areas to show all text.
-  console.log(document.getElementsByTagName('body')[0].id);
+  devLog(document.getElementsByTagName('body')[0].id);
   if (document.getElementsByTagName('body')[0].id === 'filing-page') {
     initScrollDetection();
     setInitialExpandForTextAreas();
@@ -187,7 +204,7 @@ var app = new Vue({
     },
     saved: {
       handler() {
-        console.log('counts updated');
+        devLog('counts updated');
         this.saveCounts();
         app.$nextTick(function () {
           //call any vanilla js functions after update.
@@ -206,12 +223,13 @@ var app = new Vue({
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        console.log('adminConfig data has been set ', data);
+        devLog('adminConfig data has been set: ');
+        devLog(data);
       }.bind(this)
     );
   },
   mounted() {
-    console.log('App mounted!');
+    devLog('App mounted!');
     this.loadAll();
     detectChangesInChromeStorage();
 
@@ -220,18 +238,18 @@ var app = new Vue({
   },
   methods: {
     saveSettings: function () {
-      // console.log("save settings", app.settings)
+      // devLog("save settings", app.settings)
       settingString = JSON.stringify(this.settings);
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      console.log('save responses');
+      devLog('save responses');
       chrome.storage.local.set({
         responses: app.responses,
       });
     },
     saveCounts: function () {
-      console.log('saving counts');
+      devLog('saving counts');
       chrome.storage.local.set({
         counts: app.saved,
       });
@@ -240,27 +258,27 @@ var app = new Vue({
       if (callback === undefined) {
         callback = function () {};
       }
-      console.log(localStorage.getItem('localExpungeVTSettings'));
+      devLog(localStorage.getItem('localExpungeVTSettings'));
       localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
       if (
         localResult !== undefined &&
         localResult !== '' &&
         localResult !== null
       ) {
-        console.log('settings found');
+        devLog('settings found');
         this.settings = localResult;
-        console.log(this.settings);
+        devLog(this.settings);
       } else {
-        console.log('No settings found, saving default settings');
+        devLog('No settings found, saving default settings');
         this.saveSettings();
       }
 
       chrome.storage.local.get(function (result) {
         //test if we have any data
-        console.log('loading all');
-        console.log(JSON.stringify(result));
+        devLog('loading all');
+        devLog(JSON.stringify(result));
         if (result.counts !== undefined) {
-          console.log(result.counts);
+          devLog(result.counts);
           app.saved = result.counts;
         }
 
@@ -279,7 +297,7 @@ var app = new Vue({
       // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts);
 
-      console.log(
+      devLog(
         'there are ' +
           filingCounties.length +
           ' counties for ' +
@@ -305,7 +323,7 @@ var app = new Vue({
           allEligibleCountsForThisCounty
         );
 
-        console.log(
+        devLog(
           'there are ' +
             filingsForThisCounty.length +
             ' different filings needed in ' +
@@ -720,7 +738,7 @@ var app = new Vue({
     },
     returnCountyContact: function (cty) {
       allCounties = this.countiesContact;
-      console.log('Number: ' + allCounties[cty]);
+      devLog('Number: ' + allCounties[cty]);
       return allCounties[cty];
     },
     proSeFromRole: function (preparerRole) {
