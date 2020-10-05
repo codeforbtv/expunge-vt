@@ -57,7 +57,7 @@ function appendDataWithConfirmation(newData, oldData) {
   var totalNumMatchingExistingCounts = 0;
   for (count in newCounts) {
     var currentCount = newCounts[count];
-    console.log(currentCount.uid);
+    devLog(currentCount.uid);
     var numMatchingExistingCounts = oldData.counts.filter(
       (count) => count.uid === currentCount.uid
     ).length;
@@ -382,8 +382,8 @@ function getOdysseyCountInfo(docket) {
   });
 
   // return parsed offenses
-  console.log('Parsed Offenses: ');
-  console.log(offenseArray);
+  devLog('Parsed Offenses: ');
+  devLog(offenseArray);
   return offenseArray;
 }
 
@@ -457,7 +457,7 @@ function getVTCOCountInfo(rawData) {
     } else {
       //Catch Line 2 of each count
       description = allCountsArray[i].trim();
-      console.log('description: ' + description);
+      devLog('description: ' + description);
       description = description.replace(/\//g, ' / ');
       description = description.replace(/\s\s/g, ' ');
 
@@ -488,7 +488,7 @@ function processCountLine1(countLine1, countNum, rawData) {
   //find location of fel/mis
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
-  console.log(countLine1Array);
+  devLog(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
   for (j = 5; j < felMisLocation; j++) {
@@ -555,7 +555,7 @@ function processCountLine1(countLine1, countNum, rawData) {
     countObject['allegedOffenseDate'] = formatDate(allegedOffenseDate.trim());
   } catch (err) {
     countObject['allegedOffenseDate'] = '';
-    console.log('Error:' + err);
+    devLog('Error:' + err);
   }
 
   //Get Arrest/citation date:
@@ -573,7 +573,7 @@ function processCountLine1(countLine1, countNum, rawData) {
     countObject['arrestCitationDate'] = formatDate(arrestCitationDate.trim());
   } catch (err) {
     countObject['arrestCitationDate'] = '';
-    console.log('Error:' + err);
+    devLog('Error:' + err);
   }
 }
 
