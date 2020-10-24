@@ -9,7 +9,7 @@ function initListeners() {
     switch (rawDocketData.domain) {
       // VT COURTS ONLINE
       case 'secure.vermont.gov': {
-        parsedData = getVTCOPetitionerInfo(rawDocketData.rawDocket);
+        parsedData = getVTCOPetitionerInfo(rawDocketData);
         break;
       }
       // ODYSSEY
@@ -393,8 +393,9 @@ function getOdysseyCountInfo(docket, docketUrl) {
  * Parses the VTCO docket data and returns object with parsed data
  * @param {string} rawData The content of the 'pre' element that VTCO uses to wrap it's docket info
  */
-function getVTCOPetitionerInfo(rawData) {
+function getVTCOPetitionerInfo(data) {
   //Get Defendant Name
+  const rawData = data.rawDocket; // this is the 'pre' element wraps VTCOs docket info
   nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
   nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
   defName = rawData.substring(nameLocation, nameLocationEnd);
@@ -429,13 +430,19 @@ function getVTCOPetitionerInfo(rawData) {
     defName: defName,
     defDOB: formatDate(defDOB),
     defAddress: addressArray.join('\n'),
-    counts: getVTCOCountInfo(rawData),
+    counts: getVTCOCountInfo(rawData, data.url),
   };
 
   return parsedData;
 }
 
-function getVTCOCountInfo(rawData) {
+/**
+ * Function to parse out the criminal counts visible on a VCOL docket
+ * @param {string} rawData The docket 'pre' element
+ * @param {string} docketUrl The url of this count's docket
+ * @returns {array} An array of criminal count objects
+ */
+function getVTCOCountInfo(rawData, docketUrl) {
   divider =
     '================================================================================';
 
@@ -472,6 +479,7 @@ function getVTCOCountInfo(rawData) {
 
       console.log(decodedString);
       countObject['description'] = decodedString;
+      countObject['url'] = docketUrl;
 
       counts.push(countObject);
     }
