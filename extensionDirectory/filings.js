@@ -321,7 +321,7 @@ var app = new Vue({
         //add the notice of appearance filing to this county because we have petitions to file
         //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
         var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented = this.segmentCountsByMaxDocketNumber(
+        var allEligibleCountsForThisCountySegmented = this.groupCountsByMaxDocketNumber(
           allEligibleCountsForThisCounty,
           maxDocketsPerNoA
         );
@@ -379,31 +379,28 @@ var app = new Vue({
       }
       return groupedFilings;
     },
-    segmentCountsByMaxDocketNumber: function (counts, max) {
+
+    /* Used when there are more docket numbers than will fit on a single Notice of Appearance
+     * form. This takes an array[counts], and returns an array[array[counts]]. For example, if
+     * the `max` is 10 dockets, then each inner array would have all the counts belonging to the
+     * next 10 dockets.
+     */
+    groupCountsByMaxDocketNumber: function (counts, maxLength) {
       var allDocketNums = this.allDocketNumsObject(counts);
+      var numDocketGroups = Math.ceil(allDocketNums.length / maxLength);
+      var docketGroups = [];
 
-      var numSegments = Math.ceil(allDocketNums.length / max);
-      var result = [];
-
-      for (var i = 0; i < numSegments; i++) {
-        var start = i * max;
-        var end = Math.min(i * max + max, allDocketNums.length);
-
-        var docketObjectsThisSegment = allDocketNums.slice(start, end);
-
-        var docketsThisSegment = docketObjectsThisSegment.map(function (
-          docket
-        ) {
-          return docket.num;
-        });
-
-        var segment = counts.filter((f) =>
-          docketsThisSegment.includes(f.docketNum)
-        );
-        result.push(segment);
+      // divide all counts into arrays grouped by the `maxLength` number of dockets
+      for (var i = 0; i < numDocketGroups; i++) {
+        var start = i * maxLength;
+        var end = Math.min(i * maxLength + maxLength, allDocketNums.length);
+        var dockets = allDocketNums.slice(start, end);
+        var docketNums = dockets.map((docket) => docket.num);
+        var countGroup = counts.filter((f) => docketNums.includes(f.docketNum));
+        docketGroups.push(countGroup);
       }
 
-      return result;
+      return docketGroups;
     },
     createResponseObjectForFiling: function (id) {
       if (app.responses[id] === undefined) {
