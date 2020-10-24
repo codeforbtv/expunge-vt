@@ -218,7 +218,7 @@ function getOdysseyPetitionerInfo(docketData) {
 /**
  * Function to parse out the criminal counts visible on a docket
  * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
- * @param {string} docketUrl The url of this count's docket (Odyssey only)
+ * @param {string} docketUrl The url of this count's docket
  * @returns {array} An array of criminal count objects
  */
 function getOdysseyCountInfo(docket, docketUrl) {
@@ -391,7 +391,7 @@ function getOdysseyCountInfo(docket, docketUrl) {
 
 /**
  * Parses the VTCO docket data and returns object with parsed data
- * @param {string} rawData The content of the 'pre' element that VTCO uses to wrap it's docket info
+ * @param {string} data The 'docketData' object from payload.js
  */
 function getVTCOPetitionerInfo(data) {
   //Get Defendant Name
