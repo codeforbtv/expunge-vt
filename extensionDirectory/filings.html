@@ -150,9 +150,14 @@
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <label v-if="numDockets > 1"
-                >Consolidate Petitions
+              <span>Consolidate: </span>
+              <label v-if="numDockets > 1">
                 <input type="checkbox" v-model="groupCounts" />
+                Petitions
+              </label>
+              <label v-if="numDockets > 1">
+                <input type="checkbox" v-model="groupNoas"/>
+                NoA
               </label>
               <button
                 v-on:click="printDocument"
