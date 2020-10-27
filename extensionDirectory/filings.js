@@ -440,19 +440,16 @@ var app = new Vue({
 
         // when the county changes, insert a NOA
         if (lastCounty != currCounty) {
-          var counts = filings
+          const counts = filings
             .filter((f) => f.county == currCounty)
             .map((f) => f.counts)
             .flat();
-          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-            currCounty,
-            counts
-          );
-          filingsWithNOAs.push(noticeOfAppearanceObject);
+          const noa = this.createNOAFiling(currCounty, counts);
+          filingsWithNOAs.push(noa);
           lastCounty = currCounty;
         }
 
-        // always add the filings
+        // always copy over the filings to new array
         filingsWithNOAs.push(thisFiling);
       }
       return filingsWithNOAs;
@@ -466,51 +463,48 @@ var app = new Vue({
     insertNOAsForEachDocket: function (filings) {
       let lastDocketNum = '';
       let filingsWithNOAs = [];
+
+      // loop over all the filings
       for (var i = 0; i < filings.length; i++) {
         const thisFiling = filings[i];
+        const currDocketNum = thisFiling.docketNums[0].string;
 
         // Conditionally insert a NOA at the beginning of each new string of docket petitions
-        // TODO: remove this if/when there is no other code adding NOAs
-        if (thisFiling.type != 'NoA') {
-          // Not sure why filing has an array of docketNums? May not need this condition...
-          if (thisFiling.docketNums.length == 1) {
-            const currDocketNum = thisFiling.docketNums[0].string;
-
-            // only add NOA if the docket number has changed
-            if (lastDocketNum != currDocketNum) {
-              const docketCounts = filings
-                .map(function (f) {
-                  if (
-                    f.docketSheetNums.filter((n) => n.num == currDocketNum)
-                      .length > 0
-                  ) {
-                    return f.counts;
-                  } else {
-                    return [];
-                  }
-                })
-                .flat();
-              const noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-                thisFiling.county,
-                docketCounts
-              );
-              lastDocketNum = currDocketNum;
-              filingsWithNOAs.push(noticeOfAppearanceObject);
-            }
-
-            // always add the filings
-            filingsWithNOAs.push(thisFiling);
-          }
+        if (lastDocketNum != currDocketNum) {
+          const docketCounts = filings
+            .map(function (f) {
+              if (
+                f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
+                0
+              ) {
+                return f.counts;
+              } else {
+                return [];
+              }
+            })
+            .flat();
+          const noa = this.createNOAFiling(thisFiling.county, docketCounts);
+          filingsWithNOAs.push(noa);
+          lastDocketNum = currDocketNum;
         }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
       }
       return filingsWithNOAs;
     },
+
     createResponseObjectForFiling: function (id) {
       if (app.responses[id] === undefined) {
         Vue.set(app.responses, id, '');
       }
     },
-    createNoticeOfAppearanceFiling: function (county, counts) {
+
+    /*
+     * Helper function to make a "Notice of Appearance" object that can be
+     * inserted into arrays of filings.
+     */
+    createNOAFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'NoA', county);
     },
     groupIneligibleCounts: function (counts) {
