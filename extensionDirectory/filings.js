@@ -388,13 +388,9 @@ var app = new Vue({
           }
         }
         // insert NOAs into filings
-        const filingsWithNOAs = this.insertNOAsBeforeCounties(
-          allFilingsForThisCountyObject
-        );
-        // const filingsWithNOAs = this.insertIndividualNOAs(
-        //   allFilingsForThisCountyObject,
-        //   countyName
-        // );
+        const filingsWithNOAs = this.groupCounts
+          ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
+          : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
 
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
@@ -433,7 +429,7 @@ var app = new Vue({
      * @param {object} filings      An array of filing objects that needs some NOAs added to it
      * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
      */
-    insertNOAsBeforeCounties: function (filings) {
+    insertNOAsForEachCounty: function (filings) {
       let lastCounty = '';
       let filingsWithNOAs = [];
 
@@ -462,10 +458,9 @@ var app = new Vue({
     /*
      * Inserts an NOA each time the docket changes in the array of filings.
      * @param {object} filings      An array of filing objects that needs some NOAs added to it
-     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
      * @TODO: simplify this function
      */
-    insertIndividualNOAs: function (filings, countyName) {
+    insertNOAsForEachDocket: function (filings) {
       let lastDocketNum = '';
       let filingsWithNOAs = [];
       for (var i = 0; i < filings.length; i++) {
@@ -493,7 +488,7 @@ var app = new Vue({
                 })
                 .flat();
               const noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-                countyName,
+                thisFiling.county,
                 docketCounts
               );
               lastDocketNum = currDocketNum;
