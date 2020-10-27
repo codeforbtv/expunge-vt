@@ -353,8 +353,8 @@ var app = new Vue({
         );
 
         //iterate through the filing types needed for this county and push them into the array
-        for (var i in filingsForThisCounty) {
-          var filingType = filingsForThisCounty[i];
+        for (var filingIndex in filingsForThisCounty) {
+          var filingType = filingsForThisCounty[filingIndex];
 
           //if the filing is not one we're going to need a petition for, let's skip to the next filing type
           if (!this.isFileable(filingType)) continue;
