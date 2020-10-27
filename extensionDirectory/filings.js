@@ -397,41 +397,11 @@ var app = new Vue({
             }
           }
         }
-
-        // TODO: only order this way when consolidating by NOA &! by petition
-        // TODO: review above in case this code should be moved upward
-        //  .. group petitions by docket number, not by petition type when consolidating by NOA checkbox is checked
-
-        // optinally add a NoA for every single docket
-        let lastDocketNum = '';
-        let filingsWithNOAs = [];
-        for (var i = 0; i < allFilingsForThisCountyObject.length; i++) {
-          const thisFiling = allFilingsForThisCountyObject[i];
-
-          // Conditionally insert a NOA at the beginning of each new string of docket petitions
-          // TODO: remove this if/when there is no other code adding NOAs
-          if (thisFiling.type != 'NoA') {
-            if (thisFiling.docketNums.length == 1) {
-              const currDocketNum = thisFiling.docketNums[0].string;
-
-              // only add NOA if the docket number has changed
-              if (lastDocketNum != currDocketNum) {
-                const docketCounts = allEligibleCountsForThisCountySegmented
-                  .flat()
-                  .filter((c) => c.docketSheetNum == currDocketNum);
-                const noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-                  countyName,
-                  docketCounts
-                );
-                lastDocketNum = currDocketNum;
-                filingsWithNOAs.push(noticeOfAppearanceObject);
-              }
-
-              // always add the filings
-              filingsWithNOAs.push(thisFiling);
-            }
-          }
-        }
+        // insert NOAs into filings
+        const filingsWithNOAs = this.insertIndividualNOAs(
+          allFilingsForThisCountyObject,
+          countyName
+        );
 
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
@@ -463,6 +433,55 @@ var app = new Vue({
       }
 
       return docketGroups;
+    },
+
+    /*
+     * Inserts one NOA for each unique docket filing in provided array.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
+     */
+    insertIndividualNOAs: function (filings, countyName) {
+      // optinally add a NoA for every single docket
+      let lastDocketNum = '';
+      let filingsWithNOAs = [];
+      for (var i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+
+        // Conditionally insert a NOA at the beginning of each new string of docket petitions
+        // TODO: remove this if/when there is no other code adding NOAs
+        if (thisFiling.type != 'NoA') {
+          // Not sure why filing has an array of docketNums? May not need this condition...
+          if (thisFiling.docketNums.length == 1) {
+            const currDocketNum = thisFiling.docketNums[0].string;
+
+            // only add NOA if the docket number has changed
+            if (lastDocketNum != currDocketNum) {
+              const docketCounts = filings
+                .map(function (f) {
+                  if (
+                    f.docketSheetNums.filter((n) => n.num == currDocketNum)
+                      .length > 0
+                  ) {
+                    return f.counts;
+                  } else {
+                    return [];
+                  }
+                })
+                .flat();
+              const noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
+                countyName,
+                docketCounts
+              );
+              lastDocketNum = currDocketNum;
+              filingsWithNOAs.push(noticeOfAppearanceObject);
+            }
+
+            // always add the filings
+            filingsWithNOAs.push(thisFiling);
+          }
+        }
+      }
+      return filingsWithNOAs;
     },
     createResponseObjectForFiling: function (id) {
       if (app.responses[id] === undefined) {
