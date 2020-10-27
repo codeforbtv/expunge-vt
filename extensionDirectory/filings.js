@@ -352,16 +352,6 @@ var app = new Vue({
           maxDocketsPerNoA
         );
 
-        // iterate through our array of segmented count arrays to create all of the NoAs needed.
-        // for (var i in allEligibleCountsForThisCountySegmented) {
-        //   var NoACounts = allEligibleCountsForThisCountySegmented[i];
-        //   var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-        //     countyName,
-        //     NoACounts
-        //   );
-        //   allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
-        // }
-
         //iterate through the filing types needed for this county and push them into the array
         for (var i in filingsForThisCounty) {
           var filingType = filingsForThisCounty[i];
@@ -398,10 +388,13 @@ var app = new Vue({
           }
         }
         // insert NOAs into filings
-        const filingsWithNOAs = this.insertIndividualNOAs(
-          allFilingsForThisCountyObject,
-          countyName
+        const filingsWithNOAs = this.insertNOAsBeforeCounties(
+          allFilingsForThisCountyObject
         );
+        // const filingsWithNOAs = this.insertIndividualNOAs(
+        //   allFilingsForThisCountyObject,
+        //   countyName
+        // );
 
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
@@ -436,12 +429,43 @@ var app = new Vue({
     },
 
     /*
-     * Inserts one NOA for each unique docket filing in provided array.
+     * Inserts an NOA each time the county changes in the array of filings.
      * @param {object} filings      An array of filing objects that needs some NOAs added to it
      * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
      */
+    insertNOAsBeforeCounties: function (filings) {
+      let lastCounty = '';
+      let filingsWithNOAs = [];
+
+      // loop over all the filings
+      for (var i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+        const currCounty = thisFiling.county;
+
+        // when the county changes, insert a NOA
+        if (lastCounty != currCounty) {
+          var NoACounts = filings.filter((f) => f.county == currCounty);
+          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
+            currCounty,
+            NoACounts
+          );
+          filingsWithNOAs.push(noticeOfAppearanceObject);
+          lastCounty = currCounty;
+        }
+
+        // always add the filings
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
+    /*
+     * Inserts an NOA each time the docket changes in the array of filings.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
+     * @TODO: simplify this function
+     */
     insertIndividualNOAs: function (filings, countyName) {
-      // optinally add a NoA for every single docket
       let lastDocketNum = '';
       let filingsWithNOAs = [];
       for (var i = 0; i < filings.length; i++) {
