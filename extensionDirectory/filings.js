@@ -352,15 +352,15 @@ var app = new Vue({
           maxDocketsPerNoA
         );
 
-        //iterate through our array of segmented count arrays to create all of the NoAs needed.
-        for (var NoAindex in allEligibleCountsForThisCountySegmented) {
-          var NoACounts = allEligibleCountsForThisCountySegmented[NoAindex];
-          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-            countyName,
-            NoACounts
-          );
-          allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
-        }
+        // iterate through our array of segmented count arrays to create all of the NoAs needed.
+        // for (var i in allEligibleCountsForThisCountySegmented) {
+        //   var NoACounts = allEligibleCountsForThisCountySegmented[i];
+        //   var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
+        //     countyName,
+        //     NoACounts
+        //   );
+        //   allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
+        // }
 
         //iterate through the filing types needed for this county and push them into the array
         for (var i in filingsForThisCounty) {
@@ -397,10 +397,46 @@ var app = new Vue({
             }
           }
         }
+
+        // TODO: only order this way when consolidating by NOA &! by petition
+        // TODO: review above in case this code should be moved upward
+        //  .. group petitions by docket number, not by petition type when consolidating by NOA checkbox is checked
+
+        // optinally add a NoA for every single docket
+        let lastDocketNum = '';
+        let filingsWithNOAs = [];
+        for (var i = 0; i < allFilingsForThisCountyObject.length; i++) {
+          const thisFiling = allFilingsForThisCountyObject[i];
+
+          // Conditionally insert a NOA at the beginning of each new string of docket petitions
+          // TODO: remove this if/when there is no other code adding NOAs
+          if (thisFiling.type != 'NoA') {
+            if (thisFiling.docketNums.length == 1) {
+              const currDocketNum = thisFiling.docketNums[0].string;
+
+              // only add NOA if the docket number has changed
+              if (lastDocketNum != currDocketNum) {
+                const docketCounts = allEligibleCountsForThisCountySegmented
+                  .flat()
+                  .filter((c) => c.docketSheetNum == currDocketNum);
+                const noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
+                  countyName,
+                  docketCounts
+                );
+                lastDocketNum = currDocketNum;
+                filingsWithNOAs.push(noticeOfAppearanceObject);
+              }
+
+              // always add the filings
+              filingsWithNOAs.push(thisFiling);
+            }
+          }
+        }
+
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
           county: countyName,
-          filings: allFilingsForThisCountyObject,
+          filings: filingsWithNOAs,
         });
       }
       return groupedFilings;
