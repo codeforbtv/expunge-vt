@@ -440,10 +440,13 @@ var app = new Vue({
 
         // when the county changes, insert a NOA
         if (lastCounty != currCounty) {
-          var NoACounts = filings.filter((f) => f.county == currCounty);
+          var counts = filings
+            .filter((f) => f.county == currCounty)
+            .map((f) => f.counts)
+            .flat();
           var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
             currCounty,
-            NoACounts
+            counts
           );
           filingsWithNOAs.push(noticeOfAppearanceObject);
           lastCounty = currCounty;
