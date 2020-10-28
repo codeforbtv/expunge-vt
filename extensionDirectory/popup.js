@@ -9,12 +9,12 @@ function initListeners() {
     switch (rawDocketData.domain) {
       // VT COURTS ONLINE
       case 'secure.vermont.gov': {
-        parsedData = getVTCOPetitionerInfo(rawDocketData.rawDocket);
+        parsedData = getVTCOPetitionerInfo(rawDocketData);
         break;
       }
       // ODYSSEY
       case 'publicportal.courts.vt.gov': {
-        parsedData = getOdysseyPetitionerInfo(rawDocketData.rawDocket);
+        parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
       default: {
@@ -160,12 +160,12 @@ class PetitionerCount {
 }
 
 /**
- * Parses Odyssey docket html and returns object with parsed data
- * @param {string} domString The html of the Odyssey docket
+ * Parses Odyssey docket data and returns object with parsed data.
+ * @param {object} docketData All the Odyssey docket info collected by payload.js
  */
-function getOdysseyPetitionerInfo(domString) {
+function getOdysseyPetitionerInfo(docketData) {
   try {
-    const docket = $($.parseHTML(domString));
+    const docket = $($.parseHTML(docketData.rawDocket));
     const partyInfo = docket
       .find('#party-info')
       .parent()
@@ -208,7 +208,7 @@ function getOdysseyPetitionerInfo(domString) {
     currentDocket.defDOB = formatDate(
       partyInfo.find("[label='DOB:'] .roa-value").text().trim()
     );
-    currentDocket.counts = getOdysseyCountInfo(docket);
+    currentDocket.counts = getOdysseyCountInfo(docket, docketData.url);
     return currentDocket;
   } catch (err) {
     alert('Petitioner Info Error: ' + err);
@@ -218,9 +218,10 @@ function getOdysseyPetitionerInfo(domString) {
 /**
  * Function to parse out the criminal counts visible on a docket
  * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
+ * @param {string} docketUrl The url of this count's docket
  * @returns {array} An array of criminal count objects
  */
-function getOdysseyCountInfo(docket) {
+function getOdysseyCountInfo(docket, docketUrl) {
   // grab the offense table from docket
   const caseOffenseTable = docket
     .find('[data-header-text="Case Information"]')
@@ -282,6 +283,7 @@ function getOdysseyCountInfo(docket) {
         titleNum: statuteTitle[0],
         sectionNum: statuteSection[0],
         unparsedOffenseData: offenseData,
+        url: docketUrl,
       });
     }
   });
@@ -389,10 +391,11 @@ function getOdysseyCountInfo(docket) {
 
 /**
  * Parses the VTCO docket data and returns object with parsed data
- * @param {string} rawData The content of the 'pre' element that VTCO uses to wrap it's docket info
+ * @param {string} data The 'docketData' object from payload.js
  */
-function getVTCOPetitionerInfo(rawData) {
+function getVTCOPetitionerInfo(data) {
   //Get Defendant Name
+  const rawData = data.rawDocket; // this is the 'pre' element wraps VTCOs docket info
   nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
   nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
   defName = rawData.substring(nameLocation, nameLocationEnd);
@@ -427,13 +430,19 @@ function getVTCOPetitionerInfo(rawData) {
     defName: defName,
     defDOB: formatDate(defDOB),
     defAddress: addressArray.join('\n'),
-    counts: getVTCOCountInfo(rawData),
+    counts: getVTCOCountInfo(rawData, data.url),
   };
 
   return parsedData;
 }
 
-function getVTCOCountInfo(rawData) {
+/**
+ * Function to parse out the criminal counts visible on a VCOL docket
+ * @param {string} rawData The docket 'pre' element
+ * @param {string} docketUrl The url of this count's docket
+ * @returns {array} An array of criminal count objects
+ */
+function getVTCOCountInfo(rawData, docketUrl) {
   divider =
     '================================================================================';
 
@@ -470,6 +479,7 @@ function getVTCOCountInfo(rawData) {
 
       devLog(decodedString);
       countObject['description'] = decodedString;
+      countObject['url'] = docketUrl;
 
       counts.push(countObject);
     }
@@ -477,7 +487,7 @@ function getVTCOCountInfo(rawData) {
   return counts;
 }
 
-//Break line one of a count into its individual fields
+// When parsing VCOL data, break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum, rawData) {
   //Break into array and remove spaces
   countLine1Array = countLine1.split(' ');
@@ -488,6 +498,7 @@ function processCountLine1(countLine1, countNum, rawData) {
   //find location of fel/mis
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
+  // TODO: conditionally display console.log content
   devLog(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
@@ -516,10 +527,10 @@ function processCountLine1(countLine1, countNum, rawData) {
     docketSheetNum +
     countLine1Array[0] +
     countLine1Array[1] +
-    checkDisposition(disposition);
+    beautifyDisposition(disposition);
   uid = uid.split(' ').join('_');
 
-  offenseDisposition = checkDisposition(disposition);
+  offenseDisposition = beautifyDisposition(disposition);
   dispositionDate = countLine1Array[felMisLocation + 1];
   //Create count object with all count line 1 items
   countObject = {
@@ -617,13 +628,7 @@ function isDismissed(offenseDisposition) {
     return false;
   }
 }
-function checkDisposition(string) {
-  if (string.trim() == '') {
-    return 'Pending';
-  } else {
-    return string;
-  }
-}
+
 function isFelOrMisd(element) {
   if (element === 'mis' || element === 'fel') {
     return element;
@@ -666,6 +671,26 @@ function nthIndex(str, subStr, n) {
     if (i < 0) break;
   }
   return i;
+}
+
+/**
+ * Helper function to clean up the disposition text, if possible
+ * @param {string} text The text to try to replace
+ */
+function beautifyDisposition(text) {
+  switch (text.trim()) {
+    // replace empty disposition strings with 'pending'
+    case '':
+      return 'Pending';
+
+    // common truncation on VCOL
+    case 'Plea guilty by wai':
+      return 'Plea guilty by waiver';
+
+    // otherwise return the trimmed original text
+    default:
+      return text;
+  }
 }
 
 /**
