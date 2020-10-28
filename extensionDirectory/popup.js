@@ -57,7 +57,7 @@ function appendDataWithConfirmation(newData, oldData) {
   var totalNumMatchingExistingCounts = 0;
   for (count in newCounts) {
     var currentCount = newCounts[count];
-    console.log(currentCount.uid);
+    devLog(currentCount.uid);
     var numMatchingExistingCounts = oldData.counts.filter(
       (count) => count.uid === currentCount.uid
     ).length;
@@ -384,8 +384,8 @@ function getOdysseyCountInfo(docket, docketUrl) {
   });
 
   // return parsed offenses
-  console.log('Parsed Offenses: ');
-  console.log(offenseArray);
+  devLog('Parsed Offenses: ');
+  devLog(offenseArray);
   return offenseArray;
 }
 
@@ -466,7 +466,7 @@ function getVTCOCountInfo(rawData, docketUrl) {
     } else {
       //Catch Line 2 of each count
       description = allCountsArray[i].trim();
-      console.log('description: ' + description);
+      devLog('description: ' + description);
       description = description.replace(/\//g, ' / ');
       description = description.replace(/\s\s/g, ' ');
 
@@ -477,7 +477,7 @@ function getVTCOCountInfo(rawData, docketUrl) {
       );
       var decodedString = dom.body.textContent;
 
-      console.log(decodedString);
+      devLog(decodedString);
       countObject['description'] = decodedString;
       countObject['url'] = docketUrl;
 
@@ -499,7 +499,7 @@ function processCountLine1(countLine1, countNum, rawData) {
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
   // TODO: conditionally display console.log content
-  console.log(countLine1Array);
+  devLog(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
   for (j = 5; j < felMisLocation; j++) {
@@ -566,7 +566,7 @@ function processCountLine1(countLine1, countNum, rawData) {
     countObject['allegedOffenseDate'] = formatDate(allegedOffenseDate.trim());
   } catch (err) {
     countObject['allegedOffenseDate'] = '';
-    console.log('Error:' + err);
+    devLog('Error:' + err);
   }
 
   //Get Arrest/citation date:
@@ -584,9 +584,26 @@ function processCountLine1(countLine1, countNum, rawData) {
     countObject['arrestCitationDate'] = formatDate(arrestCitationDate.trim());
   } catch (err) {
     countObject['arrestCitationDate'] = '';
-    console.log('Error:' + err);
+    devLog('Error:' + err);
   }
 }
+
+/**
+ * Replaces console.log() statements with a wrapper that prevents the extension from logging
+ * to the console unless it was installed by a developer. This will keep the console clean; a
+ * practice recommended for chrome extensions.
+ *
+ * @param {any} data Data to log to the console
+ */
+function devLog(data) {
+  // see https://developer.chrome.com/extensions/management#method-getSelf
+  chrome.management.getSelf(function (self) {
+    if (self.installType == 'development') {
+      console.log(data);
+    }
+  });
+}
+
 /**
  * A helper function to convert dates into a standard format
  * used consistently throughout this extension.

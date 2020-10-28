@@ -93,8 +93,6 @@ Vue.component('pills-row', {
       if (!this.dob) return '';
       let fromTime = moment(value).diff(moment(this.dob));
       let duration = moment.duration(fromTime);
-
-      console.log(value, this.dob);
       return duration.asDays() / 365.25;
     },
   },
@@ -144,7 +142,6 @@ Vue.component('filing-type-heading', {
           return checkoutPhrases[i]['phrase'];
         }
       }
-      console.log(checkoutPhrases);
     },
   },
   template: `
