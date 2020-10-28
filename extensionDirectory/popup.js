@@ -487,7 +487,7 @@ function getVTCOCountInfo(rawData, docketUrl) {
   return counts;
 }
 
-//Break line one of a count into its individual fields
+// When parsing VCOL data, break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum, rawData) {
   //Break into array and remove spaces
   countLine1Array = countLine1.split(' ');
@@ -498,6 +498,7 @@ function processCountLine1(countLine1, countNum, rawData) {
   //find location of fel/mis
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
+  // TODO: conditionally display console.log content
   console.log(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
@@ -526,10 +527,10 @@ function processCountLine1(countLine1, countNum, rawData) {
     docketSheetNum +
     countLine1Array[0] +
     countLine1Array[1] +
-    checkDisposition(disposition);
+    beautifyDisposition(disposition);
   uid = uid.split(' ').join('_');
 
-  offenseDisposition = checkDisposition(disposition);
+  offenseDisposition = beautifyDisposition(disposition);
   dispositionDate = countLine1Array[felMisLocation + 1];
   //Create count object with all count line 1 items
   countObject = {
@@ -610,13 +611,7 @@ function isDismissed(offenseDisposition) {
     return false;
   }
 }
-function checkDisposition(string) {
-  if (string.trim() == '') {
-    return 'Pending';
-  } else {
-    return string;
-  }
-}
+
 function isFelOrMisd(element) {
   if (element === 'mis' || element === 'fel') {
     return element;
@@ -659,6 +654,26 @@ function nthIndex(str, subStr, n) {
     if (i < 0) break;
   }
   return i;
+}
+
+/**
+ * Helper function to clean up the disposition text, if possible
+ * @param {string} text The text to try to replace
+ */
+function beautifyDisposition(text) {
+  switch (text.trim()) {
+    // replace empty disposition strings with 'pending'
+    case '':
+      return 'Pending';
+
+    // common truncation on VCOL
+    case 'Plea guilty by wai':
+      return 'Plea guilty by waiver';
+
+    // otherwise return the trimmed original text
+    default:
+      return text;
+  }
 }
 
 /**
