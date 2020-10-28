@@ -150,16 +150,16 @@
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <span>Consolidate: </span>
+              <span>Consolidate by county: </span>
+              <!-- TODO: can you consoliate NoA without Petitions? Or the other way around? May need logic to handle an overriding case... -->
+              <label v-if="numDockets > 1">
+                <input type="checkbox" v-model="groupNoas"/>
+                NoA
+              </label>
               <label v-if="numDockets > 1">
                 <input type="checkbox" v-model="groupCounts" />
                 Petitions
               </label>
-              <!-- TODO: can you consoliate NoA without Petitions? Or the other way around? May need logic to handle an overriding case... -->
-              <!-- <label v-if="numDockets > 1">
-                <input type="checkbox" v-model="groupNoas"/>
-                NoA
-              </label> -->
               <button
                 v-on:click="printDocument"
                 class="btn btn-primary no-print"

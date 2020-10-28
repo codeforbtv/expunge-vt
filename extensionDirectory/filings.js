@@ -179,7 +179,7 @@ var app = new Vue({
       counts: [],
     },
     groupCounts: false,
-    groupNoas: true,
+    groupNoas: false,
     responses: {},
     countiesContact: {},
     popupHeadline: '',
