@@ -9,12 +9,12 @@ function initListeners() {
     switch (rawDocketData.domain) {
       // VT COURTS ONLINE
       case 'secure.vermont.gov': {
-        parsedData = getVTCOPetitionerInfo(rawDocketData.rawDocket);
+        parsedData = getVTCOPetitionerInfo(rawDocketData);
         break;
       }
       // ODYSSEY
       case 'publicportal.courts.vt.gov': {
-        parsedData = getOdysseyPetitionerInfo(rawDocketData.rawDocket);
+        parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
       default: {
@@ -160,12 +160,12 @@ class PetitionerCount {
 }
 
 /**
- * Parses Odyssey docket html and returns object with parsed data
- * @param {string} domString The html of the Odyssey docket
+ * Parses Odyssey docket data and returns object with parsed data.
+ * @param {object} docketData All the Odyssey docket info collected by payload.js
  */
-function getOdysseyPetitionerInfo(domString) {
+function getOdysseyPetitionerInfo(docketData) {
   try {
-    const docket = $($.parseHTML(domString));
+    const docket = $($.parseHTML(docketData.rawDocket));
     const partyInfo = docket
       .find('#party-info')
       .parent()
@@ -208,7 +208,7 @@ function getOdysseyPetitionerInfo(domString) {
     currentDocket.defDOB = formatDate(
       partyInfo.find("[label='DOB:'] .roa-value").text().trim()
     );
-    currentDocket.counts = getOdysseyCountInfo(docket);
+    currentDocket.counts = getOdysseyCountInfo(docket, docketData.url);
     return currentDocket;
   } catch (err) {
     alert('Petitioner Info Error: ' + err);
@@ -218,9 +218,10 @@ function getOdysseyPetitionerInfo(domString) {
 /**
  * Function to parse out the criminal counts visible on a docket
  * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
+ * @param {string} docketUrl The url of this count's docket
  * @returns {array} An array of criminal count objects
  */
-function getOdysseyCountInfo(docket) {
+function getOdysseyCountInfo(docket, docketUrl) {
   // grab the offense table from docket
   const caseOffenseTable = docket
     .find('[data-header-text="Case Information"]')
@@ -282,6 +283,7 @@ function getOdysseyCountInfo(docket) {
         titleNum: statuteTitle[0],
         sectionNum: statuteSection[0],
         unparsedOffenseData: offenseData,
+        url: docketUrl,
       });
     }
   });
@@ -389,10 +391,11 @@ function getOdysseyCountInfo(docket) {
 
 /**
  * Parses the VTCO docket data and returns object with parsed data
- * @param {string} rawData The content of the 'pre' element that VTCO uses to wrap it's docket info
+ * @param {string} data The 'docketData' object from payload.js
  */
-function getVTCOPetitionerInfo(rawData) {
+function getVTCOPetitionerInfo(data) {
   //Get Defendant Name
+  const rawData = data.rawDocket; // this is the 'pre' element wraps VTCOs docket info
   nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
   nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
   defName = rawData.substring(nameLocation, nameLocationEnd);
@@ -427,13 +430,19 @@ function getVTCOPetitionerInfo(rawData) {
     defName: defName,
     defDOB: formatDate(defDOB),
     defAddress: addressArray.join('\n'),
-    counts: getVTCOCountInfo(rawData),
+    counts: getVTCOCountInfo(rawData, data.url),
   };
 
   return parsedData;
 }
 
-function getVTCOCountInfo(rawData) {
+/**
+ * Function to parse out the criminal counts visible on a VCOL docket
+ * @param {string} rawData The docket 'pre' element
+ * @param {string} docketUrl The url of this count's docket
+ * @returns {array} An array of criminal count objects
+ */
+function getVTCOCountInfo(rawData, docketUrl) {
   divider =
     '================================================================================';
 
@@ -470,6 +479,7 @@ function getVTCOCountInfo(rawData) {
 
       console.log(decodedString);
       countObject['description'] = decodedString;
+      countObject['url'] = docketUrl;
 
       counts.push(countObject);
     }
