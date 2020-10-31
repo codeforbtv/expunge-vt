@@ -275,7 +275,14 @@ var app = new Vue({
         });
       });
     },
-    groupCountsIntoFilings: function (counts, groupDockets = true) {
+
+    /**
+     * Creates the petition filings (including NOAs) from collected counts
+     *
+     * @param {Object} counts Count objects used to generate petitons
+     * @param {boolean} groupDockets Indicates whether to consolidate dockets into single petitons
+     */
+    createFilingsFromCounts: function (counts, groupDockets = true) {
       // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts);
 
@@ -737,11 +744,9 @@ var app = new Vue({
       };
     },
     filings: function () {
-      var shouldGroupCounts = true;
-      if (this.groupCounts !== undefined) {
-        shouldGroupCounts = this.groupCounts;
-      }
-      return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
+      var shouldGroupCounts =
+        this.groupCounts !== undefined ? this.groupCounts : true;
+      return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
       return this.saved.counts.filter((count) => count.filingType !== 'X')
