@@ -188,6 +188,24 @@ var app = new Vue({
     stipDef: {},
   },
   watch: {
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "NoAs" checkbox IS checked when "Petitions" checkbox is checked
+    groupCounts: {
+      handler(value) {
+        if (value) {
+          this.groupNoas = true;
+        }
+      },
+    },
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "Petitions" checkbox IS NOT checked when unchecking "NoAs" checkbox
+    groupNoas: {
+      handler(value) {
+        if (!value) {
+          this.groupCounts = false;
+        }
+      },
+    },
     responses: {
       handler() {
         app.saveResponses();
@@ -388,7 +406,7 @@ var app = new Vue({
           }
         }
         // insert NOAs into filings
-        const filingsWithNOAs = this.groupCounts
+        const filingsWithNOAs = this.groupNoas
           ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
           : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
 
