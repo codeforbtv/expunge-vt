@@ -17,7 +17,7 @@ Vue.component('docket-caption', {
 Vue.component('filing-nav', {
   template: `<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
-        <li class="filing-nav__parent-link">
+        <li class="cover-sheet filing-nav__parent-link">
           <a href="#extra-documents">Cover Sheet</a>
           <ol>
             <li class="filing-nav__child-link">
@@ -32,8 +32,8 @@ Vue.component('filing-nav', {
         <li v-for="group in filings" class="filing-nav__parent-link">
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link">
-            <a v-bind:href="'#'+filing.id">{{filing.title}}</a>
+          <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
+            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title}}</a>
             <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
           </li>
         </ol>
