@@ -476,7 +476,6 @@ var app = new Vue({
     /*
      * Inserts an NOA each time the docket changes in the array of filings.
      * @param {object} filings      An array of filing objects that needs some NOAs added to it
-     * @TODO: simplify this function
      */
     insertNOAsForEachDocket: function (filings) {
       let lastDocketNum = '';
