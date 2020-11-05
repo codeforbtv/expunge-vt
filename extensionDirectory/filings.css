@@ -121,13 +121,29 @@ a.btn {
 .filing-nav__parent-link a {
   color: #000;
 }
+
+/* TODO: cover sheet links probably shouldn't have a "filing" class - they aren't filings */
+.cover-sheet .filing-nav__child-link,
+.cover-sheet .filing-nav__child-link:last-child {
+  border-width: 0;
+}
+.filing-nav__child-link.petition-type__NoA,
+.filing-nav__child-link.petition-type__NoA a {
+  color: white;
+  background-color: #66b0ff;
+}
 .filing-nav__child-link {
   font-weight: normal;
   transition: box-shadow 0.1s ease-in-out, transform 0.1s ease-in-out;
   color: #007bff;
-  font-size: 1rem;
+  font-size: 16px;
   margin-left: 0;
-  padding-left: 10px;
+  border: 1px solid #66b0ff;
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+.filing-nav__child-link:last-child {
+  border-bottom: 1px solid #66b0ff;
 }
 .filing-nav__child-link a {
   color: #007bff;
@@ -136,13 +152,40 @@ a.btn {
 .active.filing-nav__child-link {
   box-shadow: -5px 0 0 0 #007bff;
   transform: translateX(5px);
+  border-right-width: 5px;
+  border-right-color: #007bff;
 }
 .filing-nav__counts {
-  color: #000;
+  color: #333;
   text-transform: uppercase;
   font-size: 12px;
   font-weight: bold;
-  padding-top: 0.4rem;
+  margin-bottom: 0.75em;
+}
+
+/* Move list numbers inside blue <li> borders */
+.filing-nav__child-link::marker {
+  color: transparent;
+}
+.filing-nav__parent-link ol {
+  list-style: none;
+  counter-reset: petition-counter;
+}
+li.filing-nav__child-link {
+  counter-increment: petition-counter;
+  padding-left: 30px;
+}
+li.filing-nav__child-link a::before {
+  content: counter(petition-counter) '. ';
+  padding: 5px;
+  font-size: 1rem;
+  position: absolute;
+  left: 24px;
+  text-align: right;
+  width: 2em;
+}
+li.filing-nav__child-link.active a::before {
+  left: 0px;
 }
 
 /* Title section above each document */
