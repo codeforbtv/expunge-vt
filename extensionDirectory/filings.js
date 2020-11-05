@@ -179,6 +179,7 @@ var app = new Vue({
       counts: [],
     },
     groupCounts: false,
+    groupNoas: false,
     responses: {},
     countiesContact: {},
     popupHeadline: '',
@@ -187,6 +188,24 @@ var app = new Vue({
     stipDef: {},
   },
   watch: {
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "NoAs" checkbox IS checked when "Petitions" checkbox is checked
+    groupCounts: {
+      handler(value) {
+        if (value) {
+          this.groupNoas = true;
+        }
+      },
+    },
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "Petitions" checkbox IS NOT checked when unchecking "NoAs" checkbox
+    groupNoas: {
+      handler(value) {
+        if (!value) {
+          this.groupCounts = false;
+        }
+      },
+    },
     responses: {
       handler() {
         app.saveResponses();
@@ -293,7 +312,14 @@ var app = new Vue({
         });
       });
     },
-    groupCountsIntoFilings: function (counts, groupDockets = true) {
+
+    /**
+     * Creates the petition filings (including NOAs) from collected counts
+     *
+     * @param {Object} counts Count objects used to generate petitons
+     * @param {boolean} groupDockets Indicates whether to consolidate dockets into single petitons
+     */
+    createFilingsFromCounts: function (counts, groupDockets = true) {
       // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts);
 
@@ -339,20 +365,10 @@ var app = new Vue({
         //add the notice of appearance filing to this county because we have petitions to file
         //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
         var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented = this.segmentCountsByMaxDocketNumber(
+        var allEligibleCountsForThisCountySegmented = this.groupCountsByMaxDocketNumber(
           allEligibleCountsForThisCounty,
           maxDocketsPerNoA
         );
-
-        //iterate through our array of segmented count arrays to create all of the NoAs needed.
-        for (var NoAindex in allEligibleCountsForThisCountySegmented) {
-          var NoACounts = allEligibleCountsForThisCountySegmented[NoAindex];
-          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-            countyName,
-            NoACounts
-          );
-          allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
-        }
 
         //iterate through the filing types needed for this county and push them into the array
         for (var filingIndex in filingsForThisCounty) {
@@ -389,46 +405,123 @@ var app = new Vue({
             }
           }
         }
+        // insert NOAs into filings
+        const filingsWithNOAs = this.groupNoas
+          ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
+          : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
+
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
           county: countyName,
-          filings: allFilingsForThisCountyObject,
+          filings: filingsWithNOAs,
         });
       }
       return groupedFilings;
     },
-    segmentCountsByMaxDocketNumber: function (counts, max) {
+
+    /* Used when there are more docket numbers than will fit on a single Notice of Appearance
+     * form. This takes an array[counts], and returns an array[array[counts]]. For example, if
+     * the `max` is 10 dockets, then each inner array would have all the counts belonging to the
+     * next 10 dockets.
+     */
+    groupCountsByMaxDocketNumber: function (counts, maxLength) {
       var allDocketNums = this.allDocketNumsObject(counts);
+      var numDocketGroups = Math.ceil(allDocketNums.length / maxLength);
+      var docketGroups = [];
 
-      var numSegments = Math.ceil(allDocketNums.length / max);
-      var result = [];
-
-      for (var i = 0; i < numSegments; i++) {
-        var start = i * max;
-        var end = Math.min(i * max + max, allDocketNums.length);
-
-        var docketObjectsThisSegment = allDocketNums.slice(start, end);
-
-        var docketsThisSegment = docketObjectsThisSegment.map(function (
-          docket
-        ) {
-          return docket.num;
-        });
-
-        var segment = counts.filter((f) =>
-          docketsThisSegment.includes(f.docketNum)
-        );
-        result.push(segment);
+      // divide all counts into arrays grouped by the `maxLength` number of dockets
+      for (var i = 0; i < numDocketGroups; i++) {
+        var start = i * maxLength;
+        var end = Math.min(i * maxLength + maxLength, allDocketNums.length);
+        var dockets = allDocketNums.slice(start, end);
+        var docketNums = dockets.map((docket) => docket.num);
+        var countGroup = counts.filter((f) => docketNums.includes(f.docketNum));
+        docketGroups.push(countGroup);
       }
 
-      return result;
+      return docketGroups;
     },
+
+    /*
+     * Inserts an NOA each time the county changes in the array of filings.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
+     */
+    insertNOAsForEachCounty: function (filings) {
+      let lastCounty = '';
+      let filingsWithNOAs = [];
+
+      // loop over all the filings
+      for (var i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+        const currCounty = thisFiling.county;
+
+        // when the county changes, insert a NOA
+        if (lastCounty != currCounty) {
+          const counts = filings
+            .filter((f) => f.county == currCounty)
+            .map((f) => f.counts)
+            .flat();
+          const noa = this.createNOAFiling(currCounty, counts);
+          filingsWithNOAs.push(noa);
+          lastCounty = currCounty;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
+    /*
+     * Inserts an NOA each time the docket changes in the array of filings.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     */
+    insertNOAsForEachDocket: function (filings) {
+      let lastDocketNum = '';
+      let filingsWithNOAs = [];
+
+      // loop over all the filings
+      for (var i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+        const currDocketNum = thisFiling.docketNums[0].string;
+
+        // Conditionally insert a NOA at the beginning of each new string of docket petitions
+        if (lastDocketNum != currDocketNum) {
+          const docketCounts = filings
+            .map(function (f) {
+              if (
+                f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
+                0
+              ) {
+                return f.counts;
+              } else {
+                return [];
+              }
+            })
+            .flat();
+          const noa = this.createNOAFiling(thisFiling.county, docketCounts);
+          filingsWithNOAs.push(noa);
+          lastDocketNum = currDocketNum;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
     createResponseObjectForFiling: function (id) {
       if (app.responses[id] === undefined) {
         Vue.set(app.responses, id, '');
       }
     },
-    createNoticeOfAppearanceFiling: function (county, counts) {
+
+    /*
+     * Helper function to make a "Notice of Appearance" object that can be
+     * inserted into arrays of filings.
+     */
+    createNOAFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'NoA', county);
     },
     groupIneligibleCounts: function (counts) {
@@ -758,11 +851,9 @@ var app = new Vue({
       };
     },
     filings: function () {
-      var shouldGroupCounts = true;
-      if (this.groupCounts !== undefined) {
-        shouldGroupCounts = this.groupCounts;
-      }
-      return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
+      var shouldGroupCounts =
+        this.groupCounts !== undefined ? this.groupCounts : true;
+      return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
       return this.saved.counts.filter((count) => count.filingType !== 'X')

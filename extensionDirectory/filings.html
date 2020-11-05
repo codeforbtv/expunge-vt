@@ -142,14 +142,22 @@
         </div>
       </div>
 
+      <!-- If there are filings to dispalay... -->
       <template v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
+
+        <!-- Page header & page actions -->
         <div v-if="petitioner.name" class="header-bar-wrapper no-print">
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <label v-if="numDockets > 1"
-                >Consolidate Petitions
+              <span>Consolidate by county: </span>
+              <label v-if="numDockets > 1">
+                <input type="checkbox" v-model="groupNoas"/>
+                NoA
+              </label>
+              <label v-if="numDockets > 1">
                 <input type="checkbox" v-model="groupCounts" />
+                Petitions
               </label>
               <button
                 v-on:click="printDocument"
@@ -180,6 +188,7 @@
 
         <filing-nav v-bind:filings="filings"></filing-nav>
 
+        <!-- Cover letter & checkout sheet wrapper -->
         <table class="extra-pages">
           <tbody>
             <tr>
@@ -192,10 +201,11 @@
                     >Terms and Conditions.</a
                   >
                 </section>
-                <!-- Begin Extra Documents -->
 
+                <!-- Begin Cover Sheet -->
                 <section class="extra-documents-top" id="extra-documents">
-                  <!-- Clinic Checkout Sheet -->
+                  
+                  <!-- Client Cover Letter -->
                   <article class="page" id="clinic-checkout">
                     <div class="document-meta-data no-print">
                       <p class="document-meta-data__title">Cover Letter</p>
@@ -322,10 +332,7 @@
                     </div>
                   </article>
 
-                  <!-- End Clinic Checkout Sheet -->
-
                   <!-- Client Checkout Sheet -->
-
                   <article class="page" id="client-checkout">
                     <div class="document-meta-data no-print">
                       <p class="document-meta-data__title">Checkout Sheet</p>
@@ -461,10 +468,9 @@
                     </div>
                   </article>
 
-                  <!-- End Client Checkout Sheet -->
                 </section>
+                <!-- End Cover Sheet -->
 
-                <!-- End Extra Documents -->
               </td>
             </tr>
           </tbody>
@@ -474,12 +480,16 @@
             </tr>
           </tfoot>
         </table>
+        <!-- Cover letter & checkout sheet wrapper -->
 
+        <!-- Petition wrapper -->
         <table v-if="filings.length != 0" class="all-filings">
           <tbody>
             <tr>
               <td>
                 <section v-for="group in filings" v-bind:id="group.county">
+
+                  <!-- Generic petition heading info -->
                   <article
                     class="page"
                     v-for="filing in group.filings"
@@ -532,11 +542,11 @@
                       </div>
 
                       <h1 class="filing-title">{{filing.title}}</h1>
+                      <!-- End generic petition heading info -->
 
                       <!-- Begin Unique Portion of Filings -->
 
                       <!-- Notice of Appearance -->
-
                       <div class="filing-body" v-if="filing.type == 'NoA'">
                         <p class="indent">
                           <template v-if="proSeFromRole(settings.role)">
@@ -650,7 +660,6 @@
                       </div>
 
                       <!-- (Stipulated) Petiton To Expunge Non Conviction -->
-
                       <div
                         class="filing-body"
                         v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'"
@@ -738,7 +747,6 @@
                       </div>
 
                       <!-- (Stipulated) Petiton To Expunge Non-Crime -->
-
                       <div
                         class="filing-body"
                         v-if="filing.type == 'ExNCrim' || filing.type == 'StipExNCrim'"
@@ -819,7 +827,6 @@
                       </div>
 
                       <!-- (Stipulated) Petiton To Seal Conviction -->
-
                       <div
                         class="filing-body"
                         v-if="filing.type == 'SC' || filing.type == 'StipSC'"
@@ -903,7 +910,6 @@
                       </div>
 
                       <!-- (Stipulated) Petiton To Seal DUI Conviction -->
-
                       <div
                         class="filing-body"
                         v-if="filing.type == 'SDui' || filing.type == 'StipSDui'"
@@ -986,8 +992,8 @@
                           as
                         </p>
                       </div>
-
                       <!-- End Unique Portion of Filings -->
+
                       <template v-if="filing.type != 'NoA'">
                         <div class="filing-body__response">
                           <p
@@ -1002,7 +1008,7 @@
                         </div>
                       </template>
 
-                      <!-- Begin Closings -->
+                      <!-- Begin generic footer -->
                       <template v-if="filing.type != 'NoA'">
                         <div class="filing-closing">
                             <p class="filing-closing__salutation">
@@ -1064,8 +1070,8 @@
                                 </div>
                             </div>
                     </template>
+                    <!-- End generic footer -->
 
-                      <!-- End Closings -->
                     </div>
                   </article>
 
@@ -1082,6 +1088,7 @@
             </tr>
           </tfoot>
         </table>
+        <!-- End petition wrapper -->
 
         <div v-if="settings.forVla" class="footer">
           <p class="footer__company">Vermont Legal Aid, Inc.</p>
@@ -1092,6 +1099,8 @@
           <p class="footer__phone">{{settings['footer2']}}</p>
         </div>
       </template>
+
+      <!-- else show default "no filings" display -->
       <template v-else>
         <div class="no-filings">
           <p>
@@ -1111,6 +1120,7 @@
       </template>
     </div>
     <!-- End Vue App -->
+    
     <script id="script" src="components.js"></script>
     <script id="script" src="filings.js"></script>
     <script id="script" src="csv.js"></script>
