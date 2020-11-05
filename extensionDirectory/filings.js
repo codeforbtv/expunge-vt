@@ -475,20 +475,25 @@ var app = new Vue({
 
     /*
      * Inserts an NOA each time the docket changes in the array of filings.
-     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {object[]} filings      An array of filing objects that needs some NOAs added to it
      */
     insertNOAsForEachDocket: function (filings) {
       let lastDocketNum = '';
       let filingsWithNOAs = [];
 
-      // loop over all the filings
-      for (var i = 0; i < filings.length; i++) {
-        const thisFiling = filings[i];
+      // sorted filings by docket
+      var sortedFilings = filings.sort((a, b) =>
+        a.docketNums[0].num > b.docketNums[0].num ? 1 : -1
+      );
+
+      // loop over all the sortedFilings
+      for (var i = 0; i < sortedFilings.length; i++) {
+        const thisFiling = sortedFilings[i];
         const currDocketNum = thisFiling.docketNums[0].string;
 
         // Conditionally insert a NOA at the beginning of each new string of docket petitions
         if (lastDocketNum != currDocketNum) {
-          const docketCounts = filings
+          const docketCounts = sortedFilings
             .map(function (f) {
               if (
                 f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
