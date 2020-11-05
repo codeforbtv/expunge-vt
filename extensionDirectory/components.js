@@ -33,7 +33,7 @@ Vue.component('filing-nav', {
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
           <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title}}</a>
+            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
             <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
           </li>
         </ol>
@@ -41,6 +41,17 @@ Vue.component('filing-nav', {
       </ol>
       </div>
       `,
+  filters: {
+    navTitleFilter(txt) {
+      const trimStip = txt.startsWith('Stipulated ')
+        ? txt.substring(11) + ' (Stip)'
+        : txt;
+      const trimPetion = trimStip.startsWith('Petition to ')
+        ? trimStip.substring(12)
+        : trimStip;
+      return trimPetion;
+    },
+  },
   props: ['filings'],
 });
 
