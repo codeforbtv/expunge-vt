@@ -104,7 +104,7 @@ a.btn {
   padding: 1rem;
   z-index: 9;
   background-color: #fff;
-  width: 15em;
+  width: 17em;
   overflow-y: scroll;
   padding-top: 40px;
 }
@@ -492,7 +492,7 @@ p.filing-dated-city {
     padding: 6rem;
     height: 100%;
     border: 2px solid #ddd;
-    margin-left: 17rem;
+    margin-left: 19rem;
     margin-right: auto;
     margin-top: 8rem;
     position: relative;
