@@ -34,7 +34,7 @@ Vue.component('filing-nav', {
         <ol>
           <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
             <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
-            <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
+            <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
           </li>
         </ol>
         </li>
@@ -50,6 +50,46 @@ Vue.component('filing-nav', {
         ? trimStip.substring(12)
         : trimStip;
       return trimPetion;
+    },
+    /**
+     * The subtitle for each petition in the nav varies depending on several factors.
+     * @todo Finish selecting the best subtitles after all other PRs are merged in
+     * @param {object} filing All the info for the current filing
+     */
+    petitionCountFilter(filing) {
+      // NoA subtitle
+      if (filing.type == 'NoA') {
+        // default: "####-##-## (X Counts)"
+        if (!this.app.groupCounts && !this.app.groupNoA) {
+          return `${filing.docketNums[0].num} (${filing.numCountsString})`;
+        }
+        // groupNoAs only:
+        else if (this.app.groupNoAs) {
+          return '[todo: groupNoas]';
+        }
+        // groupCounts & groupNoAs:
+        else if (this.app.groupNoAs && this.app.groupCounts) {
+          return '[todo: groupCounts]';
+        }
+      }
+      // Petition subtitles
+      else {
+        // default:
+        if (!this.app.groupCounts && !this.app.groupNoA) {
+          if (filing.counts.length > 1) {
+            return `${filing.counts.length} Counts`;
+          }
+          return '';
+        }
+        // groupNoAs only:
+        else if (this.app.groupNoAs) {
+          return '[todo: groupNoas]';
+        }
+        // groupCounts & groupNoAs:
+        else if (this.app.groupNoAs && this.app.groupCounts) {
+          return '[todo: groupCounts]';
+        }
+      }
     },
   },
   props: ['filings'],
