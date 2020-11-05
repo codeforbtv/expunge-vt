@@ -909,6 +909,7 @@ var app = new Vue({
           count.filingType === 'SDui' || count.filingType === 'StipSDui'
       );
     },
+    /* Checkes the computed `filings` property to see how many unique dockets there are */
     numDockets: function () {
       const dockets = this.filings
         .map((f) =>
