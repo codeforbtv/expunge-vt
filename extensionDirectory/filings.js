@@ -910,14 +910,20 @@ var app = new Vue({
       );
     },
     numDockets: function () {
-      var numDockets = this.saved.counts.filter((e, i) => {
-        return (
-          this.saved.counts.findIndex((x) => {
-            return x.docketNum == e.docketNum && x.county == e.county;
-          }) == i
-        );
-      });
-      return numDockets.length;
+      const dockets = this.filings
+        .map((f) =>
+          f.filings
+            .map((f2) => f2.docketNums.map((d) => d.string).flat())
+            .flat()
+        )
+        .flat();
+      const uniqueDockets = dockets.reduce((acc, n) => {
+        if (!acc.includes(n)) {
+          acc.push(n);
+        }
+        return acc;
+      }, []);
+      return uniqueDockets.length;
     },
     csvFilename: function () {
       var date = new Date();
