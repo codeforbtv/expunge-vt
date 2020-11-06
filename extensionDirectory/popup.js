@@ -704,7 +704,7 @@ function generateCountUID(offense) {
     offense.docketSheetNum +
     `_Count${offense.countNum}_` +
     `${offense.description}_` +
-    checkDisposition(offense.offenseDisposition);
+    beautifyDisposition(offense.offenseDisposition);
   return uid.split(' ').join('_');
 }
 
