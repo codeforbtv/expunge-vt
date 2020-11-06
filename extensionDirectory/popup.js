@@ -200,7 +200,11 @@ function getOdysseyPetitionerInfo(docketData) {
       }
     });
 
-    currentDocket.defName = partyInfo.find('td:first-of-type').html().trim();
+    // get name from page and reformat it if necessary
+    // Note: it would be more durable to parse the fname, lname and any titles (Jr, III, etc) - possible refactor.
+    const rawName = partyInfo.find('td:first-of-type').html().trim();
+    currentDocket.defName = formatPetitionersName(rawName);
+
     currentDocket.defDOB = partyInfo
       .find("[label='DOB:'] .roa-value")
       .text()
@@ -212,6 +216,21 @@ function getOdysseyPetitionerInfo(docketData) {
     return currentDocket;
   } catch (err) {
     alert('Petitioner Info Error: ' + err);
+  }
+}
+
+/**
+ * A helper method to format names as "Firstname Lastname"
+ * @param {string} fullTextName A person's name which may, or may not, be formatted as "Lastname, Firstname"
+ */
+function formatPetitionersName(fullTextName) {
+  const commaIndex = fullTextName.indexOf(',');
+  if (commaIndex == -1) {
+    return fullTextName;
+  } else {
+    const lname = fullTextName.substring(0, commaIndex);
+    const fname = fullTextName.substring(commaIndex + 1);
+    return `${fname.trim()} ${lname.trim()}`;
   }
 }
 
