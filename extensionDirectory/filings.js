@@ -633,17 +633,17 @@ var app = new Vue({
         case 'ExNC':
           return 'Petition to Expunge Non-Conviction';
         case 'StipExNCrim':
-          return 'Stipulated Petition to Expunge Conviction';
+          return 'Stipulated Petition to Expunge Non-Criminal Conviction';
         case 'ExNCrim':
-          return 'Petition to Expunge Conviction';
+          return 'Petition to Expunge Non-Criminal Conviction';
         case 'StipSC':
           return 'Stipulated Petition to Seal Conviction';
         case 'SC':
           return 'Petition to Seal Conviction';
         case 'StipSDui':
-          return 'Stipulated Petition to Seal Conviction';
+          return 'Stipulated Petition to Seal DUI Conviction';
         case 'SDui':
-          return 'Petition to Seal Conviction';
+          return 'Petition to Seal DUI Conviction';
         case 'X':
           return 'Ineligible';
         default:
