@@ -78,12 +78,13 @@ function detectChangesInChromeStorage() {
 }
 
 function initScrollDetection() {
-  //initates the scrollspy for the filing-nav module.
+  // initates the scrollspy for the filing-nav module.
+  // see: https://www.npmjs.com/package/gumshoejs#nested-navigation
   var spy = new Gumshoe('#filing-nav a', {
     nested: true,
     nestedClass: 'active-parent',
     offset: 200, // how far from the top of the page to activate a content area
-    reflow: true, // if true, listen for reflows
+    reflow: true, // will update when the navigation chages (eg, user adds/changes a petition, or consolidates petitions/NOAs)
   });
 }
 
