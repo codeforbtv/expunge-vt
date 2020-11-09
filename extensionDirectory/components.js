@@ -59,35 +59,28 @@ Vue.component('filing-nav', {
     petitionCountFilter(filing) {
       // NoA subtitle
       if (filing.type == 'NoA') {
-        // default: "####-##-## (X Counts)"
-        if (!this.app.groupCounts && !this.app.groupNoA) {
+        // default (ungrouped): "Docket Number (N Counts)"
+        if (!this.app.groupCounts && !this.app.groupNoas) {
           return `${filing.docketNums[0].num} (${filing.numCountsString})`;
         }
-        // groupNoAs only:
-        else if (this.app.groupNoAs) {
-          return '[todo: groupNoas]';
-        }
-        // groupCounts & groupNoAs:
-        else if (this.app.groupNoAs && this.app.groupCounts) {
-          return '[todo: groupCounts]';
+        // two cases, same text: "N Dockets (N Counts)"
+        //    1. groupNoAs only
+        //    2. groupCounts & groupNoAs
+        else {
+          return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
         }
       }
       // Petition subtitles
       else {
-        // default:
+        // default (ungrouped): "N Counts" (or blank if counts == 1)
         if (!this.app.groupCounts && !this.app.groupNoA) {
-          if (filing.counts.length > 1) {
-            return `${filing.counts.length} Counts`;
-          }
-          return '';
+          return filing.counts.length > 1
+            ? `${filing.counts.length} Counts`
+            : '';
         }
-        // groupNoAs only:
-        else if (this.app.groupNoAs) {
-          return '[todo: groupNoas]';
-        }
-        // groupCounts & groupNoAs:
-        else if (this.app.groupNoAs && this.app.groupCounts) {
-          return '[todo: groupCounts]';
+        // groupCounts: "N Dockets (N Counts)"
+        else if (this.app.groupNoas && this.app.groupCounts) {
+          return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
         }
       }
     },
