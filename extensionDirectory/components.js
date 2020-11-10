@@ -59,13 +59,13 @@ Vue.component('filing-nav', {
     petitionCountFilter(filing) {
       // NoA subtitle
       if (filing.type == 'NoA') {
-        // default (ungrouped): "Docket Number (N Counts)"
+        // default (ungrouped): "####-##-## (N Counts)"
         if (!this.app.groupCounts && !this.app.groupNoas) {
           return `${filing.docketNums[0].num} (${filing.numCountsString})`;
         }
         // two cases, same text: "N Dockets (N Counts)"
-        //    1. groupNoAs only
-        //    2. groupCounts & groupNoAs
+        //    1. groupNoas only
+        //    2. groupCounts & groupNoas
         else {
           return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
         }
@@ -73,10 +73,14 @@ Vue.component('filing-nav', {
       // Petition subtitles
       else {
         // default (ungrouped): "N Counts" (or blank if counts == 1)
-        if (!this.app.groupCounts && !this.app.groupNoA) {
+        if (!this.app.groupCounts && !this.app.groupNoas) {
           return filing.counts.length > 1
             ? `${filing.counts.length} Counts`
             : '';
+        }
+        // groupCounts: "####-##-##"
+        else if (this.app.groupNoas && !this.app.groupCounts) {
+          return `${filing.docketNums[0].num}`;
         }
         // groupCounts: "N Dockets (N Counts)"
         else if (this.app.groupNoas && this.app.groupCounts) {
