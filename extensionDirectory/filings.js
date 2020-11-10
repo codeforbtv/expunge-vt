@@ -13,9 +13,26 @@ $(document).on('keydown', function (e) {
   }
 });
 
+/**
+ * Replaces console.log() statements with a wrapper that prevents the extension from logging
+ * to the console unless it was installed by a developer. This will keep the console clean; a
+ * practice recommended for chrome extensions.
+ *
+ * @param {any} data Data to log to the console
+ * @todo find a way to make this reusuable, then delete the duplicate fn() in popup.js
+ */
+function devLog(data) {
+  // see https://developer.chrome.com/extensions/management#method-getSelf
+  chrome.management.getSelf(function (self) {
+    if (self.installType == 'development') {
+      console.log(data);
+    }
+  });
+}
+
 function initAfterVue() {
   //sets intital height of all text areas to show all text.
-  console.log(document.getElementsByTagName('body')[0].id);
+  devLog(document.getElementsByTagName('body')[0].id);
   if (document.getElementsByTagName('body')[0].id === 'filing-page') {
     initScrollDetection();
     setInitialExpandForTextAreas();
@@ -61,12 +78,13 @@ function detectChangesInChromeStorage() {
 }
 
 function initScrollDetection() {
-  //initates the scrollspy for the filing-nav module.
+  // initates the scrollspy for the filing-nav module.
+  // see: https://www.npmjs.com/package/gumshoejs#nested-navigation
   var spy = new Gumshoe('#filing-nav a', {
     nested: true,
     nestedClass: 'active-parent',
     offset: 200, // how far from the top of the page to activate a content area
-    reflow: true, // if true, listen for reflows
+    reflow: true, // will update when the navigation chages (eg, user adds/changes a petition, or consolidates petitions/NOAs)
   });
 }
 
@@ -162,6 +180,7 @@ var app = new Vue({
       counts: [],
     },
     groupCounts: false,
+    groupNoas: false,
     responses: {},
     countiesContact: {},
     popupHeadline: '',
@@ -170,6 +189,24 @@ var app = new Vue({
     stipDef: {},
   },
   watch: {
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "NoAs" checkbox IS checked when "Petitions" checkbox is checked
+    groupCounts: {
+      handler(value) {
+        if (value) {
+          this.groupNoas = true;
+        }
+      },
+    },
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "Petitions" checkbox IS NOT checked when unchecking "NoAs" checkbox
+    groupNoas: {
+      handler(value) {
+        if (!value) {
+          this.groupCounts = false;
+        }
+      },
+    },
     responses: {
       handler() {
         app.saveResponses();
@@ -187,7 +224,7 @@ var app = new Vue({
     },
     saved: {
       handler() {
-        console.log('counts updated');
+        devLog('counts updated');
         this.saveCounts();
         app.$nextTick(function () {
           //call any vanilla js functions after update.
@@ -206,12 +243,13 @@ var app = new Vue({
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        console.log('adminConfig data has been set ', data);
+        devLog('adminConfig data has been set: ');
+        devLog(data);
       }.bind(this)
     );
   },
   mounted() {
-    console.log('App mounted!');
+    devLog('App mounted!');
     this.loadAll();
     detectChangesInChromeStorage();
 
@@ -220,18 +258,18 @@ var app = new Vue({
   },
   methods: {
     saveSettings: function () {
-      // console.log("save settings", app.settings)
+      // devLog("save settings", app.settings)
       settingString = JSON.stringify(this.settings);
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      console.log('save responses');
+      devLog('save responses');
       chrome.storage.local.set({
         responses: app.responses,
       });
     },
     saveCounts: function () {
-      console.log('saving counts');
+      devLog('saving counts');
       chrome.storage.local.set({
         counts: app.saved,
       });
@@ -240,27 +278,27 @@ var app = new Vue({
       if (callback === undefined) {
         callback = function () {};
       }
-      console.log(localStorage.getItem('localExpungeVTSettings'));
+      devLog(localStorage.getItem('localExpungeVTSettings'));
       localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
       if (
         localResult !== undefined &&
         localResult !== '' &&
         localResult !== null
       ) {
-        console.log('settings found');
+        devLog('settings found');
         this.settings = localResult;
-        console.log(this.settings);
+        devLog(this.settings);
       } else {
-        console.log('No settings found, saving default settings');
+        devLog('No settings found, saving default settings');
         this.saveSettings();
       }
 
       chrome.storage.local.get(function (result) {
         //test if we have any data
-        console.log('loading all');
-        console.log(JSON.stringify(result));
+        devLog('loading all');
+        devLog(JSON.stringify(result));
         if (result.counts !== undefined) {
-          console.log(result.counts);
+          devLog(result.counts);
           app.saved = result.counts;
         }
 
@@ -275,11 +313,18 @@ var app = new Vue({
         });
       });
     },
-    groupCountsIntoFilings: function (counts, groupDockets = true) {
+
+    /**
+     * Creates the petition filings (including NOAs) from collected counts
+     *
+     * @param {Object} counts Count objects used to generate petitons
+     * @param {boolean} groupDockets Indicates whether to consolidate dockets into single petitons
+     */
+    createFilingsFromCounts: function (counts, groupDockets = true) {
       // get all counties that have counts associated with them
       var filingCounties = this.groupByCounty(counts);
 
-      console.log(
+      devLog(
         'there are ' +
           filingCounties.length +
           ' counties for ' +
@@ -305,7 +350,7 @@ var app = new Vue({
           allEligibleCountsForThisCounty
         );
 
-        console.log(
+        devLog(
           'there are ' +
             filingsForThisCounty.length +
             ' different filings needed in ' +
@@ -321,24 +366,14 @@ var app = new Vue({
         //add the notice of appearance filing to this county because we have petitions to file
         //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
         var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented = this.segmentCountsByMaxDocketNumber(
+        var allEligibleCountsForThisCountySegmented = this.groupCountsByMaxDocketNumber(
           allEligibleCountsForThisCounty,
           maxDocketsPerNoA
         );
 
-        //iterate through our array of segmented count arrays to create all of the NoAs needed.
-        for (var NoAindex in allEligibleCountsForThisCountySegmented) {
-          var NoACounts = allEligibleCountsForThisCountySegmented[NoAindex];
-          var noticeOfAppearanceObject = this.createNoticeOfAppearanceFiling(
-            countyName,
-            NoACounts
-          );
-          allFilingsForThisCountyObject.push(noticeOfAppearanceObject);
-        }
-
         //iterate through the filing types needed for this county and push them into the array
-        for (var filingIndex in filingsForThisCounty) {
-          var filingType = filingsForThisCounty[filingIndex];
+        for (var i in filingsForThisCounty) {
+          var filingType = filingsForThisCounty[i];
 
           //if the filing is not one we're going to need a petition for, let's skip to the next filing type
           if (!this.isFileable(filingType)) continue;
@@ -371,46 +406,128 @@ var app = new Vue({
             }
           }
         }
+        // insert NOAs into filings
+        const filingsWithNOAs = this.groupNoas
+          ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
+          : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
+
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
           county: countyName,
-          filings: allFilingsForThisCountyObject,
+          filings: filingsWithNOAs,
         });
       }
       return groupedFilings;
     },
-    segmentCountsByMaxDocketNumber: function (counts, max) {
+
+    /* Used when there are more docket numbers than will fit on a single Notice of Appearance
+     * form. This takes an array[counts], and returns an array[array[counts]]. For example, if
+     * the `max` is 10 dockets, then each inner array would have all the counts belonging to the
+     * next 10 dockets.
+     */
+    groupCountsByMaxDocketNumber: function (counts, maxLength) {
       var allDocketNums = this.allDocketNumsObject(counts);
+      var numDocketGroups = Math.ceil(allDocketNums.length / maxLength);
+      var docketGroups = [];
 
-      var numSegments = Math.ceil(allDocketNums.length / max);
-      var result = [];
-
-      for (var i = 0; i < numSegments; i++) {
-        var start = i * max;
-        var end = Math.min(i * max + max, allDocketNums.length);
-
-        var docketObjectsThisSegment = allDocketNums.slice(start, end);
-
-        var docketsThisSegment = docketObjectsThisSegment.map(function (
-          docket
-        ) {
-          return docket.num;
-        });
-
-        var segment = counts.filter((f) =>
-          docketsThisSegment.includes(f.docketNum)
-        );
-        result.push(segment);
+      // divide all counts into arrays grouped by the `maxLength` number of dockets
+      for (var i = 0; i < numDocketGroups; i++) {
+        var start = i * maxLength;
+        var end = Math.min(i * maxLength + maxLength, allDocketNums.length);
+        var dockets = allDocketNums.slice(start, end);
+        var docketNums = dockets.map((docket) => docket.num);
+        var countGroup = counts.filter((f) => docketNums.includes(f.docketNum));
+        docketGroups.push(countGroup);
       }
 
-      return result;
+      return docketGroups;
     },
+
+    /*
+     * Inserts an NOA each time the county changes in the array of filings.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
+     */
+    insertNOAsForEachCounty: function (filings) {
+      let lastCounty = '';
+      let filingsWithNOAs = [];
+
+      // loop over all the filings
+      for (var i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+        const currCounty = thisFiling.county;
+
+        // when the county changes, insert a NOA
+        if (lastCounty != currCounty) {
+          const counts = filings
+            .filter((f) => f.county == currCounty)
+            .map((f) => f.counts)
+            .flat();
+          const noa = this.createNOAFiling(currCounty, counts);
+          filingsWithNOAs.push(noa);
+          lastCounty = currCounty;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
+    /*
+     * Inserts an NOA each time the docket changes in the array of filings.
+     * @param {object[]} filings      An array of filing objects that needs some NOAs added to it
+     */
+    insertNOAsForEachDocket: function (filings) {
+      let lastDocketNum = '';
+      let filingsWithNOAs = [];
+
+      // sorted filings by docket
+      var sortedFilings = filings.sort((a, b) =>
+        a.docketNums[0].num > b.docketNums[0].num ? 1 : -1
+      );
+
+      // loop over all the sortedFilings
+      for (var i = 0; i < sortedFilings.length; i++) {
+        const thisFiling = sortedFilings[i];
+        const currDocketNum = thisFiling.docketNums[0].string;
+
+        // Conditionally insert a NOA at the beginning of each new string of docket petitions
+        if (lastDocketNum != currDocketNum) {
+          const docketCounts = sortedFilings
+            .map(function (f) {
+              if (
+                f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
+                0
+              ) {
+                return f.counts;
+              } else {
+                return [];
+              }
+            })
+            .flat();
+          const noa = this.createNOAFiling(thisFiling.county, docketCounts);
+          filingsWithNOAs.push(noa);
+          lastDocketNum = currDocketNum;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
     createResponseObjectForFiling: function (id) {
       if (app.responses[id] === undefined) {
         Vue.set(app.responses, id, '');
       }
     },
-    createNoticeOfAppearanceFiling: function (county, counts) {
+
+    /*
+     * Helper function to make a "Notice of Appearance" object that can be
+     * inserted into arrays of filings.
+     */
+    createNOAFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'NoA', county);
     },
     groupIneligibleCounts: function (counts) {
@@ -516,17 +633,17 @@ var app = new Vue({
         case 'ExNC':
           return 'Petition to Expunge Non-Conviction';
         case 'StipExNCrim':
-          return 'Stipulated Petition to Expunge Conviction';
+          return 'Stipulated Petition to Expunge Non-Criminal Conviction';
         case 'ExNCrim':
-          return 'Petition to Expunge Conviction';
+          return 'Petition to Expunge Non-Criminal Conviction';
         case 'StipSC':
           return 'Stipulated Petition to Seal Conviction';
         case 'SC':
           return 'Petition to Seal Conviction';
         case 'StipSDui':
-          return 'Stipulated Petition to Seal Conviction';
+          return 'Stipulated Petition to Seal DUI Conviction';
         case 'SDui':
-          return 'Petition to Seal Conviction';
+          return 'Petition to Seal DUI Conviction';
         case 'X':
           return 'Ineligible';
         default:
@@ -557,6 +674,10 @@ var app = new Vue({
       );
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
+    /*
+     * Creates a filing object from data provided.
+     * NOTE: will fail without explaination on civil violations b/c this presumes `counts` is a non-empty array
+     */
     makeFilingObject: function (counts, filingType, county) {
       var countsOnThisFiling = counts;
       var numCounts = countsOnThisFiling.length;
@@ -720,7 +841,7 @@ var app = new Vue({
     },
     returnCountyContact: function (cty) {
       allCounties = this.countiesContact;
-      console.log('Number: ' + allCounties[cty]);
+      devLog('Number: ' + allCounties[cty]);
       return allCounties[cty];
     },
     proSeFromRole: function (preparerRole) {
@@ -740,11 +861,9 @@ var app = new Vue({
       };
     },
     filings: function () {
-      var shouldGroupCounts = true;
-      if (this.groupCounts !== undefined) {
-        shouldGroupCounts = this.groupCounts;
-      }
-      return this.groupCountsIntoFilings(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
+      var shouldGroupCounts =
+        this.groupCounts !== undefined ? this.groupCounts : true;
+      return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
       return this.saved.counts.filter((count) => count.filingType !== 'X')
@@ -800,15 +919,22 @@ var app = new Vue({
           count.filingType === 'SDui' || count.filingType === 'StipSDui'
       );
     },
+    /* Checkes the computed `filings` property to see how many unique dockets there are */
     numDockets: function () {
-      var numDockets = this.saved.counts.filter((e, i) => {
-        return (
-          this.saved.counts.findIndex((x) => {
-            return x.docketNum == e.docketNum && x.county == e.county;
-          }) == i
-        );
-      });
-      return numDockets.length;
+      const dockets = this.filings
+        .map((f) =>
+          f.filings
+            .map((f2) => f2.docketNums.map((d) => d.string).flat())
+            .flat()
+        )
+        .flat();
+      const uniqueDockets = dockets.reduce((acc, n) => {
+        if (!acc.includes(n)) {
+          acc.push(n);
+        }
+        return acc;
+      }, []);
+      return uniqueDockets.length;
     },
     csvFilename: function () {
       var date = new Date();
