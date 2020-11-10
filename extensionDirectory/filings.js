@@ -668,6 +668,10 @@ var app = new Vue({
       );
       return this.makeFilingObject(countsOnThisFiling, filingType, county);
     },
+    /*
+     * Creates a filing object from data provided.
+     * NOTE: will fail without explaination on civil violations b/c this presumes `counts` is a non-empty array
+     */
     makeFilingObject: function (counts, filingType, county) {
       var countsOnThisFiling = counts;
       var numCounts = countsOnThisFiling.length;
