@@ -33,14 +33,62 @@ Vue.component('filing-nav', {
         <a href v-bind:href="'#'+group.county">{{group.county}}</a>
         <ol>
           <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title}}</a>
-            <p class="filing-nav__counts">{{filing.numCountsString}}, {{filing.numDocketsString}}</p>
+            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
+            <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
           </li>
         </ol>
         </li>
       </ol>
       </div>
       `,
+  filters: {
+    navTitleFilter(txt) {
+      const trimStip = txt.startsWith('Stipulated ')
+        ? txt.substring(11) + ' (Stip)'
+        : txt;
+      const trimPetion = trimStip.startsWith('Petition to ')
+        ? trimStip.substring(12)
+        : trimStip;
+      return trimPetion;
+    },
+    /**
+     * The subtitle for each petition in the nav varies depending on several factors.
+     * @todo Finish selecting the best subtitles after all other PRs are merged in
+     * @param {object} filing All the info for the current filing
+     */
+    petitionCountFilter(filing) {
+      // NoA subtitle
+      if (filing.type == 'NoA') {
+        // default (ungrouped): "####-##-## (N Counts)"
+        if (!this.app.groupCounts && !this.app.groupNoas) {
+          return `${filing.docketNums[0].num} (${filing.numCountsString})`;
+        }
+        // two cases, same text: "N Dockets (N Counts)"
+        //    1. groupNoas only
+        //    2. groupCounts & groupNoas
+        else {
+          return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
+        }
+      }
+      // Petition subtitles
+      else {
+        // default (ungrouped): "N Counts" (or blank if counts == 1)
+        if (!this.app.groupCounts && !this.app.groupNoas) {
+          return filing.counts.length > 1
+            ? `${filing.counts.length} Counts`
+            : '';
+        }
+        // groupCounts: "####-##-##"
+        else if (this.app.groupNoas && !this.app.groupCounts) {
+          return `${filing.docketNums[0].num}`;
+        }
+        // groupCounts: "N Dockets (N Counts)"
+        else if (this.app.groupNoas && this.app.groupCounts) {
+          return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
+        }
+      }
+    },
+  },
   props: ['filings'],
 });
 
