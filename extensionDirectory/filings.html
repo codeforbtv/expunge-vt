@@ -150,15 +150,17 @@
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <span>Consolidate by county: </span>
-              <label v-if="numDockets > 1">
-                <input type="checkbox" v-model="groupNoas"/>
-                NoA
-              </label>
-              <label v-if="numDockets > 1">
-                <input type="checkbox" v-model="groupCounts" />
-                Petitions
-              </label>
+              <div v-if="numDockets > 1">
+                <span>Consolidate by county: </span>
+                <label>
+                  <input type="checkbox" v-model="groupNoas"/>
+                  NoA
+                </label>
+                <label>
+                  <input type="checkbox" v-model="groupCounts" />
+                  Petitions
+                </label>
+              </div>
               <button
                 v-on:click="printDocument"
                 class="btn btn-primary no-print"
