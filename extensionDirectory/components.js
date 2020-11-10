@@ -99,6 +99,9 @@ Vue.component('pills-row', {
   },
 });
 
+/* TODO: implement or remove
+ * A seemingly useful component that returns a plain-english explaination of a given filing type.
+ */
 Vue.component('filing-type-heading', {
   methods: {
     getCheckoutPhrases(fType) {

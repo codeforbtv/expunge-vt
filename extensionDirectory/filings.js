@@ -78,12 +78,13 @@ function detectChangesInChromeStorage() {
 }
 
 function initScrollDetection() {
-  //initates the scrollspy for the filing-nav module.
+  // initates the scrollspy for the filing-nav module.
+  // see: https://www.npmjs.com/package/gumshoejs#nested-navigation
   var spy = new Gumshoe('#filing-nav a', {
     nested: true,
     nestedClass: 'active-parent',
     offset: 200, // how far from the top of the page to activate a content area
-    reflow: true, // if true, listen for reflows
+    reflow: true, // will update when the navigation chages (eg, user adds/changes a petition, or consolidates petitions/NOAs)
   });
 }
 
@@ -475,20 +476,25 @@ var app = new Vue({
 
     /*
      * Inserts an NOA each time the docket changes in the array of filings.
-     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {object[]} filings      An array of filing objects that needs some NOAs added to it
      */
     insertNOAsForEachDocket: function (filings) {
       let lastDocketNum = '';
       let filingsWithNOAs = [];
 
-      // loop over all the filings
-      for (var i = 0; i < filings.length; i++) {
-        const thisFiling = filings[i];
+      // sorted filings by docket
+      var sortedFilings = filings.sort((a, b) =>
+        a.docketNums[0].num > b.docketNums[0].num ? 1 : -1
+      );
+
+      // loop over all the sortedFilings
+      for (var i = 0; i < sortedFilings.length; i++) {
+        const thisFiling = sortedFilings[i];
         const currDocketNum = thisFiling.docketNums[0].string;
 
         // Conditionally insert a NOA at the beginning of each new string of docket petitions
         if (lastDocketNum != currDocketNum) {
-          const docketCounts = filings
+          const docketCounts = sortedFilings
             .map(function (f) {
               if (
                 f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
@@ -627,17 +633,17 @@ var app = new Vue({
         case 'ExNC':
           return 'Petition to Expunge Non-Conviction';
         case 'StipExNCrim':
-          return 'Stipulated Petition to Expunge Conviction';
+          return 'Stipulated Petition to Expunge Non-Criminal Conviction';
         case 'ExNCrim':
-          return 'Petition to Expunge Conviction';
+          return 'Petition to Expunge Non-Criminal Conviction';
         case 'StipSC':
           return 'Stipulated Petition to Seal Conviction';
         case 'SC':
           return 'Petition to Seal Conviction';
         case 'StipSDui':
-          return 'Stipulated Petition to Seal Conviction';
+          return 'Stipulated Petition to Seal DUI Conviction';
         case 'SDui':
-          return 'Petition to Seal Conviction';
+          return 'Petition to Seal DUI Conviction';
         case 'X':
           return 'Ineligible';
         default:
