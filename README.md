@@ -36,7 +36,7 @@ This tool was originally developed exclusively for use by VLA in their clincs in
 
 - **... but primarily attorneys.** Although anyone with data access can use this tool to generate petitions, they will need to be reviewed (and possibly corrected or modified) by an attorney familiar with expungement statutues. There are a lot of intracasies in expunging & sealing records and conflicts and inaccuracies in the official records that require expert review.
 
-## Anyone can demo Expunge-VT though
+## Demo Expunge-VT 
 Although you can't generate real petitions without data access, you can give it a test run on these three sample dockets. Just download [the extension from the Chrome Store](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn), navigate to one of these three pages, and click the icon to begin parsing the dockets. 
 
 1. [Sample 1](http://htmlpreview.github.io/?https://github.com/codeforbtv/expunge-vt/blob/master/sampleDocketHTML/sample1.html)
