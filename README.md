@@ -8,14 +8,18 @@ VLA runs free clinics throughout the year, but copying information off state dat
 
 [<img src="https://uploads-ssl.webflow.com/5f4f5872323e026126988212/5f56321f2220c927ad18423e_ChromeWebStore_BadgeWBorder_v2_496x150.png" width=300/>](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn)
 
-This project works through a chrome extension that reads an HTML docket sheet from [VT Courts Online](https://secure.vermont.gov/vtcdas/user) that provides key data a defendant's case. One or more cleaned samples of an HTML docket can be found in the "sampleDocketHTML" folder. When the project is complete, the extension will use the data parsed from the HTML to print petitions for expungement ready for filing.
+Printable petitions are generated using an extension for the Chrome browser. 
+
+The extension essentially reads and (temporarily remembers) info as an attorney browses through case records. This information is automatically inserted into the specified petitions and a printable webpage is generated. The attorney can correct common data errors, insert petitioner names/dates/etc, and print petitions for submission to the state's attorneys.
+
+Petitions are separated by county, and (optionally) by docket or case, making it easier to submit petitions in the format preferred by each county.
 
 ## What does it do?
 
 - **It does** generate petitions 50-80% faster than doing them by hand.
-- **It does** parse criminal dockets for the info needed for expungement/sealing petitions.
+- **It does** parse criminal dockets for all available info.
 - **It does** collect data from multiple cases across multiple counties.
-- **It does** automatically generate petitions that an attorney can edit and print.
+- **It does** generate petitions that can be edited and printed.
 - **It does** highlight some useful case info (misdemeanors, dismissals, fees, etc).
 
 But equally important are the things it **does not** do:
