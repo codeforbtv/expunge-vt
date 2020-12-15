@@ -1,6 +1,6 @@
 # Expunge-VT
 
-This project orginated as a way for Vermont Legal Aid (VLA) to generate petitions more quickly during their expungment clinics.
+This project originated as a way for Vermont Legal Aid (VLA) to generate petitions more quickly during their expungement clinics.
 
 VLA runs free clinics throughout the year, but copying information off state databases and filling out petitions by hand is slow. By creating a chrome extension that generates printable files at the push of a button, volunteer attorneys help more people clear their records in every clinic. 
 
@@ -14,9 +14,9 @@ This project works through a chrome extension that reads an HTML docket sheet fr
 
 - **It does** generate petitions 50-80% faster than doing them by hand.
 - **It does** parse criminal dockets for the info needed for expungement/sealing petitions.
-- **It does** collect data from mulitiple cases across multiple counties.
+- **It does** collect data from multiple cases across multiple counties.
 - **It does** automatically generate petitions that an attorney can edit and print.
-- **It does** highlight some useful case info (misdemenors, dismissals, fees, etc).
+- **It does** highlight some useful case info (misdemeanors, dismissals, fees, etc).
 
 But equally important are the things it **does not** do:
 
