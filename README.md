@@ -11,7 +11,7 @@ This project is a chrome extension that let's attourneys generate printable form
 
 # The Chrome extension
 
-[View Extension](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
+[<img src="https://uploads-ssl.webflow.com/5f4f5872323e026126988212/5f56321f2220c927ad18423e_ChromeWebStore_BadgeWBorder_v2_496x150.png" width=300/>](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn)
 
 This project works through a chrome extension that reads an HTML docket sheet from [VT Courts Online](https://secure.vermont.gov/vtcdas/user) that provides key data a defendant's case. One or more cleaned samples of an HTML docket can be found in the "sampleDocketHTML" folder. When the project is complete, the extension will use the data parsed from the HTML to print petitions for expungement ready for filing.
 
