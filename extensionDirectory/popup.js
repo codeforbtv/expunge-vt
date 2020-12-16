@@ -17,6 +17,12 @@ function initListeners() {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
+      // DEMO & DEV: currently we only have demo samples for VCOL dockets
+      case 'htmlpreview.github.io':
+      case 'localhost': {
+        parsedData = getVTCOPetitionerInfo(rawDocketData);
+        break;
+      }
       default: {
         // TODO: handle default case
       }

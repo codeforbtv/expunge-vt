@@ -31,6 +31,7 @@ switch (docketData.domain) {
 
 // If an expected site was not found, maybe it is being run on a local file?
 if (docketData.url.startsWith('file')) {
+  docketData.domain = 'localhost';
   docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
 }
 
