@@ -353,7 +353,10 @@ function getOdysseyCountInfo(docket, docketUrl) {
         .find('.roa-event-content > div > div > div:first')
         .text()
         .trim();
-      const countNum = parseInt(countText.substr(0, 1), 10);
+
+      /* TODO: handle the case where the count number cannot be parsed */
+      const parsedNum = countText.match(/^\d+/);
+      const countNum = parsedNum.length == 1 ? parseInt(parsedNum[0], 10) : 0;
       let decision = jqDisp
         .find('.roa-event-content > div > div > div:nth-child(2)')
         .text()
