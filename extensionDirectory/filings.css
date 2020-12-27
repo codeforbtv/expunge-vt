@@ -372,6 +372,11 @@ p.document-meta-data__body {
   margin-top: 2.5rem;
   padding-top: 0.25rem;
 }
+.filing-closing__date-area-prose {
+  margin: 2.5rem 0 0 2.5rem;
+  border-top: 1.5px solid black;
+  width: 25%;
+}
 
 .filing-closing__date-box {
   border-top: 1.5px solid black;
@@ -394,11 +399,24 @@ p.filing-dated-city {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
-/* Use this with a span full of non-breaking spaces to give it a solid fill-in underline */
+/* Use "fill-in" for a solid underline where people need to fill in 
+ * information. Use one of the cascading modifiers to get the desired width. 
+ */
 .fill-in {
-  opacity: 1;
-  position: relative;
   border-bottom: 1.5px solid #000;
+  display: inline-block;
+}
+.fill-in.half-width {
+  width: 360px;
+}
+.fill-in.quarter-width {
+  width: 180px;
+}
+.fill-in.word-width {
+  width: 100px;
+}
+.fill-in.digit-width {
+  width: 40px;
 }
 
 /* CHeckout sheet */
