@@ -17,6 +17,12 @@ function initListeners() {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
+      // DEMO & DEV: currently we only have demo samples for VCOL dockets
+      case 'htmlpreview.github.io':
+      case 'localhost': {
+        parsedData = getVTCOPetitionerInfo(rawDocketData);
+        break;
+      }
       default: {
         // TODO: handle default case
       }
@@ -347,7 +353,10 @@ function getOdysseyCountInfo(docket, docketUrl) {
         .find('.roa-event-content > div > div > div:first')
         .text()
         .trim();
-      const countNum = parseInt(countText.substr(0, 1), 10);
+
+      /* TODO: handle the case where the count number cannot be parsed */
+      const parsedNum = countText.match(/^\d+/);
+      const countNum = parsedNum.length == 1 ? parseInt(parsedNum[0], 10) : 0;
       let decision = jqDisp
         .find('.roa-event-content > div > div > div:nth-child(2)')
         .text()

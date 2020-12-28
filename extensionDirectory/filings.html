@@ -281,7 +281,7 @@
                             v-bind:id="group.county"
                           >
                             <li>
-                              {{group.filings.length - 1}}
+                              {{group.filings | numWithoutNOAs}}
                               <span v-if="group.filings.length > 2"
                                 >petitions</span
                               ><span v-else>petition</span> for {{group.county}}

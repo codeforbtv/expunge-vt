@@ -860,6 +860,8 @@ var app = new Vue({
         address: this.nl2br(this.saved.defAddress),
       };
     },
+
+    /* "Filings" include the Notice of Appearance (NoA) forms */
     filings: function () {
       var shouldGroupCounts =
         this.groupCounts !== undefined ? this.groupCounts : true;
@@ -919,7 +921,7 @@ var app = new Vue({
           count.filingType === 'SDui' || count.filingType === 'StipSDui'
       );
     },
-    /* Checkes the computed `filings` property to see how many unique dockets there are */
+    /* Checks the computed `filings` property to see how many unique dockets there are */
     numDockets: function () {
       const dockets = this.filings
         .map((f) =>
@@ -1006,6 +1008,14 @@ var app = new Vue({
     toCountyCode: function (value) {
       if (!value) return '';
       return countyCodeFromCounty(value);
+    },
+
+    /** Takes an array of filings and figures out how many there are after omitting the NOAs
+     * @param array   An array of filings
+     * @return int    The number of filings that are not NOAs
+     */
+    numWithoutNOAs: function (filings) {
+      return filings.filter((f) => f.type != 'NoA').length;
     },
   },
 });
