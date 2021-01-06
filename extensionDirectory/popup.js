@@ -450,9 +450,6 @@ function getVTCOPetitionerInfo(data) {
     addressArray[i] = addressArray[i].trim();
   }
 
-  //get docket Num
-  docketSheetNum = rawData.match(/([Docket No.\s+])(\d.*?cr)/)[0].trim();
-
   //create all counts object
   parsedData = {
     defName: defName,
@@ -551,6 +548,11 @@ function processCountLine1(countLine1, countNum, rawData) {
     }
   }
 
+  // get docketNum & docketSheetNum
+  const docketCounty = countLine1Array[2];
+  const docketNum = countLine1Array[1];
+  const docketSheetNum = `${docketNum} ${docketCounty}`;
+
   var uid =
     docketSheetNum +
     countLine1Array[0] +
@@ -560,13 +562,14 @@ function processCountLine1(countLine1, countNum, rawData) {
 
   offenseDisposition = beautifyDisposition(disposition);
   dispositionDate = countLine1Array[felMisLocation + 1];
+
   //Create count object with all count line 1 items
   countObject = {
     guid: guid(),
     uid: uid,
     countNum: countLine1Array[0],
-    docketNum: countLine1Array[1],
-    docketCounty: countLine1Array[2],
+    docketNum: docketNum,
+    docketCounty: docketCounty,
     county: countyNameFromCountyCode(countLine1Array[2]),
     titleNum: countLine1Array[4],
     sectionNum: offenseSection,
