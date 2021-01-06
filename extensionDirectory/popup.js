@@ -522,12 +522,11 @@ function processCountLine1(countLine1, countNum, rawData) {
   countLine1Array = countLine1Array.filter(function (el) {
     return el != '';
   });
+  devLog(countLine1Array);
 
   //find location of fel/mis
   felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
-  // TODO: conditionally display console.log content
-  devLog(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
   for (j = 5; j < felMisLocation; j++) {
