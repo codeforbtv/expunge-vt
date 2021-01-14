@@ -1,5 +1,7 @@
 # Getting Started with Chrome Extensions
 
+The ExpungeVT Chrome Extension is located inside the 'extensionDirectory' folder in this repo. The following is a brief overview of the extension codebase with links to resources for further exploration.
+
 ## Structure of an Extension
 
 The structure of a chrome extension is primarily defined in the manifest.json file
