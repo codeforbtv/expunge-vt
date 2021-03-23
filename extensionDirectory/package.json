@@ -6,9 +6,12 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "bootstrap": "^4.4.1",
+    "fontawesome": "^5.6.3",
+    "gumshoe": "^0.2.1",
     "gumshoejs": "^5.1.2",
     "jquery": "^3.5.0",
     "moment": "^2.24.0",
+    "popper.js": "^1.16.1",
     "smooth-scroll": "^16.1.3",
     "vue": "^2.6.11"
   },
@@ -24,8 +27,9 @@
     "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "rm -rf dist && mkdir dist && cp -r {manifest.json,images} dist && parcel watch src/*.html src/background.js",
-    "build": "rm -rf dist && mkdir dist && cp -r {manifest.json,images} dist && parcel build src/*.html src/background.js"
+    "copy-assets": "cp -r {manifest.json,images,css} dist",
+    "watch": "rm -rf dist && mkdir dist && npm run copy-assets && parcel watch src/*.html src/background.js",
+    "build": "rm -rf dist && mkdir dist && npm run copy-assets && parcel build src/*.html src/background.js"
   },
   "keywords": [],
   "author": "",
