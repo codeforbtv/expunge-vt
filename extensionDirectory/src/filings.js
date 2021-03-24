@@ -1,3 +1,13 @@
+import $ from "jquery";
+import "fontawesome";
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'vue';
+import 'smooth-scroll';
+import 'gumshoejs';
+import 'moment';
+
+
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
 

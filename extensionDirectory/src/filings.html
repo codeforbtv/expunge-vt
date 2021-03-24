@@ -2,35 +2,10 @@
 <html lang="en">
   <head>
     <title>Petitions</title>
-    <link href="filings.css" rel="stylesheet" type="text/css" />
-
-    <!-- jQuery -->
-    <script src="./node_modules/jquery/dist/jquery.js"></script>
-
-    <!-- Bootstrap -->
-    <link
-      rel="stylesheet"
-      href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
-    />
-    <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-
-    <!-- Vue -->
-    <script src="./node_modules/vue/dist/vue.js"></script>
-
-    <!-- Smooth-Scroll -->
-    <script src="./node_modules/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
-
-    <!-- Gumshoe -->
-    <script src="./node_modules/gumshoejs/dist/gumshoe.polyfills.min.js"></script>
-
-    <!-- font awesome -->
-    <link
-      rel="stylesheet"
-      href="./node_modules/@fortawesome/fontawesome-free/css/all.css"
-    />
-
-    <!-- Moment -->
-    <script src="./node_modules/moment/min/moment.min.js"></script>
+    <link href="../css/filings.css" rel="stylesheet" type="text/css" />
+    <script id="script" src="filings.js"></script>   
+    <!-- <script id="script" src="components.js"></script> -->
+    <script id="script" src="csv.js"></script>
   </head>
 
   <body id="filing-page">
@@ -223,12 +198,12 @@
                           <img
                             v-if="settings.forVla"
                             class="vla-logo"
-                            src="images/VLA_logo-200-97px.png"
+                            src="../images/VLA_logo-200-97px.png"
                           />
                           <img
                             v-else
                             class="generic-logo"
-                            src="images/icon_128.png"
+                            src="../images/icon_128.png"
                           />
                           <div class="atty-block">
                             <p
@@ -1125,9 +1100,6 @@
       </template>
     </div>
     <!-- End Vue App -->
-    
-    <script id="script" src="components.js"></script>
-    <script id="script" src="filings.js"></script>
-    <script id="script" src="csv.js"></script>
+ 
   </body>
 </html>

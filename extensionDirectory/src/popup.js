@@ -4,7 +4,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'vue';
 import 'smooth-scroll';
-import 'gumshoe';
+import 'gumshoejs';
 import 'moment';
 
 
