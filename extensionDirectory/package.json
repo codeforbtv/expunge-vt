@@ -16,7 +16,9 @@
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.4",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "vue-loader": "^15.9.6",
+    "vue-template-compiler": "^2.6.12"
   },
   "resolutions": {
     "@babel/preset-env": "7.13.8"
