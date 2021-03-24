@@ -269,7 +269,7 @@ var app = new Vue({
   methods: {
     saveSettings: function () {
       // devLog("save settings", app.settings)
-      settingString = JSON.stringify(this.settings);
+      const settingString = JSON.stringify(this.settings);
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
@@ -289,7 +289,7 @@ var app = new Vue({
         callback = function () {};
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
-      localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
+      const localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
       if (
         localResult !== undefined &&
         localResult !== '' &&
