@@ -819,7 +819,12 @@ var app = new Vue({
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
       // see: https://stackoverflow.com/a/42989406/263900
-      chrome.tabs.executeScript(null, { file: 'payload.js' });
+      chrome.tabs.executeScript(null, { file: 'payload.js' }, function() {
+        if(chrome.runtime.lastError) {
+          console.error("Parsing failed: " + chrome.runtime.lastError.message);
+          alert("Oh no! This extension isn't functioning correctly; please contact the developers.")
+        }
+      });
     },
     confirmClearData: function () {
       if (
