@@ -191,7 +191,7 @@ Vue.component('filing-type-heading', {
         },
       ];
 
-      for (i = 0; i < checkoutPhrases.length; i++) {
+      for (let i = 0; i < checkoutPhrases.length; i++) {
         if (
           checkoutPhrases[i]['type'] == fType ||
           checkoutPhrases[i]['stipType'] == fType

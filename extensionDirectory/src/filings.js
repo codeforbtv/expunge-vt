@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Vue from 'vue';
 import 'smooth-scroll';
 import 'gumshoejs';
-import 'moment';
+import moment from 'moment';
 
 
 const maxCountsOnNoA = 10;
@@ -102,7 +102,7 @@ function setInitialExpandForTextAreas() {
   //sets the default size for all text areas based on their content.
   //call this after vue has initialized and displayed
   var textAreas = document.getElementsByTagName('textarea');
-  for (var index in textAreas) {
+  for (let index in textAreas) {
     var textArea = textAreas[index];
     if (textArea === undefined) return;
     autoExpand(textArea);
@@ -346,7 +346,7 @@ var app = new Vue({
       var groupedFilings = [];
 
       //iterate through all counties and create the filings
-      for (var county in filingCounties) {
+      for (let county in filingCounties) {
         var countyName = filingCounties[county];
 
         //filter all counts to the ones only needed for this county
@@ -382,7 +382,7 @@ var app = new Vue({
         );
 
         //iterate through the filing types needed for this county and push them into the array
-        for (var i in filingsForThisCounty) {
+        for (let i in filingsForThisCounty) {
           var filingType = filingsForThisCounty[i];
 
           //if the filing is not one we're going to need a petition for, let's skip to the next filing type
@@ -402,7 +402,7 @@ var app = new Vue({
             this.createResponseObjectForFiling(filingObject.id);
           } else {
             //break the filing object into multiple petitions
-            for (var docketNumIndex in filingObject.docketSheetNums) {
+            for (let docketNumIndex in filingObject.docketSheetNums) {
               var docketSheetNumUnique =
                 filingObject.docketSheetNums[docketNumIndex].num;
               var brokenOutFilingObject = this.filterAndMakeFilingObject(
@@ -441,7 +441,7 @@ var app = new Vue({
       var docketGroups = [];
 
       // divide all counts into arrays grouped by the `maxLength` number of dockets
-      for (var i = 0; i < numDocketGroups; i++) {
+      for (let i = 0; i < numDocketGroups; i++) {
         var start = i * maxLength;
         var end = Math.min(i * maxLength + maxLength, allDocketNums.length);
         var dockets = allDocketNums.slice(start, end);
@@ -463,7 +463,7 @@ var app = new Vue({
       let filingsWithNOAs = [];
 
       // loop over all the filings
-      for (var i = 0; i < filings.length; i++) {
+      for (let i = 0; i < filings.length; i++) {
         const thisFiling = filings[i];
         const currCounty = thisFiling.county;
 
@@ -498,7 +498,7 @@ var app = new Vue({
       );
 
       // loop over all the sortedFilings
-      for (var i = 0; i < sortedFilings.length; i++) {
+      for (let i = 0; i < sortedFilings.length; i++) {
         const thisFiling = sortedFilings[i];
         const currDocketNum = thisFiling.docketNums[0].string;
 
@@ -762,7 +762,7 @@ var app = new Vue({
       var string = '';
       var delimiter = '\r\n';
       var i;
-      for (i = 0; i < array.length; i++) {
+      for (let i = 0; i < array.length; i++) {
         if (i > 0) {
           string += delimiter;
         }

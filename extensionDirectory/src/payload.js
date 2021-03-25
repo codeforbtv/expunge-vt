@@ -4,7 +4,7 @@
  *  - to alert user when the extension is used on an unsupported site
  */
 
-docketData = {
+let docketData = {
   domain: window.location.hostname,
   url: window.location.href,
   rawDocket: null,

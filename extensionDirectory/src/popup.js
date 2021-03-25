@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Vue from 'vue';
 import 'smooth-scroll';
 import 'gumshoejs';
-import 'moment';
+import moment from 'moment';
 
 
 let loadedMessage;
@@ -39,7 +39,7 @@ function initListeners() {
     }
 
     chrome.storage.local.get('counts', function (result) {
-      combinedData = appendDataWithConfirmation(parsedData, result.counts);
+      const combinedData = appendDataWithConfirmation(parsedData, result.counts);
       chrome.storage.local.set({
         counts: combinedData,
       });
@@ -250,6 +250,28 @@ function formatPetitionersName(fullTextName) {
   }
 }
 
+
+
+function countyNameFromCountyCode(countyCode) {
+  const counties = {
+    Ancr: 'Addison',
+    Bncr: 'Bennington',
+    Cacr: 'Caledonia',
+    Cncr: 'Chittenden',
+    Excr: 'Essex',
+    Frcr: 'Franklin',
+    Gicr: 'Grand Isle',
+    Lecr: 'Lamoille',
+    Oecr: 'Orange',
+    Oscr: 'Orleans',
+    Rdcr: 'Rutland',
+    Wncr: 'Washington',
+    Wmcr: 'Windham',
+    Wrcr: 'Windsor',
+  };
+  return counties[countyCode];
+}
+
 /**
  * Function to parse out the criminal counts visible on a docket
  * @param {jQuery obj} docket The Odyssey dom parsed as a jQuery object
@@ -434,20 +456,20 @@ function getOdysseyCountInfo(docket, docketUrl) {
 function getVTCOPetitionerInfo(data) {
   //Get Defendant Name
   const rawData = data.rawDocket; // this is the 'pre' element wraps VTCOs docket info
-  nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
-  nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
-  defName = rawData.substring(nameLocation, nameLocationEnd);
+  const nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
+  const nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
+  const defName = rawData.substring(nameLocation, nameLocationEnd);
 
   //Get Date of Birth
-  dobLocation = nthIndex(rawData, 'DOB:', 1) + 15;
-  dobLocationEnd = nthIndex(rawData, 'POB:', 1) - 40;
-  defDOB = rawData.substring(dobLocation, dobLocationEnd);
+  const dobLocation = nthIndex(rawData, 'DOB:', 1) + 15;
+  const dobLocationEnd = nthIndex(rawData, 'POB:', 1) - 40;
+  const defDOB = rawData.substring(dobLocation, dobLocationEnd);
 
   //Get Address
   try {
     //match all between address and next hearing
-    addressString = rawData.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms);
-    addressArray = addressString[0].split('\n');
+    const addressString = rawData.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms);
+    let addressArray = addressString[0].split('\n');
     addressArray.pop();
     //trims off disposed text and excess spaces
     addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString();
@@ -456,12 +478,12 @@ function getVTCOPetitionerInfo(data) {
     addressArray[0] = 'No Address found';
   }
 
-  for (i = 0; i < addressArray.length; i++) {
+  for (let i = 0; i < addressArray.length; i++) {
     addressArray[i] = addressArray[i].trim();
   }
 
   //create all counts object
-  parsedData = {
+  const parsedData = {
     defName: defName,
     defDOB: formatDate(defDOB),
     defAddress: addressArray.join('\n'),
@@ -478,29 +500,29 @@ function getVTCOPetitionerInfo(data) {
  * @returns {array} An array of criminal count objects
  */
 function getVTCOCountInfo(rawData, docketUrl) {
-  divider =
+  const divider =
     '================================================================================';
 
   //Determine Number of Counts and create array with each line count
-  countsStart = nthIndex(rawData, divider, 2) + divider.length + 1;
-  countsEnd = rawData.substring(countsStart).indexOf('=') + countsStart;
-  allCountsBody = rawData.substring(countsStart, countsEnd);
-  countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
+  const countsStart = nthIndex(rawData, divider, 2) + divider.length + 1;
+  const countsEnd = rawData.substring(countsStart).indexOf('=') + countsStart;
+  const allCountsBody = rawData.substring(countsStart, countsEnd);
+  var countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
   countTotal = Math.ceil(countTotal);
-  allCountsArray = allCountsBody.split('\n');
+  const allCountsArray = allCountsBody.split('\n');
 
   //Move data from count table into objects
-  countLines = countTotal * 2;
+  const countLines = countTotal * 2;
 
   var counts = [];
-  for (i = 0; i < countLines; i++) {
+  for (let i = 0; i < countLines; i++) {
     //Catch Line 1 (odd lines) of each count
     if ((i + 1) % 2 != 0) {
-      countObject = {};
+      var countObject = {};
       processCountLine1(allCountsArray[i], i / 2, rawData);
     } else {
       //Catch Line 2 of each count
-      description = allCountsArray[i].trim();
+      let description = allCountsArray[i].trim();
       devLog('description: ' + description);
       description = description.replace(/\//g, ' / ');
       description = description.replace(/\s\s/g, ' ');
@@ -525,19 +547,19 @@ function getVTCOCountInfo(rawData, docketUrl) {
 // When parsing VCOL data, break line one of a count into its individual fields
 function processCountLine1(countLine1, countNum, rawData) {
   //Break into array and remove spaces
-  countLine1Array = countLine1.split(' ');
+  let countLine1Array = countLine1.split(' ');
   countLine1Array = countLine1Array.filter(function (el) {
     return el != '';
   });
 
   //find location of fel/mis
-  felMisLocation = countLine1Array.findIndex(isFelOrMisd);
+  const felMisLocation = countLine1Array.findIndex(isFelOrMisd);
 
   // TODO: conditionally display console.log content
   devLog(countLine1Array);
   //get section string(s) beginnging at index 5 - after title
   let offenseSection = '';
-  for (j = 5; j < felMisLocation; j++) {
+  for (let j = 5; j < felMisLocation; j++) {
     if (j === 5) {
       offenseSection = countLine1Array[j];
     } else {
@@ -549,8 +571,8 @@ function processCountLine1(countLine1, countNum, rawData) {
   }
 
   // get disposition string
-  disposition = '';
-  for (j = felMisLocation + 2; j < countLine1Array.length; j++) {
+  let disposition = '';
+  for (let j = felMisLocation + 2; j < countLine1Array.length; j++) {
     if (j === 8) {
       disposition = countLine1Array[j];
     } else {
@@ -570,11 +592,11 @@ function processCountLine1(countLine1, countNum, rawData) {
     beautifyDisposition(disposition);
   uid = uid.split(' ').join('_');
 
-  offenseDisposition = beautifyDisposition(disposition);
-  dispositionDate = countLine1Array[felMisLocation + 1];
+  const offenseDisposition = beautifyDisposition(disposition);
+  const dispositionDate = countLine1Array[felMisLocation + 1];
 
   //Create count object with all count line 1 items
-  countObject = {
+  let countObject = {
     guid: guid(),
     uid: uid,
     countNum: countLine1Array[0],
