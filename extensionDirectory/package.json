@@ -29,7 +29,7 @@
     "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-assets": "cp -r {manifest.json,images,css} dist",
+    "copy-assets": "cp -r {manifest.json,images,css,src/payload.js} dist",
     "watch": "rm -rf dist && mkdir dist && npm run copy-assets && parcel watch src/*.html src/background.js",
     "build": "rm -rf dist && mkdir dist && npm run copy-assets && parcel build src/*.html src/background.js"
   },
