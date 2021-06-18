@@ -30,7 +30,7 @@
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "copy-assets": "cp -r {manifest.json,images,css,src/payload.js} dist",
-    "watch": "rm -rf dist && mkdir dist && npm run copy-assets && parcel watch src/*.html src/background.js",
+    "watch": "rm -rf dist && mkdir dist && npm run copy-assets && parcel watch src/*.html src/background.js --hmr-hostname localhost",
     "build": "rm -rf dist && mkdir dist && npm run copy-assets && parcel build src/*.html src/background.js"
   },
   "keywords": [],
