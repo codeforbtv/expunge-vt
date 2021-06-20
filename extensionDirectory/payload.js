@@ -12,11 +12,6 @@ docketData = {
 
 // select data from the current site
 switch (docketData.domain) {
-  // old Vermont Courts Online site
-  case 'secure.vermont.gov': {
-    docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
-    break;
-  }
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
   case 'publicportal.courts.vt.gov': {
     docketData.rawDocket = document.getElementById('roa-content').innerHTML;

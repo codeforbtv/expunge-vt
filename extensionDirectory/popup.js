@@ -7,20 +7,15 @@ function initListeners() {
   chrome.runtime.onMessage.addListener(function (rawDocketData) {
     let parsedData;
     switch (rawDocketData.domain) {
-      // VT COURTS ONLINE
-      case 'secure.vermont.gov': {
-        parsedData = getVTCOPetitionerInfo(rawDocketData);
-        break;
-      }
       // ODYSSEY
       case 'publicportal.courts.vt.gov': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
-      // DEMO & DEV: currently we only have demo samples for VCOL dockets
+      // DEMO & DEV: TODO - currently we only have demo samples for VCOL dockets
       case 'htmlpreview.github.io':
       case 'localhost': {
-        parsedData = getVTCOPetitionerInfo(rawDocketData);
+        parsedData = getOdysseyPetitionerInfo(rawDocketData);
         break;
       }
       default: {
@@ -418,207 +413,6 @@ function getOdysseyCountInfo(docket, docketUrl) {
 }
 
 /**
- * Parses the VTCO docket data and returns object with parsed data
- * @param {string} data The 'docketData' object from payload.js
- */
-function getVTCOPetitionerInfo(data) {
-  //Get Defendant Name
-  const rawData = data.rawDocket; // this is the 'pre' element wraps VTCOs docket info
-  nameLocation = nthIndex(rawData, 'Defendant:', 1) + 15;
-  nameLocationEnd = nthIndex(rawData, 'DOB:', 1) - 40;
-  defName = rawData.substring(nameLocation, nameLocationEnd);
-
-  //Get Date of Birth
-  dobLocation = nthIndex(rawData, 'DOB:', 1) + 15;
-  dobLocationEnd = nthIndex(rawData, 'POB:', 1) - 40;
-  defDOB = rawData.substring(dobLocation, dobLocationEnd);
-
-  //Get Address
-  try {
-    //match all between address and next hearing
-    addressString = rawData.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms);
-    addressArray = addressString[0].split('\n');
-    addressArray.pop();
-    //trims off disposed text and excess spaces
-    addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString();
-  } catch {
-    addressArray = [];
-    addressArray[0] = 'No Address found';
-  }
-
-  for (i = 0; i < addressArray.length; i++) {
-    addressArray[i] = addressArray[i].trim();
-  }
-
-  //create all counts object
-  parsedData = {
-    defName: defName,
-    defDOB: formatDate(defDOB),
-    defAddress: addressArray.join('\n'),
-    counts: getVTCOCountInfo(rawData, data.url),
-  };
-
-  return parsedData;
-}
-
-/**
- * Function to parse out the criminal counts visible on a VCOL docket
- * @param {string} rawData The docket 'pre' element
- * @param {string} docketUrl The url of this count's docket
- * @returns {array} An array of criminal count objects
- */
-function getVTCOCountInfo(rawData, docketUrl) {
-  divider =
-    '================================================================================';
-
-  //Determine Number of Counts and create array with each line count
-  countsStart = nthIndex(rawData, divider, 2) + divider.length + 1;
-  countsEnd = rawData.substring(countsStart).indexOf('=') + countsStart;
-  allCountsBody = rawData.substring(countsStart, countsEnd);
-  countTotal = (allCountsBody.match(/\n/g) || []).length / 2;
-  countTotal = Math.ceil(countTotal);
-  allCountsArray = allCountsBody.split('\n');
-
-  //Move data from count table into objects
-  countLines = countTotal * 2;
-
-  var counts = [];
-  for (i = 0; i < countLines; i++) {
-    //Catch Line 1 (odd lines) of each count
-    if ((i + 1) % 2 != 0) {
-      countObject = {};
-      processCountLine1(allCountsArray[i], i / 2, rawData);
-    } else {
-      //Catch Line 2 of each count
-      description = allCountsArray[i].trim();
-      devLog('description: ' + description);
-      description = description.replace(/\//g, ' / ');
-      description = description.replace(/\s\s/g, ' ');
-
-      var parser = new DOMParser();
-      var dom = parser.parseFromString(
-        '<!doctype html><body>' + description,
-        'text/html'
-      );
-      var decodedString = dom.body.textContent;
-
-      devLog(decodedString);
-      countObject['description'] = decodedString;
-      countObject['url'] = docketUrl;
-
-      counts.push(countObject);
-    }
-  }
-  return counts;
-}
-
-// When parsing VCOL data, break line one of a count into its individual fields
-function processCountLine1(countLine1, countNum, rawData) {
-  //Break into array and remove spaces
-  countLine1Array = countLine1.split(' ');
-  countLine1Array = countLine1Array.filter(function (el) {
-    return el != '';
-  });
-  devLog(countLine1Array);
-
-  //find location of fel/mis
-  felMisLocation = countLine1Array.findIndex(isFelOrMisd);
-
-  //get section string(s) beginnging at index 5 - after title
-  let offenseSection = '';
-  for (j = 5; j < felMisLocation; j++) {
-    if (j === 5) {
-      offenseSection = countLine1Array[j];
-    } else {
-      offenseSection = offenseSection + ' ' + countLine1Array[j];
-    }
-  }
-  if (felMisLocation === 5) {
-    offenseSection = '-';
-  }
-
-  // get disposition string
-  disposition = '';
-  for (j = felMisLocation + 2; j < countLine1Array.length; j++) {
-    if (j === 8) {
-      disposition = countLine1Array[j];
-    } else {
-      disposition = disposition + ' ' + countLine1Array[j];
-    }
-  }
-
-  // get docketNum & docketSheetNum
-  const docketCounty = countLine1Array[2];
-  const docketNum = countLine1Array[1];
-  const docketSheetNum = `${docketNum} ${docketCounty}`;
-
-  var uid =
-    docketSheetNum +
-    countLine1Array[0] +
-    countLine1Array[1] +
-    beautifyDisposition(disposition);
-  uid = uid.split(' ').join('_');
-
-  offenseDisposition = beautifyDisposition(disposition);
-  dispositionDate = countLine1Array[felMisLocation + 1];
-
-  //Create count object with all count line 1 items
-  countObject = {
-    guid: guid(),
-    uid: uid,
-    countNum: countLine1Array[0],
-    docketNum: docketNum,
-    docketCounty: docketCounty,
-    county: countyNameFromCountyCode(countLine1Array[2]),
-    titleNum: countLine1Array[4],
-    sectionNum: offenseSection,
-    offenseClass: countLine1Array[felMisLocation],
-    dispositionDate: formatDate(dispositionDate),
-    offenseDisposition: offenseDisposition,
-    filingType: 'X',
-    docketSheetNum: docketSheetNum,
-    outstandingPayment: isVCOLSurchageDue(rawData),
-    isDismissed: isDismissed(offenseDisposition),
-  };
-
-  //Get Alleged offense date:
-  try {
-    offenseDateArray = rawData.match(
-      /Alleged\s+offense\s+date:\s+(\d\d\/\d\d\/\d\d)/gi
-    );
-    offenseDateString = offenseDateArray[countNum];
-    offenseDateLocation = offenseDateString.length;
-    offenseDateLocationEnd = offenseDateLocation - 8;
-    allegedOffenseDate = offenseDateString.substring(
-      offenseDateLocation,
-      offenseDateLocationEnd
-    );
-    countObject['allegedOffenseDate'] = formatDate(allegedOffenseDate.trim());
-  } catch (err) {
-    countObject['allegedOffenseDate'] = '';
-    devLog('Error:' + err);
-  }
-
-  //Get Arrest/citation date:
-  try {
-    arrestDateArray = rawData.match(
-      /Arrest\/Citation\s+date:\s+(\d\d\/\d\d\/\d\d)/gi
-    );
-    arrestDateString = arrestDateArray[countNum];
-    arrestDateLocation = arrestDateString.length;
-    arrestDateLocationEnd = arrestDateLocation - 8;
-    arrestCitationDate = arrestDateString.substring(
-      arrestDateLocation,
-      arrestDateLocationEnd
-    );
-    countObject['arrestCitationDate'] = formatDate(arrestCitationDate.trim());
-  } catch (err) {
-    countObject['arrestCitationDate'] = '';
-    devLog('Error:' + err);
-  }
-}
-
-/**
  * Replaces console.log() statements with a wrapper that prevents the extension from logging
  * to the console unless it was installed by a developer. This will keep the console clean; a
  * practice recommended for chrome extensions.
@@ -666,33 +460,6 @@ function isFelOrMisd(element) {
   return false;
 }
 
-/**
- * Helper method to determine whether there is a surcharge due for a VCOL docket
- * - if a surchage is entered in the record there is at least one def-pay section
- * - if the surchage was due and has been paid, there is a finpay section.
- * - if there is a defpay record and no fin pay record, then a surchage is due.
- * - if there is no defpay and no finpay, then no surchage is due.
- *
- * @param {string} rawData The entire chunk of raw docket text
- * @returns boolean
- */
-function isVCOLSurchageDue(rawData) {
-  function surchargeCreated() {
-    return (
-      rawData.includes('defpay') ||
-      rawData.includes('surcharge assessed') ||
-      rawData.includes('Referred to collection agency') ||
-      rawData.includes('referred to collection agency')
-    );
-  }
-  function finalPayment() {
-    return rawData.includes('finpay') || rawData.includes('paid in full');
-  }
-
-  var isSurchageDue = surchargeCreated() && !finalPayment();
-  return isSurchageDue;
-}
-
 function nthIndex(str, subStr, n) {
   var L = str.length,
     i = -1;
@@ -713,7 +480,7 @@ function beautifyDisposition(text) {
     case '':
       return 'Pending';
 
-    // common truncation on VCOL
+    // was a common truncation on VCOL
     case 'Plea guilty by wai':
       return 'Plea guilty by waiver';
 

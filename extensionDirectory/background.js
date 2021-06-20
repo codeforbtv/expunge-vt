@@ -18,10 +18,6 @@ chrome.runtime.onInstalled.addListener(function () {
             pageUrl: { hostContains: 'codeforbtv.org' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
-            // VT Courts Online (VCOL)
-            pageUrl: { hostContains: 'secure.vermont.gov' },
-          }),
-          new chrome.declarativeContent.PageStateMatcher({
             // Odyssey site
             pageUrl: { hostContains: 'publicportal.courts.vt.gov' },
           }),
@@ -33,7 +29,7 @@ chrome.runtime.onInstalled.addListener(function () {
             pageUrl: { urlContains: 'chrome-extension://' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
-            // Activate extention on new tabs (helpful for navigating to VCOL and Odyssey)
+            // Activate extention on new tabs (helpful for navigating to Odyssey)
             pageUrl: { urlContains: 'chrome://newtab/' },
           }),
         ],
