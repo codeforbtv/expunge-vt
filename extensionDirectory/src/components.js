@@ -141,6 +141,7 @@ Vue.component('pills-row', {
             </div>
           `,
   props: ['count', 'dob'],
+  name: 'pills-row',
   methods: {
     decimalAgeInYears: function (value) {
       if (!value) return '';

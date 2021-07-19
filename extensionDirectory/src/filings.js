@@ -1,10 +1,10 @@
 import $ from "jquery";
-import "fontawesome";
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.css';
+// import "fontawesome";
+// import * as bootstrap from 'bootstrap';
+// import 'bootstrap/dist/css/bootstrap.css';
 import Vue from 'vue';
-import 'smooth-scroll';
-import 'gumshoejs';
+import SmoothScroll from 'smooth-scroll';
+import Gumshoe from 'gumshoejs';
 import moment from 'moment';
 
 
@@ -290,6 +290,7 @@ var app = new Vue({
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
       const localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
+      // debugger;
       if (
         localResult !== undefined &&
         localResult !== '' &&
@@ -902,7 +903,7 @@ var app = new Vue({
     numCountsStipulated: function () {
       let stipCount = 0;
       this.saved.counts.forEach((element) => {
-        if (element.filingType.includes('Stip')) {
+        if (element.filingType != null && element.filingType.includes('Stip')) {
           stipCount++;
         }
       });
@@ -984,7 +985,7 @@ var app = new Vue({
       });
     },
     todayDate: function () {
-      date = moment().format('MMMM D[, ]YYYY');
+      const date = moment().format('MMMM D[, ]YYYY');
       return date;
     },
   },

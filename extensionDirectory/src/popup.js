@@ -38,12 +38,14 @@ function initListeners() {
       }
     }
 
+    debugger;
     chrome.storage.local.get('counts', function (result) {
       const combinedData = appendDataWithConfirmation(parsedData, result.counts);
       chrome.storage.local.set({
         counts: combinedData,
       });
     });
+    debugger;
   });
 
   //prevents the select in the petition cards from opening the accordion.
@@ -195,6 +197,7 @@ function getOdysseyPetitionerInfo(docketData) {
     let currentDocket = new PetitionerInfo();
 
     // parse address
+    debugger;
     let addressArray = partyInfo
       .find("[ng-if='::party.Addresses.length']")
       .find('.ng-binding')
@@ -469,7 +472,7 @@ function getVTCOPetitionerInfo(data) {
   try {
     //match all between address and next hearing
     const addressString = rawData.match(/(?<=Address:)\s+.*(?=Next Hearing:)/gms);
-    let addressArray = addressString[0].split('\n');
+    var addressArray = addressString[0].split('\n');
     addressArray.pop();
     //trims off disposed text and excess spaces
     addressArray[1] = addressArray[1].match(/([ \t]{6,})(.*)/gms).toString();
@@ -478,6 +481,7 @@ function getVTCOPetitionerInfo(data) {
     addressArray[0] = 'No Address found';
   }
 
+  debugger;
   for (let i = 0; i < addressArray.length; i++) {
     addressArray[i] = addressArray[i].trim();
   }
