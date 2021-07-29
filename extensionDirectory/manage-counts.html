@@ -171,11 +171,11 @@
           <div>
             <label>
                 <p
-                  v-if="!checkDocketMatch(group.docketSheetNum, group.docketNum, group.county) && (group.docketNum && group.county)"
+                  v-if="!checkDocketMatch(group.docketSheetNum, group.docketNum, group.county) && (group.docketNum || group.county)"
                   class="alert alert-warning"
                 >
-                  WARNING - Unexpected format: the petition page may not render correctly.<br/> 
-                  Expected to see the docket number followed by the county code: <span>"{{group.docketNum}} {{group.county | toCountyCode}}"</span>
+                  <b>WARNING - Unexpected format: the petition page may not render correctly.</b><br>
+                  Expecting "docket <i>sheet</i> number" below to match docket number above followed by the county code: <b><span>{{group.docketNum}} <span v-if="group.county">{{group.county | toCountyCode}}</span><span v-else>[No County Entered]</span></span></b>
                 </p>
               <span>Original Docket Sheet Number</span>
               <input
