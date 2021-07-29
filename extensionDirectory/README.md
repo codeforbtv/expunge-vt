@@ -71,3 +71,44 @@ The remaining files have various purposes:
 - **Vue.js**: used as templating engine only - do not confuse this project with a typical vue app! We're just using vue to make the rendering a little cleaner.
 - **Gumshoe & Smooth Scroll**: Just a couple packages to help with the navigation links on the Manage Counts page.
 - **Bootstrap**: BS4 as a quick way to make things a little more pretty.
+
+# Deploying this Chrome Extension
+
+## Publishing to the Chrome Store
+[The docs explain this](https://developer.chrome.com/docs/webstore/publish/). After you've done this once though, this all you'll need to do the next time.
+
+**Log in**
+
+1. Go to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+2. Switch to the group publisher account (see below)
+3. Click through to the ExpungeVT item
+
+**Version bump**
+
+1. Note the current version published in the developer dashboard
+2. Pick the next appropriate [semantic version](https://semver.org/) (major.minor.bug)
+3. Commit
+
+**Pem key**
+
+**Create your item's zip file** 
+```
+$ cd expunge-vt/
+$ cd extensionDirectory
+$ zip -r ../text-only-7-19-2021.zip *
+```
+
+**Upload the zip file**
+
+In the Developer Dashboard, click the 'Package' nav link on the left and pick out your zip file.
+
+
+
+## The 'ExpungeVT' publisher account
+This extension is deployed under a '[group publisher](https://developer.chrome.com/docs/webstore/group-publishers/)' account which provides a group account where we can grant new developers permission to publish changes to the chrome store. 
+
+### How to add someone to the publisher account
+_TODO_ - I forget how to do this. Next time we go through [the instructions](https://developer.chrome.com/docs/webstore/group-publishers/), let's document it here.
+
+### Switching to the publisher acct
+Simple, but hard to find: check the [top-right corner for a dropdown](https://developer.chrome.com/docs/webstore/group-publishers/) and switch from your user name to  `expungevt`. If it's not there, then you'll need to be added to the group.
