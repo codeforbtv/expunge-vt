@@ -8,13 +8,14 @@ docketData = {
   domain: window.location.hostname,
   url: window.location.href,
   rawDocket: null,
+  savedDocket: false,
 };
 
 // parse data from the current site
 switch (docketData.domain) {
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
-  case 'publicportal.courts.vt.gov': 
-  
+  case 'publicportal.courts.vt.gov':
+
   // demo site used to test extension (see readme or codeforbtv.github.io/expunge-vt/)
   case 'htmlpreview.github.io': {
     docketData.rawDocket = document.getElementById('roa-content').innerHTML;
@@ -24,8 +25,13 @@ switch (docketData.domain) {
 
 // If an expected site was not found, maybe it is being run on a local file?
 if (docketData.url.startsWith('file')) {
-  docketData.domain = 'localhost';
+  let title = document.title;
   docketData.rawDocket = document.getElementById('roa-content').innerHTML;
+  if (title === 'ExpungeVT Case Record') {
+    docketData.domain = 'expungeVtRecord'
+  } else {
+    docketData.domain = 'localhost'
+  }
 }
 
 // Send message or alert user
@@ -40,3 +46,14 @@ if (docketData.rawDocket !== null) {
    */
   alert("Uh oh. ExpungeVT doesn't support this site.");
 }
+
+// docketData.domain = 'localhost';
+// alert('Hello');
+// if (1 == 2) {
+//   docketData.rawDocket = document.getElementById('roa-content').innerHTML;
+// } else {
+//   let decryptedSavedFIle = JSON.parse(
+//     Base64.decode(document.getElementById('roa-content').innerHTML)
+//   );
+//   this.saved = decryptedSavedFIle;
+// }

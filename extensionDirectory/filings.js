@@ -811,6 +811,10 @@ var app = new Vue({
       // see: https://stackoverflow.com/a/42989406/263900
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
+    loadCaseFile: function () {
+      // alert("So do we run payload here?")
+      chrome.tabs.executeScript(null, { file: 'payload.js' });
+    },
     confirmClearData: function () {
       if (
         confirm('Are you sure you want to clear all data for this petitioner?')
@@ -836,8 +840,8 @@ var app = new Vue({
     printDocument: function () {
       window.print();
     },
-    exportContent: function () {
-      downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
+    saveHtml: function () {
+      saveAllCountsToHtml(JSON.stringify(this.saved));
     },
     returnCountyContact: function (cty) {
       allCounties = this.countiesContact;
