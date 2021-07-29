@@ -10,21 +10,14 @@ docketData = {
   rawDocket: null,
 };
 
-// select data from the current site
+// parse data from the current site
 switch (docketData.domain) {
-  // old Vermont Courts Online site
-  case 'secure.vermont.gov': {
-    docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
-    break;
-  }
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
-  case 'publicportal.courts.vt.gov': {
-    docketData.rawDocket = document.getElementById('roa-content').innerHTML;
-    break;
-  }
+  case 'publicportal.courts.vt.gov': 
+  
   // demo site used to test extension (see readme or codeforbtv.github.io/expunge-vt/)
   case 'htmlpreview.github.io': {
-    docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
+    docketData.rawDocket = document.getElementById('roa-content').innerHTML;
     break;
   }
 }
@@ -32,7 +25,7 @@ switch (docketData.domain) {
 // If an expected site was not found, maybe it is being run on a local file?
 if (docketData.url.startsWith('file')) {
   docketData.domain = 'localhost';
-  docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
+  docketData.rawDocket = document.getElementById('roa-content').innerHTML;
 }
 
 // Send message or alert user
