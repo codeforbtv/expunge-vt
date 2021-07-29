@@ -10,16 +10,14 @@ docketData = {
   rawDocket: null,
 };
 
-// select data from the current site
+// parse data from the current site
 switch (docketData.domain) {
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
-  case 'publicportal.courts.vt.gov': {
-    docketData.rawDocket = document.getElementById('roa-content').innerHTML;
-    break;
-  }
+  case 'publicportal.courts.vt.gov': 
+  
   // demo site used to test extension (see readme or codeforbtv.github.io/expunge-vt/)
   case 'htmlpreview.github.io': {
-    docketData.rawDocket = document.getElementsByTagName('pre')[0].innerHTML;
+    docketData.rawDocket = document.getElementById('roa-content').innerHTML;
     break;
   }
 }
