@@ -25,7 +25,7 @@ function devLog(data) {
   // see https://developer.chrome.com/extensions/management#method-getSelf
   chrome.management.getSelf(function (self) {
     if (self.installType == 'development') {
-      console.log(data);
+      // console.log(data);
     }
   });
 }
@@ -848,6 +848,20 @@ var app = new Vue({
       if (preparerRole == 'AttyAppear') {
         return false;
       } else {
+        return true;
+      }
+    },
+    checkDocketMatch: function (longDocket, shortDocket, county) {
+      if (!longDocket) return false;
+      let concatDocket = shortDocket + ' ' + countyCodeFromCounty(county);
+
+      if (concatDocket !== longDocket) {
+        console.log('FALSE');
+
+        return false;
+      } else {
+        console.log('TRUE');
+
         return true;
       }
     },

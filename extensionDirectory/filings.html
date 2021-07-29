@@ -144,7 +144,6 @@
 
       <!-- If there are filings to dispalay... -->
       <template v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
-
         <!-- Page header & page actions -->
         <div v-if="petitioner.name" class="header-bar-wrapper no-print">
           <div class="header-bar">
@@ -153,7 +152,7 @@
               <div v-if="numDockets > 1">
                 <span>Consolidate by county: </span>
                 <label>
-                  <input type="checkbox" v-model="groupNoas"/>
+                  <input type="checkbox" v-model="groupNoas" />
                   NoA
                 </label>
                 <label>
@@ -206,7 +205,6 @@
 
                 <!-- Begin Cover Sheet -->
                 <section class="extra-documents-top" id="extra-documents">
-                  
                   <!-- Client Cover Letter -->
                   <article class="page" id="clinic-checkout">
                     <div class="document-meta-data no-print">
@@ -469,10 +467,8 @@
                       </div>
                     </div>
                   </article>
-
                 </section>
                 <!-- End Cover Sheet -->
-
               </td>
             </tr>
           </tbody>
@@ -490,7 +486,6 @@
             <tr>
               <td>
                 <section v-for="group in filings" v-bind:id="group.county">
-
                   <!-- Generic petition heading info -->
                   <article
                     class="page"
@@ -901,8 +896,9 @@
 
                         <p>
                           3. Petitioner was not later convicted of a listed
-                          crime, pursuant to 13 V.S.A. &sect; 5301(7), within the last 10 years, nor is
-                          petitioner currently being charged of such an offense.
+                          crime, pursuant to 13 V.S.A. &sect; 5301(7), within
+                          the last 10 years, nor is petitioner currently being
+                          charged of such an offense.
                         </p>
                         <p>
                           4. Petitioner believes the court will find that they
@@ -990,8 +986,8 @@
                           4. All restitution ordered here has been paid in full.
                         </p>
                         <p>
-                          5. Sealing this record serves the interests of justice,
-                          as
+                          5. Sealing this record serves the interests of
+                          justice, as
                         </p>
                       </div>
                       <!-- End Unique Portion of Filings -->
@@ -1013,70 +1009,105 @@
                       <!-- Begin generic footer -->
                       <template v-if="filing.type != 'NoA'">
                         <div class="filing-closing">
-                            <p class="filing-closing__salutation">
-                                Respectfully requested,
-                            </p>
-                            <div class="filing-closing__signature-area">
-                                <div class="filing-closing__signature-box">
+                          <p class="filing-closing__salutation">
+                            Respectfully requested,
+                          </p>
+                          <div class="filing-closing__signature-area">
+                            <div class="filing-closing__signature-box">
+                              <template v-if="proSeFromRole(settings.role)">
+                                <p class="filing-closing__name">
+                                  {{petitioner.name}}, Petitioner
+                                </p>
+                                <p
+                                  class="filing-closing__petitioner-address"
+                                  v-html="petitioner.address"
+                                ></p>
+                              </template>
+                              <template v-else>
+                                <p class="filing-closing__name">
+                                  <span>{{settings['attorney']}}</span>
+                                </p>
 
-                                    <template v-if="proSeFromRole(settings.role)">
-
-                                        <p class="filing-closing__name">{{petitioner.name}}, Petitioner</p>
-                                        <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
-
-                                    </template>
-                                    <template v-else>
-                                        <p class="filing-closing__name">
-                                            <span>{{settings['attorney']}}</span>
-                                        </p>
-
-                                        <p class= "filing-closing__petitioner-address" v-html="nl2br(settings['attorneyAddress'])"></p>
-                                    </template>
-
-                                </div>
-                                <div class="filing-closing__date-box">
-                                    <p>Date</p>
-                                </div>
+                                <p
+                                  class="filing-closing__petitioner-address"
+                                  v-html="nl2br(settings['attorneyAddress'])"
+                                ></p>
+                              </template>
                             </div>
+                            <div class="filing-closing__date-box">
+                              <p>Date</p>
+                            </div>
+                          </div>
 
-                            <filing-footer v-bind:type="filing.type" v-bind:stipulated="filing.isStipulated"></filing-footer>
+                          <filing-footer
+                            v-bind:type="filing.type"
+                            v-bind:stipulated="filing.isStipulated"
+                          ></filing-footer>
                         </div>
-                    </template>
-                    <template v-if="filing.type == 'NoA'">
+                      </template>
+                      <template v-if="filing.type == 'NoA'">
                         <div class="filing-closing">
-                            <filing-dated-city v-if="!proSeFromRole(settings.role)"></filing-dated-city>
-                            <div class="filing-closing__signature-area filing-closing--align-right">
-                                <div class="filing-closing__signature-box">
-                                    <template v-if="proSeFromRole(settings.role)">
-                                        <p class="filing-closing__name">{{petitioner.name}}, Petitioner
-                                        </p>
-                                        <div class="filing-closing__contact-box">
-                                            <p class="filing-closing__contact-box-title bold">
-                                                Petitioner's Address &amp; Phone Number:</p>
-                                            <p class="filing-closing__petitioner-address" v-html="petitioner.address"></p>
-                                            <p class="filing-closing__phone">Phone: <span class="no-visible">{{responses['phone']}}</span>
-                                                <input class="no-print" v-model="responses['phone']" placeholder="Petitioner Phone Number">
-                                            </p>
-                                        </div>
-                                    </template>
-                                    <template v-else>
-                                        <p class="filing-closing__name">
-                                            <span>{{settings['attorney']}}</span>
-                                        </p>
-                                        <div class="filing-closing__contact-box">
-                                            <p class="filing-closing__contact-box-title bold">
-                                                Attorney's Address &amp; Phone Number:</p>
-                                            <p class=  "filing-closing__petitioner-address" v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"></p>
-                                        </div>
-                                    </template>
+                          <filing-dated-city
+                            v-if="!proSeFromRole(settings.role)"
+                          ></filing-dated-city>
+                          <div
+                            class="filing-closing__signature-area filing-closing--align-right"
+                          >
+                            <div class="filing-closing__signature-box">
+                              <template v-if="proSeFromRole(settings.role)">
+                                <p class="filing-closing__name">
+                                  {{petitioner.name}}, Petitioner
+                                </p>
+                                <div class="filing-closing__contact-box">
+                                  <p
+                                    class="filing-closing__contact-box-title bold"
+                                  >
+                                    Petitioner's Address &amp; Phone Number:
+                                  </p>
+                                  <p
+                                    class="filing-closing__petitioner-address"
+                                    v-html="petitioner.address"
+                                  ></p>
+                                  <p class="filing-closing__phone">
+                                    Phone:
+                                    <span class="no-visible"
+                                      >{{responses['phone']}}</span
+                                    >
+                                    <input
+                                      class="no-print"
+                                      v-model="responses['phone']"
+                                      placeholder="Petitioner Phone Number"
+                                    />
+                                  </p>
                                 </div>
-                                <div v-if="proSeFromRole(settings.role)" class="filing-closing__date-area-prose">
-                                  Date
+                              </template>
+                              <template v-else>
+                                <p class="filing-closing__name">
+                                  <span>{{settings['attorney']}}</span>
+                                </p>
+                                <div class="filing-closing__contact-box">
+                                  <p
+                                    class="filing-closing__contact-box-title bold"
+                                  >
+                                    Attorney's Address &amp; Phone Number:
+                                  </p>
+                                  <p
+                                    class="filing-closing__petitioner-address"
+                                    v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"
+                                  ></p>
                                 </div>
+                              </template>
                             </div>
-                    </template>
-                    <!-- End generic footer -->
-
+                            <div
+                              v-if="proSeFromRole(settings.role)"
+                              class="filing-closing__date-area-prose"
+                            >
+                              Date
+                            </div>
+                          </div>
+                        </div>
+                      </template>
+                      <!-- End generic footer -->
                     </div>
                   </article>
 
@@ -1121,11 +1152,21 @@
               and open the Expunge VT extension to begin a new session.</span
             >
           </p>
+          <p class="alert alert-warning">
+            You may want to visit the add/edit counts section to add counts or
+            check for errors.
+            <button
+              v-on:click="addAndOpenManagePage"
+              class="edit-counts btn btn-primary"
+            >
+              Add/Edit <i class="fas fa-edit"></i>
+            </button>
+          </p>
         </div>
       </template>
     </div>
     <!-- End Vue App -->
-    
+
     <script id="script" src="components.js"></script>
     <script id="script" src="filings.js"></script>
     <script id="script" src="csv.js"></script>
