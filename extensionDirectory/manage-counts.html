@@ -170,6 +170,13 @@
 
           <div>
             <label>
+                <p
+                  v-if="!checkDocketMatch(group.docketSheetNum, group.docketNum, group.county)"
+                  class="alert alert-danger"
+                >
+                  WARNING: Docket sheet number must match docket number above or
+                  an error will result. <span v-if="group.county">The following county code must be written below with a single space next to the docket number: {{group.county | toCountyCode}}.</span> <span v-else>County must be selected above.</span>
+                </p>
               <span>Original Docket Sheet Number</span>
               <input
                 class="form-control"

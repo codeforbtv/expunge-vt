@@ -25,6 +25,11 @@ a.btn {
   padding: 4rem;
 }
 
+.no-filings .alert {
+  max-width: 50%;
+  margin: auto;
+}
+
 .disclaimer {
   display: flex;
   flex-direction: column;
