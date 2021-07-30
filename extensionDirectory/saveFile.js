@@ -1,10 +1,11 @@
 function saveAllCountsToHtml(savedData) {
+  console.log(savedData)
   if (savedData == null || !savedData.length) {
     alert('No case data available to save.');
     return null;
   }
   let allData = JSON.parse(savedData)
-  let defName = allData.defName.split(" ")
+  let defName = allData.saved.defName.split(" ")
   let defInitials = ""
   defName.forEach((n) => {
     defInitials += n[0]

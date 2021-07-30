@@ -28,6 +28,14 @@ function initListeners() {
         parsedData = JSON.parse(
           Base64.decode(rawDocketData.rawDocket)
         );
+
+        chrome.storage.local.get('counts', function (result) {
+          // combinedData = appendDataWithConfirmation(parsedData, result.counts);
+          chrome.storage.local.set({
+            parsedData,
+          });
+        });
+        break;
    
       }
       default: {
