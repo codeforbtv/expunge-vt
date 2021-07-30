@@ -3,11 +3,17 @@ function saveAllCountsToHtml(savedData) {
     alert('No case data available to save.');
     return null;
   }
+  let allData = JSON.parse(savedData)
+  let defName = allData.defName.split(" ")
+  let defInitials = ""
+  defName.forEach((n) => {
+    defInitials += n[0]
+  })
 
+  let now = moment().format('YYYY-MM-DD');
   let encryptedSavedData = Base64.encode(savedData);
-  console.log(JSON.parse(Base64.decode(encryptedSavedData)));
-
-  let fileName = 'expungeVT';
+  let fileName = now + '-' + defInitials;
+  console.log(fileName)
   let htmlString = `
   <html>
     <head>
@@ -15,26 +21,72 @@ function saveAllCountsToHtml(savedData) {
     </head>
     <body>
       <div class="container">
-        <h1>ExpungeVT - Saved Record</h1>
+        <img src="https://avatars.githubusercontent.com/u/3893216?s=200&v=4"/>
+        <h1><u>ExpungeVT Case File:</u> <span class="file-name">${fileName}</span></h1>
+        <div class="instruct-box">
+          <h2>Follow these steps to load your case file:</h2>
+          <ol>
+          <li>If you have a case loaded that you want to save, click the ExpungeVT extension and go to the petitions page where you can save your current case.</li>
+          <li>Click the extension icon, and then click "Clear All"</li>
+          <li>Finally, click the extension icon again, and while viewing this page, click "Load Case File"</li>
+          </ol>
+          <div class="i-wrapper">
+              <i class="far fa-save"></i>
+          </div>
+        </div>
         <p id="roa-content" class="case-data">${encryptedSavedData}</p>
       </div>
     </body>
 
     <style>
       .container {
-        max-width: 1080px;
+        max-width: 900px;
         padding: 25px 10px 25px 10px;
         margin: auto;
         word-wrap: break-word;
+        border-bottom: solid 2px #004085;
+      }
+
+      .i-wrapper {
+        width: 100%;
+        text-align: center;
+      }
+
+      i {
+        font-size: 100px;
+        margin: auto;
       }
 
       .case-data {
         display: none;
       }
+
+      .file-name {
+        padding: 10px;
+        color: #004085;
+        background-color: #cce5ff;
+      }
+
+      .instruct-box {
+        max-width: 500px;
+        padding: 10px;
+        color: #004085;
+        margin: auto;
+        background-color: #cce5ff;
+      }
+
+      li {
+        font-size: 16px;
+      }
+
+      img {
+        width: 100px;
+      }
     </style>
 
     <script id="script">
     </script>
+    <script src="https://kit.fontawesome.com/ac322eed98.js" crossorigin="anonymous"></script>
   </html>`;
 
   var blob = new Blob([htmlString], { type: 'text/html' });

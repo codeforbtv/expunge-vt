@@ -20,7 +20,11 @@ function initListeners() {
         break;
       }
       case 'expungeVtRecord': {
-        alert("Hello")
+       
+        chrome.storage.local.remove(['counts', 'responses'], function () {
+          document.location.reload();
+        });
+        
         parsedData = JSON.parse(
           Base64.decode(rawDocketData.rawDocket)
         );
