@@ -842,18 +842,9 @@ var app = new Vue({
     },
     saveHtml: function () {
       let dataPojo = {
-        settings: this.settings,
         saved: this.saved,
-        groupCounts: this.groupCounts,
-        groupNoas: this.groupNoas,
         responses: this.responses,
-        countiesContact: this.countiesContact,
-        popupHeadline: this.popupHeadline,
-        roleCoverLetterText: this.roleCoverLetterText,
-        coverLetterContent: this.coverLetterContent,
-        stipDef: this.stipDef,
       };
-      debugger;
       saveAllCountsToHtml(JSON.stringify(dataPojo));
     },
     returnCountyContact: function (cty) {

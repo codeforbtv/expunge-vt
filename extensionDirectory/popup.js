@@ -11,44 +11,49 @@ function initListeners() {
       // ODYSSEY
       case 'publicportal.courts.vt.gov': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
+        setParsedCounts()
         break;
       }
       // DEMO & DEV: TODO - currently we only have demo samples for VCOL dockets
       case 'htmlpreview.github.io':
       case 'localhost': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
+        setParsedCounts()
         break;
       }
       case 'expungeVtRecord': {
-       
         chrome.storage.local.remove(['counts', 'responses'], function () {
           document.location.reload();
         });
-        
-        parsedData = JSON.parse(
-          Base64.decode(rawDocketData.rawDocket)
-        );
 
+        parsedData = JSON.parse(Base64.decode(rawDocketData.rawDocket));
         chrome.storage.local.get('counts', function (result) {
-          // combinedData = appendDataWithConfirmation(parsedData, result.counts);
           chrome.storage.local.set({
-            parsedData,
+            counts: parsedData.saved,
           });
         });
+
+        chrome.storage.local.get('responses', function (result) {
+          chrome.storage.local.set({
+            responses: parsedData.responses,
+          });
+        });
+
         break;
-   
       }
       default: {
         // TODO: handle default case
       }
     }
 
-    chrome.storage.local.get('counts', function (result) {
-      combinedData = appendDataWithConfirmation(parsedData, result.counts);
-      chrome.storage.local.set({
-        counts: combinedData,
+    function setParsedCounts() {
+      chrome.storage.local.get('counts', function (result) {
+        combinedData = appendDataWithConfirmation(parsedData, result.counts);
+        chrome.storage.local.set({
+          counts: combinedData,
+        });
       });
-    });
+    }
   });
 
   //prevents the select in the petition cards from opening the accordion.
@@ -550,7 +555,6 @@ function guid() {
     s4()
   );
 }
-
 
 var Base64 = {
   _keyStr:

@@ -1,5 +1,5 @@
 function saveAllCountsToHtml(savedData) {
-  console.log(savedData)
+  
   if (savedData == null || !savedData.length) {
     alert('No case data available to save.');
     return null;
