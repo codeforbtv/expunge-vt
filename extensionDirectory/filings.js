@@ -172,6 +172,9 @@ var app = new Vue({
       customNote: '',
       role: 'AttyConsult',
       forVla: true,
+      feeWaiver: false,
+      groupCounts: false,
+      groupNoas: false
     },
     saved: {
       defName: '',
@@ -179,9 +182,9 @@ var app = new Vue({
       defDOB: '',
       counts: [],
     },
-    groupCounts: false,
-    groupNoas: false,
     responses: {},
+    fees: {},
+    fines: {},
     countiesContact: {},
     popupHeadline: '',
     roleCoverLetterText: {},
@@ -194,7 +197,7 @@ var app = new Vue({
     groupCounts: {
       handler(value) {
         if (value) {
-          this.groupNoas = true;
+          this.settings.groupNoas = true;
         }
       },
     },
@@ -203,7 +206,7 @@ var app = new Vue({
     groupNoas: {
       handler(value) {
         if (!value) {
-          this.groupCounts = false;
+          this.settings.groupCounts = false;
         }
       },
     },
@@ -407,9 +410,10 @@ var app = new Vue({
           }
         }
         // insert NOAs into filings
-        const filingsWithNOAs = this.groupNoas
+        const filingsWithNOAs = this.settings.groupNoas
           ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
           : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
+        console.log(filingsWithNOAs)
 
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
@@ -417,6 +421,7 @@ var app = new Vue({
           filings: filingsWithNOAs,
         });
       }
+      console.log(groupedFilings)
       return groupedFilings;
     },
 
@@ -465,6 +470,11 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(currCounty, counts);
           filingsWithNOAs.push(noa);
+
+          if (this.settings.feeWaiver) {
+            const feeFiling = this.createFeeFiling(currCounty, counts);
+            filingsWithNOAs.push(feeFiling);
+          }
           lastCounty = currCounty;
         }
 
@@ -508,6 +518,10 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(thisFiling.county, docketCounts);
           filingsWithNOAs.push(noa);
+          if (this.settings.feeWaiver) {
+            const feeFiling = this.createFeeFiling(thisFiling.county, docketCounts);
+            filingsWithNOAs.push(feeFiling);
+          }
           lastDocketNum = currDocketNum;
         }
 
@@ -529,6 +543,9 @@ var app = new Vue({
      */
     createNOAFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'NoA', county);
+    },
+    createFeeFiling: function (county, counts) {
+      return this.makeFilingObject(counts, 'feeWaiver', county);
     },
     groupIneligibleCounts: function (counts) {
       var ineligibleCounts = counts.filter((count) => count.filingType == 'X');
@@ -624,6 +641,8 @@ var app = new Vue({
       switch (filingType) {
         case 'NoA':
           return 'Notice of Appearance';
+        case 'feeWaiver':
+          return 'Motion to Waive Legal Financial Obligations';
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -704,6 +723,8 @@ var app = new Vue({
         docketNums: docketNums,
         docketSheetNums: docketSheetNums,
         counts: countsOnThisFiling,
+        fee: this.fees[filingId],
+        fine: this.fines[filingId]
       };
     },
     newCount: function (event) {
@@ -886,7 +907,7 @@ var app = new Vue({
     /* "Filings" include the Notice of Appearance (NoA) forms */
     filings: function () {
       var shouldGroupCounts =
-        this.groupCounts !== undefined ? this.groupCounts : true;
+        this.settings.groupCounts !== undefined ? this.settings.groupCounts : true;
       return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
@@ -964,10 +985,10 @@ var app = new Vue({
       var date = new Date();
       return this.slugify(
         'filings for ' +
-          app.petitioner.name +
-          ' ' +
-          date.toDateString() +
-          '.csv'
+        app.petitioner.name +
+        ' ' +
+        date.toDateString() +
+        '.csv'
       );
     },
     csvData: function () {
