@@ -28,9 +28,17 @@ if (docketData.url.startsWith('file')) {
   let title = document.title;
   docketData.rawDocket = document.getElementById('roa-content').innerHTML;
   if (title === 'ExpungeVT Case Record') {
-    docketData.domain = 'expungeVtRecord'
+    docketData.domain = 'expungeVtRecord';
   } else {
-    docketData.domain = 'localhost'
+    var answer = window.confirm(
+      'This does not look like a case file. Are you sure you want to proceed?'
+    );
+    console.log(answer)
+    if (answer) {
+      docketData.domain = 'localhost';
+    } else {
+      docketData.rawDocket = null;
+    }
   }
 }
 

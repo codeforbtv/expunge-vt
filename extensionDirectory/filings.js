@@ -178,6 +178,7 @@ var app = new Vue({
       defAddress: [''],
       defDOB: '',
       counts: [],
+      defEmail: '',
     },
     groupCounts: false,
     groupNoas: false,
@@ -880,6 +881,7 @@ var app = new Vue({
         name: this.saved.defName,
         dob: this.saved.defDOB,
         address: this.nl2br(this.saved.defAddress),
+        email: this.saved.defEmail,
       };
     },
 
