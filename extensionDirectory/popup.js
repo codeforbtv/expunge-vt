@@ -228,7 +228,7 @@ function getOdysseyPetitionerInfo(docketData) {
 
     // get name from page and reformat it if necessary
     // Note: it would be more durable to parse the fname, lname and any titles (Jr, III, etc) - possible refactor.
-    const rawName = partyInfo.find('td:first-of-type').html().trim();
+    const rawName = $('.ng-binding.roa-text-bold', partyInfo).html().trim()
     currentDocket.defName = formatPetitionersName(rawName);
 
     currentDocket.defDOB = partyInfo
