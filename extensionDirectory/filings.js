@@ -414,7 +414,6 @@ var app = new Vue({
         const filingsWithNOAs = this.settings.groupNoas
           ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
           : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
-        console.log(filingsWithNOAs)
 
         //add all filings for this county to the returned filing object.
         groupedFilings.push({
@@ -422,7 +421,6 @@ var app = new Vue({
           filings: filingsWithNOAs,
         });
       }
-      console.log(groupedFilings)
       return groupedFilings;
     },
 
@@ -474,7 +472,10 @@ var app = new Vue({
 
           if (this.settings.feeWaiver) {
             const feeFiling = this.createFeeFiling(currCounty, counts);
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(currCounty, counts);
             filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+
           }
           lastCounty = currCounty;
         }
@@ -521,7 +522,9 @@ var app = new Vue({
           filingsWithNOAs.push(noa);
           if (this.settings.feeWaiver) {
             const feeFiling = this.createFeeFiling(thisFiling.county, docketCounts);
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(thisFiling.county, docketCounts);
             filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
           }
           lastDocketNum = currDocketNum;
         }
@@ -547,6 +550,9 @@ var app = new Vue({
     },
     createFeeFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'feeWaiver', county);
+    },
+    createFeeFilingAffidavit: function (county, counts) {
+      return this.makeFilingObject(counts, 'feeWaiverAffidavit', county);
     },
     groupIneligibleCounts: function (counts) {
       var ineligibleCounts = counts.filter((count) => count.filingType == 'X');
@@ -644,6 +650,8 @@ var app = new Vue({
           return 'Notice of Appearance';
         case 'feeWaiver':
           return 'Motion to Waive Legal Financial Obligations';
+        case 'feeWaiverAffidavit':
+          return 'Petitioner\'s Affidavit re: Financial Obligations';
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -1060,7 +1068,14 @@ var app = new Vue({
      * @return int    The number of filings that are not NOAs
      */
     numWithoutNOAs: function (filings) {
+      //TODO Handle returning number of filings and fee waivers
       return filings.filter((f) => f.type != 'NoA').length;
+    },
+    feeFineTotal: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId=fileId.replace('Affidavit', '')
+      let total = (parseFloat(app.responses[fileId +'-fee']) + parseFloat(app.responses[fileId +'-fine'])).toFixed(2);
+      return total
     },
   },
 });

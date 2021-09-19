@@ -582,21 +582,21 @@
                               <span class="filing-body__response">
                                 <span
                                   class="no-visible"
-                                  v-html="responses[filing.id]"
+                                  v-html="responses[filing.id +'-fee']"
                                 ></span>
-                                <input
+                                <input type="number"
                                   class="no-print"
-                                  v-model="responses[filing.id]"
+                                  v-model="responses[filing.id +'-fee']"
                                   placeholder="Type here..."
                                 ></input>
                               </span> and assessed a $<span class="filing-body__response">
                                 <span
                                   class="no-visible"
-                                  v-html="responses[filing.id]"
+                                  v-html="responses[filing.id +'-fine']"
                                 ></span>
-                                <input
+                                <input type="number"
                                   class="no-print"
-                                  v-model="responses[filing.id]"
+                                  v-model="responses[filing.id +'-fine']"
                                   placeholder="Type here..."
                                 ></input>
                               </span> surcharge.</li>
@@ -604,6 +604,26 @@
                             <li>But for these legal financial obligations, petitioner is eligible for relief.</li>
                             <li>Petitioner is unable to pay these legal financial obligations. See attached affidavit.</li>
                             <li>Waiver of legal financial obligations would further the interests of justice.</li>
+                          </ol>
+                          </template>
+                          <template v-else>
+                            insert for non-pro-se
+                          </template>
+                        </p>
+                      </div>
+                      <div class="filing-body" v-if="filing.type == 'feeWaiverAffidavit'">
+                        <p class="indent">
+                          <template v-if="proSeFromRole(settings.role)">
+                            {{petitioner.name}}, being duly sworn, deposes and says under oath:
+                            <ol>
+                              <li>I am seeking expungement/sealing of my final Vermont criminal record.</li>
+                              <li>I have outstanding fines and/or surcharges, totaling {{ filing.id | feeFineTotal }}.</li>
+                              <li>I do not have the means to pay these legal financial debts.</li>
+                              <li>[fill in: more detail about income and bills]</li>
+                              <li>[fill in: more detail about income and bills]</li>
+                              <li>[optional: more detail about income and bills]</li>
+                              <li>This debt is the sole remaining barrier to the expungement/sealing of my record.</li>
+                              <li>I respectfully ask the court to suspend the fines and waive the surcharges so that I can expunge this record and _________________________________________.</li>
                           </ol>
                           </template>
                           <template v-else>

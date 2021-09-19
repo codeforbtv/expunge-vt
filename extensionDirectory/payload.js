@@ -33,7 +33,6 @@ if (docketData.url.startsWith('file')) {
     var answer = window.confirm(
       'This does not look like a case file. Are you sure you want to proceed?'
     );
-    console.log(answer)
     if (answer) {
       docketData.domain = 'localhost';
     } else {
