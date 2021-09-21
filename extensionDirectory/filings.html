@@ -128,6 +128,17 @@
                   placeholder="- Code for BTV -"
                 />
               </div>
+              <div class="consolidate-options" v-if="numDockets > 1">
+                <span><b>Consolidate by county: </b></span>
+                <label>
+                  NoA
+                  <input type="checkbox" v-model="settings.groupNoas" />
+                </label>
+                <label>
+                  <span>Petitions
+                  <input type="checkbox" v-model="settings.groupCounts" /></span>
+                </label>
+              </div>
             </div>
             <div class="modal-footer">
               <button
@@ -149,21 +160,12 @@
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <div v-if="numDockets > 1">
-                <span><b>Consolidate by county: </b></span>
+              <div v-if="numDockets >= 1 && proSeFromRole(settings.role)">
+                <span
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>E-mail Consent: </b></span
+                >
                 <label>
-                  <input type="checkbox" v-model="settings.groupNoas" />
-                  NoA
-                </label>
-                <label>
-                  <input type="checkbox" v-model="settings.groupCounts" />
-                  Petitions
-                </label>
-              </div>
-              <div v-if="numDockets >= 1">
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Fee waiver: </b></span>
-                <label>
-                  <input type="checkbox" v-model="settings.feeWaiver" />
+                  <input type="checkbox" v-model="settings.emailConsent" />
                 </label>
               </div>
               <button
@@ -172,10 +174,7 @@
               >
                 Print All
               </button>
-              <button
-                v-on:click="saveHtml"
-                class="btn btn-primary no-print"
-              >
+              <button v-on:click="saveHtml" class="btn btn-primary no-print">
                 Save
               </button>
               <a href="manage-counts.html" class="edit-counts btn btn-primary"
@@ -557,9 +556,10 @@
                             | dateFormatSimple}}), appearing
                             <span class="italic">pro se</span>, and hereby
                             enters this notice of appearance in the above
-                            captioned action.
-                            <br><br>
-                            By signing this notice of appearance below, I herby agree to the acceptance of all electronic filings at this email address: <b>{{petitioner.email}}</b>.
+                            captioned action. 
+                            <span class="email-test" v-if="settings.emailConsent"><br /><br />By signing this notice of appearance below, I herby
+                            agree to the acceptance of all electronic filings at
+                            the following email address: <b>{{petitioner.email}}</b>.</span>
                           </template>
                           <template v-else>
                             NOW COMES <span>{{settings['attorney']}}</span>, by
@@ -571,60 +571,128 @@
                         </p>
                       </div>
                       <!-- Fee Waiver -->
-                      <div class="filing-body" v-if="filing.type == 'feeWaiver'">
+                      <div
+                        class="filing-body"
+                        v-if="filing.feeWaiver"
+                      >
+                        <div class="no-print fee-box">
+                          <div class="fee-row">
+                            <span class="fee-label">Fine:</span>
+                            <span class="dollar">$</span
+                            ><input
+                              type="number"
+                              class="no-print"
+                              v-model="responses[filing.id +'-fine']"
+                              placeholder="Type here..."
+                            />
+                          </div>
+                          <div class="fee-row">
+                            <span class="fee-label">Surcharge:</span>
+                            <span class="dollar">$</span
+                            ><input
+                              type="number"
+                              class="no-print"
+                              v-model="responses[filing.id +'-surcharge']"
+                              placeholder="Type here..."
+                            />
+                          </div>
+                        </div>
                         <p class="indent">
                           <template v-if="proSeFromRole(settings.role)">
-                            Petitioner respectfully requests that the Court waive surcharges and/or suspend the fines associated with the above-captioned case, for which Petitioner has also sought sealing/expungement relief.
+                            Petitioner respectfully requests that the Court
+                            waive surcharges and/or suspend the fines associated
+                            with the above-captioned case, for which Petitioner
+                            has also sought sealing/expungement relief.
                             <ol>
-                            <li>Pursuant to 13 V.S.A. &#167; 7282(b), surcharges can be waived in an expungement or sealing proceeding "where the petitioner demonstrates an inability to pay."</li>
-                            <li>Pursuant to 13 V.S.A &#167; 7178 "[a] Superior judge, in his or her discretion, may suspend all or any part of the fine assessed against a respondent."
-                            <li>At the time of conviction, the court fined Petitioner $
-                              <span class="filing-body__response">
-                                <span
-                                  class="no-visible"
-                                  v-html="responses[filing.id +'-fee']"
-                                ></span>
-                                <input type="number"
-                                  class="no-print"
-                                  v-model="responses[filing.id +'-fee']"
-                                  placeholder="Type here..."
-                                ></input>
-                              </span> and assessed a $<span class="filing-body__response">
-                                <span
-                                  class="no-visible"
-                                  v-html="responses[filing.id +'-fine']"
-                                ></span>
-                                <input type="number"
-                                  class="no-print"
-                                  v-model="responses[filing.id +'-fine']"
-                                  placeholder="Type here..."
-                                ></input>
-                              </span> surcharge.</li>
-                            <li>Petitioner has filed an attendant stipulated expungement petition.</li>
-                            <li>But for these legal financial obligations, petitioner is eligible for relief.</li>
-                            <li>Petitioner is unable to pay these legal financial obligations. See attached affidavit.</li>
-                            <li>Waiver of legal financial obligations would further the interests of justice.</li>
-                          </ol>
+                              <li>
+                                Pursuant to 13 V.S.A. &#167; 7282(b), surcharges
+                                can be waived in an expungement or sealing
+                                proceeding "where the petitioner demonstrates an
+                                inability to pay."
+                              </li>
+                              <li>
+                                Pursuant to 13 V.S.A &#167; 7178 "[a] Superior
+                                judge, in his or her discretion, may suspend all
+                                or any part of the fine assessed against a
+                                respondent."
+                              </li>
+                              <li v-if="responses[filing.id +'-fine']">
+                                At the time of conviction, the court fined
+                                Petitioner ${{responses[filing.id +'-fine']}}.
+                              </li>
+                              <li v-if="responses[filing.id +'-surcharge']">
+                                At the time of conviction, the court assessed
+                                Petitioner a surcharge of ${{responses[filing.id
+                                +'-surcharge']}}.
+                              </li>
+                              <li>
+                                Petitioner has filed an attendant stipulated
+                                expungement petition.
+                              </li>
+                              <li>
+                                But for these legal financial obligations,
+                                petitioner is eligible for relief.
+                              </li>
+                              <li>
+                                Petitioner is unable to pay these legal
+                                financial obligations. See attached affidavit.
+                              </li>
+                              <li>
+                                Waiver of legal financial obligations would
+                                further the interests of justice.
+                              </li>
+                            </ol>
                           </template>
                           <template v-else>
                             insert for non-pro-se
                           </template>
                         </p>
                       </div>
-                      <div class="filing-body" v-if="filing.type == 'feeWaiverAffidavit'">
+                      <div
+                        class="filing-body"
+                        v-if="filing.type == 'feeWaiverAffidavit'"
+                      >
                         <p class="indent">
                           <template v-if="proSeFromRole(settings.role)">
-                            {{petitioner.name}}, being duly sworn, deposes and says under oath:
+                            {{petitioner.name}}, being duly sworn, deposes and
+                            says under oath:
                             <ol>
-                              <li>I am seeking expungement/sealing of my final Vermont criminal record.</li>
-                              <li>I have outstanding fines and/or surcharges, totaling {{ filing.id | feeFineTotal }}.</li>
-                              <li>I do not have the means to pay these legal financial debts.</li>
-                              <li>[fill in: more detail about income and bills]</li>
-                              <li>[fill in: more detail about income and bills]</li>
-                              <li>[optional: more detail about income and bills]</li>
-                              <li>This debt is the sole remaining barrier to the expungement/sealing of my record.</li>
-                              <li>I respectfully ask the court to suspend the fines and waive the surcharges so that I can expunge this record and _________________________________________.</li>
-                          </ol>
+                              <li>
+                                I am seeking expungement/sealing of my final
+                                Vermont criminal record.
+                              </li>
+                              <li>
+                                I have outstanding fines and/or surcharges,
+                                totaling ${{ filing.id | feeFineTotal }}.
+                              </li>
+                              <li>
+                                I do not have the means to pay these legal
+                                financial debts.
+                              </li>
+                              <li>
+                                <div class="filing-body__response">
+                                  <p
+                                    class="no-visible"
+                                    v-html="nl2br(responses[filing.id + 'feeContent'])"
+                                  ></p>
+                                  <textarea
+                                    class="no-print"
+                                    v-model="responses[filing.id + 'feeContent']"
+                                    placeholder="Type here..."
+                                  ></textarea>
+                                </div>
+                              </li>
+                              <li>
+                                This debt is the sole remaining barrier to the
+                                expungement/sealing of my record.
+                              </li>
+                              <li>
+                                I respectfully ask the court to suspend the
+                                fines and waive the surcharges so that I can
+                                expunge this record and
+                                _________________________________________.
+                              </li>
+                            </ol>
                           </template>
                           <template v-else>
                             insert for non-pro-se
@@ -1058,9 +1126,12 @@
                           justice, as
                         </p>
                       </div>
+
                       <!-- End Unique Portion of Filings -->
 
-                      <template v-if="filing.type != 'NoA' && filing.type != 'feeWaiver'">
+                      <template
+                        v-if="filing.type != 'NoA' && filing.type != 'feeWaiver'"
+                      >
                         <div class="filing-body__response">
                           <p
                             class="no-visible"

@@ -719,3 +719,39 @@ p.filing-dated-city {
   height: 1.2em;
   margin-left: 20px;
 }
+
+.fee-label {
+  width: 100px;
+  margin-left: 25px;
+  font-weight: bold;
+}
+.dollar {
+  font: 1.5em bold;
+  margin: 0 3px 0 3px;
+}
+.fee-box input {
+  width: 150px;
+}
+.fee-row {
+  display: flex;
+  flex-direction: row;
+  margin: 3px;
+}
+.fee-box {
+  width: 350px;
+  border: 1px solid black;
+  margin: auto;
+}
+
+.consolidate-options label {
+  display: flex;
+  flex-direction: column;
+  width: 75px;
+  text-align: center;
+  font-weight: bold;
+}
+.consolidate-options {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0 0 0;
+}

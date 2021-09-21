@@ -30,17 +30,29 @@ Vue.component('filing-nav', {
         </li>
         <br>
         <li v-for="group in filings" class="filing-nav__parent-link">
-        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
-        <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
-            <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
-          </li>
-        </ol>
+          <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+          <ol>
+            <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
+              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
+              <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
+              <div class="filing-nav__counts" v-if="filing.type == 'NoA'">
+                <span>Fee waiver: </span>
+                <label>
+                  <input type="checkbox" v-model="filing.feeWaiver" v-on:click="checkFeeWaiverAndAdd(filing)"/>
+                </label>
+              </div>
+            </li>
+          </ol>
         </li>
       </ol>
       </div>
       `,
+  methods: {
+    checkFeeWaiverAndAdd(noaFiling) {
+      console.log("in comp", noaFiling.feeWaiver)
+      app.checkFeeWaiverAndAdd(noaFiling)
+    },
+  },
   filters: {
     navTitleFilter(txt) {
       const trimStip = txt.startsWith('Stipulated ')
@@ -130,9 +142,12 @@ Vue.component('pills-row', {
                 <span v-if="count.isDismissed === false" class="pill pill--rounded pill--outline-black">
                     {{count.offenseDisposition}}
                 </span>
+                <span class="pill pill--rounded pill--outline-black">
+                {{decimalAgeInYears(count.allegedOffenseDate)}} yo at offense date
+                </span>
                 </template>
                 <template v-if="count.dispositionDate">
-                <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 at time of disposition</span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 18 && decimalAgeInYears(count.dispositionDate) < 21" class='pill pill--rounded pill--outline-green'> Under 21 </span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 21" class='pill pill--rounded pill--outline-black'> Adult </span>
                 </template>
@@ -147,7 +162,7 @@ Vue.component('pills-row', {
       if (!this.dob) return '';
       let fromTime = moment(value).diff(moment(this.dob));
       let duration = moment.duration(fromTime);
-      return duration.asDays() / 365.25;
+      return (duration.asDays() / 365.25).toFixed(2);
     },
   },
 });
