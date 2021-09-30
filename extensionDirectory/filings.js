@@ -649,6 +649,7 @@ var app = new Vue({
           return false;
       }
     },
+    //Grabs name for header of filing
     filingNameFromType: function (filingType) {
       switch (filingType) {
         case 'NoA':
