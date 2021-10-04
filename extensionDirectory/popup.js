@@ -117,11 +117,12 @@ function appendDataWithConfirmation(newData, oldData) {
  * This info is parsed out of the docket pages.
  */
 class PetitionerInfo {
-  constructor(name, dob, address = '', counts = []) {
+  constructor(name, dob, address = '', counts = [], feeWaivers = {}) {
     this.defName = name; // defendent's name
     this.defDOB = dob; // defendent's date of birth
     this.defAddress = address; // defendent's address (optional)
     this.counts = counts; // an array of petitioner counts (see class below)
+    this.feeWaivers = feeWaivers; // add place to save docket level info
   }
 }
 

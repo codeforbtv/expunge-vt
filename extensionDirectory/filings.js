@@ -512,7 +512,10 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(thisFiling.county, docketCounts);
           filingsWithNOAs.push(noa);
-          if (noa.feeWaiver) {
+
+          if (app.responses[noa.id + '-feeForm'] === undefined) {
+            Vue.set(app.responses, noa.id + '-feeForm', false);
+          } else if (app.responses[noa.id + '-feeForm']) {
             const feeFiling = this.createFeeFiling(
               thisFiling.county,
               docketCounts
@@ -524,6 +527,7 @@ var app = new Vue({
             filingsWithNOAs.push(feeFiling);
             filingsWithNOAs.push(feeFilingAffidavit);
           }
+
           lastDocketNum = currDocketNum;
         }
 
@@ -551,13 +555,6 @@ var app = new Vue({
     },
     createFeeFilingAffidavit: function (county, counts) {
       return this.makeFilingObject(counts, 'feeWaiverAffidavit', county);
-    },
-    checkFeeWaiverAndAdd: function (noaFiling) {
-      if (!noaFiling.feeWaiver) {
-        console.log("filing",!noaFiling.feeWaiver)
-        this.makeFilingObject(noaFiling.counts, 'feeWaiver', noaFiling.county);
-        this.makeFilingObject(noaFiling.counts, 'feeWaiverAffidavit', noaFiling.county);
-      }
     },
     groupIneligibleCounts: function (counts) {
       var ineligibleCounts = counts.filter((count) => count.filingType == 'X');
@@ -738,9 +735,6 @@ var app = new Vue({
         docketNums: docketNums,
         docketSheetNums: docketSheetNums,
         counts: countsOnThisFiling,
-        fee: this.fees[filingId],
-        fine: this.fines[filingId],
-        feeWaiver: false,
       };
     },
     newCount: function (event) {
@@ -909,6 +903,12 @@ var app = new Vue({
 
         return true;
       }
+    },
+    getFeeWaiverStatusFromFiling: function (filingId) {
+      docket =
+        'NoA-' + filingId.substring(filingId.indexOf('-') + 1) + '-feeForm';
+      console.log(app.responses[docket]);
+      return app.responses[docket];
     },
   },
   computed: {
@@ -1083,11 +1083,20 @@ var app = new Vue({
     feeFineTotal: function (fileId) {
       //TODO Handle returning number of filings and fee waivers
       fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
       let total = (
-        parseFloat(app.responses[fileId + '-fine']) +
-        parseFloat(app.responses[fileId + '-surcharge'])
+        parseFloat(app.responses[docket + '-fine']) +
+        parseFloat(app.responses[docket + '-surcharge'])
       ).toFixed(2);
       return total;
+    },
+    stringAgeInYearsAtDate: function (date, dob) {
+      console.log(date);
+      if (!date) return '';
+      if (!dob) return '';
+      let fromTime = moment(date).diff(moment(dob));
+      let duration = moment.duration(fromTime);
+      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
     },
   },
 });

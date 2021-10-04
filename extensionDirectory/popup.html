@@ -269,21 +269,21 @@
                 <div class="row text-left">
                   <div class="col-4">
                     Offense Date:<br />
-                    {{count.allegedOffenseDate | dateFormatSimple}}
+                    {{count.allegedOffenseDate | dateFormatSimple}} ({{count.allegedOffenseDate | stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.allegedOffenseDate"
                       >&nbsp;Not Entered</span
                     >
                   </div>
                   <div class="col-4">
                     Arrest/Citation Date:<br />
-                    {{count.arrestCitationDate | dateFormatSimple}}
+                    {{count.arrestCitationDate | dateFormatSimple}} ({{count.arrestCitationDate | stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.arrestCitationDate"
                       >&nbsp;Not Entered</span
                     >
                   </div>
                   <div class="col-4">
                     Disposition Date:<br />{{count.dispositionDate |
-                    dateFormatSimple}}
+                    dateFormatSimple}} ({{count.dispositionDate | stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.dispositionDate">&nbsp;Pending</span>
                   </div>
                 </div>

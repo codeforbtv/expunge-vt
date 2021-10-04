@@ -13,6 +13,11 @@
       href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"></script>
+    <link
+      href="./node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"
+      rel="stylesheet"
+    />
 
     <!-- Vue -->
     <script src="./node_modules/vue/dist/vue.js"></script>
@@ -135,8 +140,10 @@
                   <input type="checkbox" v-model="settings.groupNoas" />
                 </label>
                 <label>
-                  <span>Petitions
-                  <input type="checkbox" v-model="settings.groupCounts" /></span>
+                  <span
+                    >Petitions
+                    <input type="checkbox" v-model="settings.groupCounts"
+                  /></span>
                 </label>
               </div>
             </div>
@@ -162,7 +169,9 @@
             <div class="header-bar__controls">
               <div v-if="numDockets >= 1 && proSeFromRole(settings.role)">
                 <span
-                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>E-mail Consent: </b></span
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b
+                    >E-mail Consent:
+                  </b></span
                 >
                 <label>
                   <input type="checkbox" v-model="settings.emailConsent" />
@@ -531,14 +540,70 @@
                             >
                               <span class="docket-number__label"
                                 >Docket No.&nbsp;</span
-                              ><span class="docket-number__number no-visible"
+                              ><span class="docket-number__number"
                                 >{{docketNum.string}}</span
                               >
-                              <input
-                                class="no-print"
-                                v-model="docketNum.string"
-                              />
                             </p>
+                          </div>
+                          <div
+                            v-if="filing.type == 'NoA'"
+                            class="no-print fee-check-box"
+                          >
+                            <div class="form-check form-switch">
+                              <!-- <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="flexSwitchCheckChecked"
+                                v-model="responses[filing.id +'-feeForm']"
+                                checked
+                              /> -->
+                              <div class="switch_box box_4">
+                                <div class="input_wrapper">
+                                  <input type="checkbox" v-model="responses[filing.id +'-feeForm']" class="switch_4">
+                                  <svg class="is_checked" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 426.67 426.67">
+                                  <path d="M153.504 366.84c-8.657 0-17.323-3.303-23.927-9.912L9.914 237.265c-13.218-13.218-13.218-34.645 0-47.863 13.218-13.218 34.645-13.218 47.863 0l95.727 95.727 215.39-215.387c13.218-13.214 34.65-13.218 47.86 0 13.22 13.218 13.22 34.65 0 47.863L177.435 356.928c-6.61 6.605-15.27 9.91-23.932 9.91z"/>
+                                </svg>
+                                  <svg class="is_unchecked" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212.982 212.982">
+                                  <path d="M131.804 106.49l75.936-75.935c6.99-6.99 6.99-18.323 0-25.312-6.99-6.99-18.322-6.99-25.312 0L106.49 81.18 30.555 5.242c-6.99-6.99-18.322-6.99-25.312 0-6.99 6.99-6.99 18.323 0 25.312L81.18 106.49 5.24 182.427c-6.99 6.99-6.99 18.323 0 25.312 6.99 6.99 18.322 6.99 25.312 0L106.49 131.8l75.938 75.937c6.99 6.99 18.322 6.99 25.312 0 6.99-6.99 6.99-18.323 0-25.313l-75.936-75.936z" fill-rule="evenodd" clip-rule="evenodd"/>
+                                </svg>
+                                  </div>
+                              </div>
+                              <label
+                                class="form-check-label"
+                                for="flexSwitchCheckChecked"
+                                ><span v-if="responses[filing.id +'-feeForm']"
+                                  >Fee waiver included.</span
+                                ><span v-else>No Fee waiver.</span></label
+                              >
+                            </div>
+                            <div
+                              v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                            >
+                              <div class="fee-row">
+                                <span class="fee-label">Fine:</span>
+                                <span class="dollar">$</span
+                                ><input
+                                  type="number"
+                                  class="no-print"
+                                  :disabled="!responses[filing.id +'-feeForm']"
+                                  v-model="responses[filing.id +'-fine']"
+                                  v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                                  placeholder="Type here..."
+                                />
+                              </div>
+                              <div class="fee-row">
+                                <span class="fee-label">Surcharge:</span>
+                                <span class="dollar">$</span
+                                ><input
+                                  type="number"
+                                  class="no-print"
+                                  :disabled="!responses[filing.id +'-feeForm']"
+                                  v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                                  v-model="responses[filing.id +'-surcharge']"
+                                  placeholder="Type here..."
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -556,10 +621,15 @@
                             | dateFormatSimple}}), appearing
                             <span class="italic">pro se</span>, and hereby
                             enters this notice of appearance in the above
-                            captioned action. 
-                            <span class="email-test" v-if="settings.emailConsent"><br /><br />By signing this notice of appearance below, I herby
-                            agree to the acceptance of all electronic filings at
-                            the following email address: <b>{{petitioner.email}}</b>.</span>
+                            captioned action.
+                            <span
+                              class="email-test"
+                              v-if="settings.emailConsent"
+                              ><br /><br />By signing this notice of appearance
+                              below, I herby agree to the acceptance of all
+                              electronic filings at the following email address:
+                              <b>{{petitioner.email}}</b>.</span
+                            >
                           </template>
                           <template v-else>
                             NOW COMES <span>{{settings['attorney']}}</span>, by
@@ -572,31 +642,10 @@
                       </div>
                       <!-- Fee Waiver -->
                       <div
+                        v-bind:id="filing.id"
                         class="filing-body"
-                        v-if="filing.feeWaiver"
+                        v-if="filing.type == 'feeWaiver'"
                       >
-                        <div class="no-print fee-box">
-                          <div class="fee-row">
-                            <span class="fee-label">Fine:</span>
-                            <span class="dollar">$</span
-                            ><input
-                              type="number"
-                              class="no-print"
-                              v-model="responses[filing.id +'-fine']"
-                              placeholder="Type here..."
-                            />
-                          </div>
-                          <div class="fee-row">
-                            <span class="fee-label">Surcharge:</span>
-                            <span class="dollar">$</span
-                            ><input
-                              type="number"
-                              class="no-print"
-                              v-model="responses[filing.id +'-surcharge']"
-                              placeholder="Type here..."
-                            />
-                          </div>
-                        </div>
                         <p class="indent">
                           <template v-if="proSeFromRole(settings.role)">
                             Petitioner respectfully requests that the Court
@@ -648,9 +697,11 @@
                           </template>
                         </p>
                       </div>
+                      <!-- Fee waiver affidavit -->
                       <div
                         class="filing-body"
-                        v-if="filing.type == 'feeWaiverAffidavit'"
+                        v-bind:id="filing.id"
+                        v-if="filing.type == 'feeWaiverAffidavit' && !responses[filing.id +'-feeForm']"
                       >
                         <p class="indent">
                           <template v-if="proSeFromRole(settings.role)">
@@ -670,19 +721,6 @@
                                 financial debts.
                               </li>
                               <li>
-                                <div class="filing-body__response">
-                                  <p
-                                    class="no-visible"
-                                    v-html="nl2br(responses[filing.id + 'feeContent'])"
-                                  ></p>
-                                  <textarea
-                                    class="no-print"
-                                    v-model="responses[filing.id + 'feeContent']"
-                                    placeholder="Type here..."
-                                  ></textarea>
-                                </div>
-                              </li>
-                              <li>
                                 This debt is the sole remaining barrier to the
                                 expungement/sealing of my record.
                               </li>
@@ -690,7 +728,6 @@
                                 I respectfully ask the court to suspend the
                                 fines and waive the surcharges so that I can
                                 expunge this record and
-                                _________________________________________.
                               </li>
                             </ol>
                           </template>

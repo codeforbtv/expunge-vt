@@ -27,9 +27,9 @@ function saveAllCountsToHtml(savedData) {
         <div class="instruct-box">
           <h2>Follow these steps to load your case file:</h2>
           <ol>
-          <li>If you have a case loaded that you want to save, click the ExpungeVT extension and go to the petitions page where you can save your current case.</li>
+          <li>If you do not have the expungeVT chrome extension, <a target="_blank" href="https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn?hl=en&authuser=0">download it here</a> using a chrome browser.</li>
           <li>Click the extension icon, and then click "Clear All"</li>
-          <li>Finally, click the extension icon again, and while viewing this page, click "Load Case File"</li>
+          <li>Click the extension icon again, and while viewing this page, click "Load Case File"</li>
           </ol>
           <div class="i-wrapper">
               <i class="far fa-save"></i>
