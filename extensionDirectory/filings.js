@@ -654,7 +654,7 @@ var app = new Vue({
         case 'feeWaiver':
           return 'Motion to Waive Legal Financial Obligations';
         case 'feeWaiverAffidavit':
-          return "Petitioner's Affidavit re: Financial Obligations";
+          return "Petitioner's Affidavit in Support of Motion to Waive Legal Financial Obligations";
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -1080,15 +1080,19 @@ var app = new Vue({
       //TODO Handle returning number of filings and fee waivers
       return filings.filter((f) => f.type != 'NoA').length;
     },
-    feeFineTotal: function (fileId) {
+    returnFine: function (fileId) {
       //TODO Handle returning number of filings and fee waivers
       fileId = fileId.replace('Affidavit', '');
       docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
-      let total = (
-        parseFloat(app.responses[docket + '-fine']) +
-        parseFloat(app.responses[docket + '-surcharge'])
-      ).toFixed(2);
-      return total;
+      let fine = parseFloat(app.responses[docket + '-fine']).toFixed(2);
+      return fine;
+    },
+    returnSurcharge: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
+      let surcharge = parseFloat(app.responses[docket + '-surcharge']).toFixed(2);
+      return surcharge;
     },
     stringAgeInYearsAtDate: function (date, dob) {
       console.log(date);

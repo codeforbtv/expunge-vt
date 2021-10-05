@@ -176,6 +176,7 @@ a.btn {
   list-style: none;
   counter-reset: petition-counter;
 }
+
 li.filing-nav__child-link {
   counter-increment: petition-counter;
   padding-left: 30px;
@@ -284,6 +285,11 @@ p.document-meta-data__body {
   max-width: 11rem;
   width: 50%;
   min-width: 9rem;
+}
+
+.page .filing-title {
+  margin:auto;
+  max-width: 500px;
 }
 
 .page .filing-title,
@@ -404,6 +410,13 @@ p.filing-dated-city {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
+
+/* Ordered Lists */
+
+.filing-body li {
+  list-style-position: inside;
+  text-indent: -1em;
+  }
 /* Use "fill-in" for a solid underline where people need to fill in 
  * information. Use one of the cascading modifiers to get the desired width. 
  */

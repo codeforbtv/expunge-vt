@@ -51,7 +51,7 @@ if (docketData.rawDocket !== null) {
    *  - a) We could bundle some message in the docketData object and handle downstream
    *  - b) We could make the popup self-aware of the active page and disallow parsing on unexpected sites
    */
-  alert("Uh oh. ExpungeVT doesn't support this site.");
+  alert("Uh oh. ExpungeVT doesn't support this site. If you are trying to load a case, open the file from your computer so it opens in Chrome and follow the instructions from there. You may need to right click or ctrl+click (on Mac) on the file to open the file in Chrome.");
 }
 
 // docketData.domain = 'localhost';
