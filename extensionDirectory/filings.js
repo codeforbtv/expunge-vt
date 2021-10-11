@@ -67,9 +67,12 @@ function initSmoothScroll() {
 
 function detectChangesInChromeStorage() {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    var storageChange = changes['counts'];
-    if (storageChange === undefined) return;
-    if (storageChange.newValue === undefined) {
+    console.log(changes);
+    var countsChange = changes['counts'];
+    var responsesChange = changes['responses'];
+
+    if (countsChange === undefined && responsesChange === undefined) return;
+    if (countsChange.newValue === undefined) {
       app.clearAll();
       return;
     }
@@ -910,6 +913,9 @@ var app = new Vue({
       console.log(app.responses[docket]);
       return app.responses[docket];
     },
+    numOfFeeWaiversInGroup: function (filings) {
+      return filings.filter((f) => f.type == 'feeWaiver').length;
+    },
   },
   computed: {
     petitioner: function () {
@@ -1077,8 +1083,17 @@ var app = new Vue({
      * @return int    The number of filings that are not NOAs
      */
     numWithoutNOAs: function (filings) {
-      //TODO Handle returning number of filings and fee waivers
-      return filings.filter((f) => f.type != 'NoA').length;
+      return filings.filter((f) => {
+        if (
+          f.type == 'NoA' ||
+          f.type == 'feeWaiver' ||
+          f.type == 'feeWaiverAffidavit'
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      }).length;
     },
     returnFine: function (fileId) {
       //TODO Handle returning number of filings and fee waivers
@@ -1091,7 +1106,9 @@ var app = new Vue({
       //TODO Handle returning number of filings and fee waivers
       fileId = fileId.replace('Affidavit', '');
       docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
-      let surcharge = parseFloat(app.responses[docket + '-surcharge']).toFixed(2);
+      let surcharge = parseFloat(app.responses[docket + '-surcharge']).toFixed(
+        2
+      );
       return surcharge;
     },
     stringAgeInYearsAtDate: function (date, dob) {

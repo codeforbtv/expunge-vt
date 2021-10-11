@@ -303,6 +303,18 @@
                                 ({{returnCountyContact(group.county)}})</span
                               >
                             </li>
+                            <li>
+                              <span
+                                v-if="numOfFeeWaiversInGroup(group.filings) == 1"
+                                >One fee waiver and affidavit for
+                                {{group.county}} county.</span
+                              ><span
+                                v-if="numOfFeeWaiversInGroup(group.filings) > 1"
+                                ><br />{{numOfFeeWaiversInGroup(group.filings)}}
+                                fee waivers for {{group.county}} county and an
+                                affidavit for each.</span
+                              >
+                            </li>
                           </span>
                         </ul>
                         <p>
@@ -1333,7 +1345,9 @@
                           I do swear and affirm that the above statement made by
                           me is true and accurate to the best of my knowledge
                           and belief.
-                          <filing-dated-city v-if="!proSeFromRole(settings.role)"></filing-dated-city>
+                          <filing-dated-city
+                            v-if="!proSeFromRole(settings.role)"
+                          ></filing-dated-city>
                           <div
                             class="filing-closing__signature-area filing-closing--align-right"
                           >

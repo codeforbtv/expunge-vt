@@ -11,14 +11,14 @@ function initListeners() {
       // ODYSSEY
       case 'publicportal.courts.vt.gov': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
-        setParsedCounts()
+        setParsedCounts();
         break;
       }
       // DEMO & DEV: TODO - currently we only have demo samples for VCOL dockets
       case 'htmlpreview.github.io':
       case 'localhost': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
-        setParsedCounts()
+        setParsedCounts();
         break;
       }
       case 'expungeVtRecord': {
@@ -229,7 +229,7 @@ function getOdysseyPetitionerInfo(docketData) {
 
     // get name from page and reformat it if necessary
     // Note: it would be more durable to parse the fname, lname and any titles (Jr, III, etc) - possible refactor.
-    const rawName = $('.ng-binding.roa-text-bold', partyInfo).html().trim()
+    const rawName = $('.ng-binding.roa-text-bold', partyInfo).html().trim();
     currentDocket.defName = formatPetitionersName(rawName);
 
     currentDocket.defDOB = partyInfo
@@ -469,10 +469,7 @@ function formatDate(date) {
  */
 function isDismissed(offenseDisposition) {
   var dispositionNormalized = offenseDisposition.toLowerCase().trim();
-  if (
-    dispositionNormalized === 'dismissed by state' ||
-    dispositionNormalized === 'dismissed by court'
-  ) {
+  if (dispositionNormalized.toLowerCase().substr(0, 12) === 'dismissed by') {
     return true;
   } else {
     return false;
