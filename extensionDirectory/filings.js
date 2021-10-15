@@ -472,6 +472,22 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(currCounty, counts);
           filingsWithNOAs.push(noa);
+
+          if (app.responses[noa.id + '-feeForm'] === undefined) {
+            Vue.set(app.responses, noa.id + '-feeForm', false);
+          } else if (app.responses[noa.id + '-feeForm']) {
+            const feeFiling = this.createFeeFiling(
+              thisFiling.county,
+              docketCounts
+            );
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(
+              thisFiling.county,
+              docketCounts
+            );
+            filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+          }
+
           lastCounty = currCounty;
         }
 
