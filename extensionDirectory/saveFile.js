@@ -12,7 +12,7 @@ function saveAllCountsToHtml(savedData) {
   })
 
   let now = moment().format('YYYY-MM-DD');
-  let encryptedSavedData = Base64.encode(savedData);
+  let obfuscatedSavedData = Base64.encode(savedData);
   let fileName = now + '-' + defInitials;
   console.log(fileName)
   let htmlString = `
@@ -35,7 +35,7 @@ function saveAllCountsToHtml(savedData) {
               <i class="far fa-save"></i>
           </div>
         </div>
-        <p id="roa-content" class="case-data">${encryptedSavedData}</p>
+        <p id="roa-content" class="case-data">${obfuscatedSavedData}</p>
       </div>
     </body>
 

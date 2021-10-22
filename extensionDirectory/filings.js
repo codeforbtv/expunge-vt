@@ -1,3 +1,5 @@
+// const moment = require('moment');
+
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
 
@@ -931,6 +933,22 @@ var app = new Vue({
     },
     numOfFeeWaiversInGroup: function (filings) {
       return filings.filter((f) => f.type == 'feeWaiver').length;
+    },
+    getNextNotaryDate: function () {
+      let currentDate = moment();
+      let janThisYear = moment(currentDate.format('YYYY') + '-01-31');
+
+      if (currentDate.isBefore(janThisYear) && isOdd(currentDate)) {
+        return janThisYear.format('MMMM DD, YYYY');
+      } else if (!isOdd(currentDate)) {
+        return moment(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
+      } else if (currentDate.isAfter(janThisYear) && isOdd(currentDate)) {
+        return moment(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
+      }
+      function isOdd(num) {
+        let numInt = parseInt(num.format('YYYY'));
+        return numInt % 2;
+      }
     },
   },
   computed: {
