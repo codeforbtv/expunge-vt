@@ -1,3 +1,5 @@
+// const moment = require('moment');
+
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
 
@@ -67,9 +69,12 @@ function initSmoothScroll() {
 
 function detectChangesInChromeStorage() {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    var storageChange = changes['counts'];
-    if (storageChange === undefined) return;
-    if (storageChange.newValue === undefined) {
+    console.log(changes);
+    var countsChange = changes['counts'];
+    var responsesChange = changes['responses'];
+
+    if (countsChange === undefined && responsesChange === undefined) return;
+    if (countsChange.newValue === undefined) {
       app.clearAll();
       return;
     }
@@ -172,16 +177,20 @@ var app = new Vue({
       customNote: '',
       role: 'AttyConsult',
       forVla: true,
+      emailConsent: false,
+      groupCounts: false,
+      groupNoas: false,
     },
     saved: {
       defName: '',
       defAddress: [''],
       defDOB: '',
       counts: [],
+      defEmail: '',
     },
-    groupCounts: false,
-    groupNoas: false,
     responses: {},
+    fees: {},
+    fines: {},
     countiesContact: {},
     popupHeadline: '',
     roleCoverLetterText: {},
@@ -194,7 +203,7 @@ var app = new Vue({
     groupCounts: {
       handler(value) {
         if (value) {
-          this.groupNoas = true;
+          this.settings.groupNoas = true;
         }
       },
     },
@@ -203,7 +212,7 @@ var app = new Vue({
     groupNoas: {
       handler(value) {
         if (!value) {
-          this.groupCounts = false;
+          this.settings.groupCounts = false;
         }
       },
     },
@@ -407,7 +416,7 @@ var app = new Vue({
           }
         }
         // insert NOAs into filings
-        const filingsWithNOAs = this.groupNoas
+        const filingsWithNOAs = this.settings.groupNoas
           ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
           : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
 
@@ -465,6 +474,22 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(currCounty, counts);
           filingsWithNOAs.push(noa);
+
+          if (app.responses[noa.id + '-feeForm'] === undefined) {
+            Vue.set(app.responses, noa.id + '-feeForm', false);
+          } else if (app.responses[noa.id + '-feeForm']) {
+            const feeFiling = this.createFeeFiling(
+              thisFiling.county,
+              docketCounts
+            );
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(
+              thisFiling.county,
+              docketCounts
+            );
+            filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+          }
+
           lastCounty = currCounty;
         }
 
@@ -508,6 +533,22 @@ var app = new Vue({
             .flat();
           const noa = this.createNOAFiling(thisFiling.county, docketCounts);
           filingsWithNOAs.push(noa);
+
+          if (app.responses[noa.id + '-feeForm'] === undefined) {
+            Vue.set(app.responses, noa.id + '-feeForm', false);
+          } else if (app.responses[noa.id + '-feeForm']) {
+            const feeFiling = this.createFeeFiling(
+              thisFiling.county,
+              docketCounts
+            );
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(
+              thisFiling.county,
+              docketCounts
+            );
+            filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+          }
+
           lastDocketNum = currDocketNum;
         }
 
@@ -529,6 +570,12 @@ var app = new Vue({
      */
     createNOAFiling: function (county, counts) {
       return this.makeFilingObject(counts, 'NoA', county);
+    },
+    createFeeFiling: function (county, counts) {
+      return this.makeFilingObject(counts, 'feeWaiver', county);
+    },
+    createFeeFilingAffidavit: function (county, counts) {
+      return this.makeFilingObject(counts, 'feeWaiverAffidavit', county);
     },
     groupIneligibleCounts: function (counts) {
       var ineligibleCounts = counts.filter((count) => count.filingType == 'X');
@@ -554,7 +601,7 @@ var app = new Vue({
       allDocketNums = counts.map(function (count) {
         return {
           num: count.docketNum,
-          county: count.docketCounty,
+          county: countyCodeFromCounty(count.county),
           string: count.docketNum + ' ' + countyCodeFromCounty(count.county),
         };
       });
@@ -620,10 +667,15 @@ var app = new Vue({
           return false;
       }
     },
+    //Grabs name for header of filing
     filingNameFromType: function (filingType) {
       switch (filingType) {
         case 'NoA':
           return 'Notice of Appearance';
+        case 'feeWaiver':
+          return 'Motion to Waive Legal Financial Obligations';
+        case 'feeWaiverAffidavit':
+          return "Petitioner's Affidavit in Support of Motion to Waive Legal Financial Obligations";
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -811,6 +863,10 @@ var app = new Vue({
       // see: https://stackoverflow.com/a/42989406/263900
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
+    loadCaseFile: function () {
+      // alert("So do we run payload here?")
+      chrome.tabs.executeScript(null, { file: 'payload.js' });
+    },
     confirmClearData: function () {
       if (
         confirm('Are you sure you want to clear all data for this petitioner?')
@@ -836,8 +892,12 @@ var app = new Vue({
     printDocument: function () {
       window.print();
     },
-    exportContent: function () {
-      downloadCSV({ data_array: app.csvData, filename: app.csvFilename });
+    saveHtml: function () {
+      let dataPojo = {
+        saved: this.saved,
+        responses: this.responses,
+      };
+      saveAllCountsToHtml(JSON.stringify(dataPojo));
     },
     returnCountyContact: function (cty) {
       allCounties = this.countiesContact;
@@ -865,6 +925,31 @@ var app = new Vue({
         return true;
       }
     },
+    getFeeWaiverStatusFromFiling: function (filingId) {
+      docket =
+        'NoA-' + filingId.substring(filingId.indexOf('-') + 1) + '-feeForm';
+      console.log(app.responses[docket]);
+      return app.responses[docket];
+    },
+    numOfFeeWaiversInGroup: function (filings) {
+      return filings.filter((f) => f.type == 'feeWaiver').length;
+    },
+    getNextNotaryDate: function () {
+      let currentDate = moment();
+      let janThisYear = moment(currentDate.format('YYYY') + '-01-31');
+
+      if (currentDate.isBefore(janThisYear) && isOdd(currentDate)) {
+        return janThisYear.format('MMMM DD, YYYY');
+      } else if (!isOdd(currentDate)) {
+        return moment(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
+      } else if (currentDate.isAfter(janThisYear) && isOdd(currentDate)) {
+        return moment(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
+      }
+      function isOdd(num) {
+        let numInt = parseInt(num.format('YYYY'));
+        return numInt % 2;
+      }
+    },
   },
   computed: {
     petitioner: function () {
@@ -872,13 +957,16 @@ var app = new Vue({
         name: this.saved.defName,
         dob: this.saved.defDOB,
         address: this.nl2br(this.saved.defAddress),
+        email: this.saved.defEmail,
       };
     },
 
     /* "Filings" include the Notice of Appearance (NoA) forms */
     filings: function () {
       var shouldGroupCounts =
-        this.groupCounts !== undefined ? this.groupCounts : true;
+        this.settings.groupCounts !== undefined
+          ? this.settings.groupCounts
+          : true;
       return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
@@ -1029,7 +1117,41 @@ var app = new Vue({
      * @return int    The number of filings that are not NOAs
      */
     numWithoutNOAs: function (filings) {
-      return filings.filter((f) => f.type != 'NoA').length;
+      return filings.filter((f) => {
+        if (
+          f.type == 'NoA' ||
+          f.type == 'feeWaiver' ||
+          f.type == 'feeWaiverAffidavit'
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      }).length;
+    },
+    returnFine: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
+      let fine = parseFloat(app.responses[docket + '-fine']).toFixed(2);
+      return fine;
+    },
+    returnSurcharge: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
+      let surcharge = parseFloat(app.responses[docket + '-surcharge']).toFixed(
+        2
+      );
+      return surcharge;
+    },
+    stringAgeInYearsAtDate: function (date, dob) {
+      console.log(date);
+      if (!date) return '';
+      if (!dob) return '';
+      let fromTime = moment(date).diff(moment(dob));
+      let duration = moment.duration(fromTime);
+      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
     },
   },
 });

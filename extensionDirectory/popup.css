@@ -336,3 +336,23 @@ hr {
   color: #555;
   background-color: transparent;
 }
+.popup-edition-wrap {
+  width:100%;
+}
+.popup-edition {
+  margin:15px auto 0px auto;
+  width:70%;
+  text-align: center;
+  border: 2px solid black;
+  font-weight: 800;
+}
+
+.donate-box {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.donate {
+  margin: auto !important;
+}

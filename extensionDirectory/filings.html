@@ -13,6 +13,11 @@
       href="./node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
     <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"></script>
+    <link
+      href="./node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"
+      rel="stylesheet"
+    />
 
     <!-- Vue -->
     <script src="./node_modules/vue/dist/vue.js"></script>
@@ -128,6 +133,19 @@
                   placeholder="- Code for BTV -"
                 />
               </div>
+              <div class="consolidate-options" v-if="numDockets > 1">
+                <span><b>Consolidate by county: </b></span>
+                <label>
+                  NoA
+                  <input type="checkbox" v-model="settings.groupNoas" />
+                </label>
+                <label>
+                  <span
+                    >Petitions
+                    <input type="checkbox" v-model="settings.groupCounts"
+                  /></span>
+                </label>
+              </div>
             </div>
             <div class="modal-footer">
               <button
@@ -149,15 +167,14 @@
           <div class="header-bar">
             <h1>Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
-              <div v-if="numDockets > 1">
-                <span>Consolidate by county: </span>
+              <div v-if="numDockets >= 1 && proSeFromRole(settings.role)">
+                <span
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b
+                    >E-mail Consent:
+                  </b></span
+                >
                 <label>
-                  <input type="checkbox" v-model="groupNoas" />
-                  NoA
-                </label>
-                <label>
-                  <input type="checkbox" v-model="groupCounts" />
-                  Petitions
+                  <input type="checkbox" v-model="settings.emailConsent" />
                 </label>
               </div>
               <button
@@ -166,11 +183,8 @@
               >
                 Print All
               </button>
-              <button
-                v-on:click="exportContent"
-                class="btn btn-primary no-print"
-              >
-                Export to CSV
+              <button v-on:click="saveHtml" class="btn btn-primary no-print">
+                Save
               </button>
               <a href="manage-counts.html" class="edit-counts btn btn-primary"
                 >Add/Edit Counts <i class="fas fa-edit"></i
@@ -287,6 +301,18 @@
                                 v-if="returnCountyContact(group.county) != null && returnCountyContact(group.county) != ''"
                               >
                                 ({{returnCountyContact(group.county)}})</span
+                              >
+                            </li>
+                            <li>
+                              <span
+                                v-if="numOfFeeWaiversInGroup(group.filings) == 1"
+                                >One fee waiver and affidavit for
+                                {{group.county}} county.</span
+                              ><span
+                                v-if="numOfFeeWaiversInGroup(group.filings) > 1"
+                                ><br />{{numOfFeeWaiversInGroup(group.filings)}}
+                                fee waivers for {{group.county}} county and an
+                                affidavit for each.</span
                               >
                             </li>
                           </span>
@@ -526,14 +552,81 @@
                             >
                               <span class="docket-number__label"
                                 >Docket No.&nbsp;</span
-                              ><span class="docket-number__number no-visible"
+                              ><span class="docket-number__number"
                                 >{{docketNum.string}}</span
                               >
-                              <input
-                                class="no-print"
-                                v-model="docketNum.string"
-                              />
                             </p>
+                          </div>
+                          <div
+                            v-if="filing.type == 'NoA'"
+                            class="no-print fee-check-box"
+                          >
+                            <div class="form-check form-switch">
+                              <div class="switch_box box_4">
+                                <div class="input_wrapper">
+                                  <input
+                                    type="checkbox"
+                                    v-model="responses[filing.id +'-feeForm']"
+                                    class="switch_4"
+                                  />
+                                  <svg
+                                    class="is_checked"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 426.67 426.67"
+                                  >
+                                    <path
+                                      d="M153.504 366.84c-8.657 0-17.323-3.303-23.927-9.912L9.914 237.265c-13.218-13.218-13.218-34.645 0-47.863 13.218-13.218 34.645-13.218 47.863 0l95.727 95.727 215.39-215.387c13.218-13.214 34.65-13.218 47.86 0 13.22 13.218 13.22 34.65 0 47.863L177.435 356.928c-6.61 6.605-15.27 9.91-23.932 9.91z"
+                                    />
+                                  </svg>
+                                  <svg
+                                    class="is_unchecked"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 212.982 212.982"
+                                  >
+                                    <path
+                                      d="M131.804 106.49l75.936-75.935c6.99-6.99 6.99-18.323 0-25.312-6.99-6.99-18.322-6.99-25.312 0L106.49 81.18 30.555 5.242c-6.99-6.99-18.322-6.99-25.312 0-6.99 6.99-6.99 18.323 0 25.312L81.18 106.49 5.24 182.427c-6.99 6.99-6.99 18.323 0 25.312 6.99 6.99 18.322 6.99 25.312 0L106.49 131.8l75.938 75.937c6.99 6.99 18.322 6.99 25.312 0 6.99-6.99 6.99-18.323 0-25.313l-75.936-75.936z"
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                              <label
+                                class="form-check-label"
+                                for="flexSwitchCheckChecked"
+                                ><span v-if="responses[filing.id +'-feeForm']"
+                                  >Fee waiver included.</span
+                                ><span v-else>No Fee waiver.</span></label
+                              >
+                            </div>
+                            <div
+                              v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                            >
+                              <div class="fee-row">
+                                <span class="fee-label">Fine:</span>
+                                <span class="dollar">$</span
+                                ><input
+                                  type="number"
+                                  class="no-print"
+                                  :disabled="!responses[filing.id +'-feeForm']"
+                                  v-model="responses[filing.id +'-fine']"
+                                  v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                                  placeholder="Type here..."
+                                />
+                              </div>
+                              <div class="fee-row">
+                                <span class="fee-label">Surcharge:</span>
+                                <span class="dollar">$</span
+                                ><input
+                                  type="number"
+                                  class="no-print"
+                                  :disabled="!responses[filing.id +'-feeForm']"
+                                  v-bind:class="[!responses[filing.id +'-feeForm'] ? 'disable-box' : '']"
+                                  v-model="responses[filing.id +'-surcharge']"
+                                  placeholder="Type here..."
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -552,6 +645,14 @@
                             <span class="italic">pro se</span>, and hereby
                             enters this notice of appearance in the above
                             captioned action.
+                            <span
+                              class="email-test"
+                              v-if="settings.emailConsent"
+                              ><br /><br />By signing this notice of appearance
+                              below, I herby agree to the acceptance of all
+                              electronic filings at the following email address:
+                              <b>{{petitioner.email}}</b>.</span
+                            >
                           </template>
                           <template v-else>
                             NOW COMES <span>{{settings['attorney']}}</span>, by
@@ -562,7 +663,134 @@
                           </template>
                         </p>
                       </div>
-
+                      <!-- Fee Waiver -->
+                      <div
+                        v-bind:id="filing.id"
+                        class="filing-body"
+                        v-if="filing.type == 'feeWaiver'"
+                      >
+                        <p class="indent">
+                          <template>
+                            <p class="indent">
+                              NOW COMES {{petitioner.name}} (DOB:
+                              {{petitioner.dob | dateFormatSimple}}),
+                              <template v-if="proSeFromRole(settings.role)"
+                                >appearing <span class="italic">pro se</span>
+                              </template>
+                              <template v-else>
+                                by and through counsel,
+                                <span>{{settings['attorney']}}</span> </template
+                              >, and hereby moves the Court to
+                              <span
+                                v-if="$options.filters.returnFine(filing.id)>0"
+                                >waive surcharges </span
+                              ><span
+                                v-if="$options.filters.returnFine(filing.id)>0 && $options.filters.returnSurcharge(filing.id)>0"
+                                >and
+                              </span>
+                              <span
+                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                >suspend the fines </span
+                              >associated with the above-captioned case for the
+                              reasons set forth herein.
+                            </p>
+                            <ol>
+                              <li
+                                v-if="$options.filters.returnFine(filing.id)>0"
+                              >
+                                Pursuant to 13 V.S.A. &#167; 7282(b), surcharges
+                                can be waived in an expungement or sealing
+                                proceeding "where the petitioner demonstrates an
+                                inability to pay."
+                              </li>
+                              <li
+                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                              >
+                                Pursuant to 13 V.S.A &#167; 7178 "[a] Superior
+                                judge, in his or her discretion, may suspend all
+                                or any part of the fine assessed against a
+                                respondent."
+                              </li>
+                              <li
+                                v-if="$options.filters.returnFine(filing.id)>0"
+                              >
+                                At the time of conviction, the court fined
+                                Petitioner ${{ filing.id | returnFine }}.
+                              </li>
+                              <li
+                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                              >
+                                At the time of conviction, the court assessed
+                                Petitioner a surcharge of ${{ filing.id |
+                                returnSurcharge }}.
+                              </li>
+                              <li>
+                                Petitioner has contemporaneously filed petition
+                                for record clearance.
+                              </li>
+                              <li>
+                                But for these legal financial obligations,
+                                petitioner is eligible for relief.
+                              </li>
+                              <li>
+                                Petitioner is unable to pay these legal
+                                financial obligations.
+                              </li>
+                              <li>
+                                Waiver of legal financial obligations would
+                                further the interests of justice for the reasons
+                                set forth in the attached affidavit and because
+                                the relief petitioner seeks should not be barred
+                                due to economic status.
+                              </li>
+                            </ol>
+                          </template>
+                        </p>
+                      </div>
+                      <!-- Fee waiver affidavit -->
+                      <div
+                        class="filing-body"
+                        v-bind:id="filing.id"
+                        v-if="filing.type == 'feeWaiverAffidavit' && !responses[filing.id +'-feeForm']"
+                      >
+                        <p class="indent">
+                          <template>
+                            {{petitioner.name}}, being duly sworn, deposes and
+                            says under oath:
+                            <ol>
+                              <li>
+                                I am petitioning the Court to clear my Vermont
+                                criminal record in the above referenced matter.
+                              </li>
+                              <li
+                                v-if="$options.filters.returnFine(filing.id)>0"
+                              >
+                                I have outstanding fines totaling ${{ filing.id
+                                | returnFine }}.
+                              </li>
+                              <li
+                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                              >
+                                I have outstanding surcharges totaling ${{
+                                filing.id | returnSurcharge }}.
+                              </li>
+                              <li>
+                                I do not have the means to pay this legal
+                                financial debt without substantial hardship.
+                              </li>
+                              <li>
+                                This debt is the sole remaining barrier to the
+                                relief sought in this matter.
+                              </li>
+                              <li>
+                                I respectfully ask the court to waive this
+                                financial obligation so that I may clear my
+                                record.
+                              </li>
+                            </ol>
+                          </template>
+                        </p>
+                      </div>
                       <!-- (Stipulated) Petiton To Expunge Conviction -->
                       <div
                         class="filing-body"
@@ -990,9 +1218,12 @@
                           justice, as
                         </p>
                       </div>
+
                       <!-- End Unique Portion of Filings -->
 
-                      <template v-if="filing.type != 'NoA'">
+                      <template
+                        v-if="filing.type != 'NoA' && filing.type != 'feeWaiver'"
+                      >
                         <div class="filing-body__response">
                           <p
                             class="no-visible"
@@ -1007,7 +1238,9 @@
                       </template>
 
                       <!-- Begin generic footer -->
-                      <template v-if="filing.type != 'NoA'">
+                      <template
+                        v-if="filing.type != 'NoA' && filing.type != 'feeWaiverAffidavit'"
+                      >
                         <div class="filing-closing">
                           <p class="filing-closing__salutation">
                             Respectfully requested,
@@ -1107,6 +1340,61 @@
                           </div>
                         </div>
                       </template>
+                      <template v-if="filing.type == 'feeWaiverAffidavit'">
+                        <div class="filing-closing">
+                          I do swear and affirm that the above statement made by
+                          me is true and accurate to the best of my knowledge
+                          and belief.
+                          <filing-dated-city
+                            v-if="!proSeFromRole(settings.role)"
+                          ></filing-dated-city>
+                          <div
+                            class="filing-closing__signature-area filing-closing--align-right"
+                          >
+                            <div class="filing-closing__signature-box">
+                              <template>
+                                <p class="filing-closing__name">
+                                  {{petitioner.name}}, Petitioner
+                                </p>
+                                <p
+                                  class="filing-closing__petitioner-address"
+                                  v-html="petitioner.address"
+                                ></p>
+                              </template>
+                            </div>
+                            <div
+                              v-if="proSeFromRole(settings.role)"
+                              class="filing-closing__date-area-prose"
+                            >
+                              Date
+                            </div>
+                          </div>
+                        </div>
+                        <div class="filing-closing">
+                          <template>
+                            <div class="notary-block">
+                              <br />
+                              <p>STATE OF VERMONT</p>
+                              <p>___________________ COUNTY, ss.</p>
+                              <br />
+                              <p>
+                                Sworn to and subscribed before me this ______
+                                day of ________________, _______ by
+                                {{petitioner.name}}, who acknowledged the
+                                execution of the foregoing AFFIDAVIT IN SUPPORT
+                                OF MOTION TO WAIVE LEGAL FINANCIAL OBLIGATIONS
+                                to be their own free act and deed.
+                              </p>
+                              <br /><br />
+                              <p>_____________________________</p>
+                              <p>Notary Public</p>
+                              <p>
+                                My Commission Expires {{getNextNotaryDate()}}.
+                              </p>
+                            </div>
+                          </template>
+                        </div>
+                      </template>
                       <!-- End generic footer -->
                     </div>
                   </article>
@@ -1169,6 +1457,6 @@
 
     <script id="script" src="components.js"></script>
     <script id="script" src="filings.js"></script>
-    <script id="script" src="csv.js"></script>
+    <script id="script" src="saveFile.js"></script>
   </body>
 </html>

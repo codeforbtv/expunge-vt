@@ -176,6 +176,7 @@ a.btn {
   list-style: none;
   counter-reset: petition-counter;
 }
+
 li.filing-nav__child-link {
   counter-increment: petition-counter;
   padding-left: 30px;
@@ -284,6 +285,11 @@ p.document-meta-data__body {
   max-width: 11rem;
   width: 50%;
   min-width: 9rem;
+}
+
+.page .filing-title {
+  margin:auto;
+  max-width: 500px;
 }
 
 .page .filing-title,
@@ -404,6 +410,13 @@ p.filing-dated-city {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 }
+
+/* Ordered Lists */
+
+.filing-body li {
+  list-style-position: inside;
+  text-indent: -1em;
+  }
 /* Use "fill-in" for a solid underline where people need to fill in 
  * information. Use one of the cascading modifiers to get the desired width. 
  */
@@ -719,3 +732,159 @@ p.filing-dated-city {
   height: 1.2em;
   margin-left: 20px;
 }
+
+.fee-label {
+  width: 100px;
+  margin-left: 25px;
+  font-weight: bold;
+}
+.dollar {
+  font: 1.5em bold;
+  margin: 0 3px 0 3px;
+}
+.fee-row input {
+  width: 100px;
+}
+.fee-row {
+  display: flex;
+  flex-direction: row;
+  margin: 3px;
+}
+.disable-box {
+  /* all: unset; */
+  background-color: #656a70 !important;
+}
+
+.fee-check-box {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  margin: 20px auto 0 auto;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+.fee-check-box span {
+  margin: 5px 15px 5px 10px;
+}
+.consolidate-options label {
+  display: flex;
+  flex-direction: column;
+  width: 75px;
+  text-align: center;
+  font-weight: bold;
+}
+.consolidate-options {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0 0 0;
+}
+
+.form-check {
+  display: flex;
+  flex-direction: row;
+}
+
+.switch_box {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+/* Switch 4 Specific Style Start */
+
+.form-check-label {
+  text-align: center;
+  width: 100%;
+}
+
+.input_wrapper {
+  width: 80px;
+  height: 40px;
+  position: relative;
+  cursor: pointer;
+}
+
+.input_wrapper input[type='checkbox'] {
+  width: 80px;
+  height: 40px;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #315e7f;
+  border-radius: 2px;
+  position: relative;
+  outline: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.input_wrapper input[type='checkbox']:after {
+  position: absolute;
+  content: '';
+  top: 3px;
+  left: 3px;
+  width: 34px;
+  height: 34px;
+  background: #dfeaec;
+  z-index: 2;
+  border-radius: 2px;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+}
+
+.input_wrapper svg {
+  position: absolute;
+  top: 50%;
+  -webkit-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+  fill: #fff;
+  -webkit-transition: all 0.35s;
+  transition: all 0.35s;
+  z-index: 1;
+}
+
+.input_wrapper .is_checked {
+  width: 18px;
+  left: 18%;
+  -webkit-transform: translateX(190%) translateY(-30%) scale(0);
+  transform: translateX(190%) translateY(-30%) scale(0);
+}
+
+.input_wrapper .is_unchecked {
+  width: 15px;
+  right: 10%;
+  -webkit-transform: translateX(0) translateY(-30%) scale(1);
+  transform: translateX(0) translateY(-30%) scale(1);
+}
+
+/* Checked State */
+.input_wrapper input[type='checkbox']:checked {
+  background: #23da87;
+}
+
+.input_wrapper input[type='checkbox']:checked:after {
+  left: calc(100% - 37px);
+}
+
+.input_wrapper input[type='checkbox']:checked + .is_checked {
+  -webkit-transform: translateX(0) translateY(-30%) scale(1);
+  transform: translateX(0) translateY(-30%) scale(1);
+}
+
+.input_wrapper input[type='checkbox']:checked ~ .is_unchecked {
+  -webkit-transform: translateX(-190%) translateY(-30%) scale(0);
+  transform: translateX(-190%) translateY(-30%) scale(0);
+}
+
+/* Switch 4 Specific Style End */

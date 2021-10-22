@@ -6,6 +6,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "bootstrap": "^4.4.1",
+    "bootstrap4-toggle": "^3.6.1",
     "gumshoejs": "^5.1.2",
     "jquery": "^3.5.0",
     "moment": "^2.24.0",

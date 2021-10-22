@@ -30,13 +30,13 @@ Vue.component('filing-nav', {
         </li>
         <br>
         <li v-for="group in filings" class="filing-nav__parent-link">
-        <a href v-bind:href="'#'+group.county">{{group.county}}</a>
-        <ol>
-          <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-            <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
-            <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
-          </li>
-        </ol>
+          <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+          <ol>
+            <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
+              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
+              <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
+            </li>
+          </ol>
         </li>
       </ol>
       </div>
@@ -125,15 +125,16 @@ Vue.component('pills-row', {
                 </span>
                 <template v-if="count.offenseDisposition">
                 <span v-if="count.isDismissed === true" class="pill pill--rounded pill--outline-green">
-                    {{count.offenseDisposition}}
+                  {{dispositionTrimmer(count.offenseDisposition)}}
                 </span>
                 <span v-if="count.isDismissed === false" class="pill pill--rounded pill--outline-black">
-                    {{count.offenseDisposition}}
+                    {{dispositionTrimmer(count.offenseDisposition)}}
                 </span>
                 </template>
                 <template v-if="count.dispositionDate">
-                <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) < 18" class='pill pill--rounded pill--outline-green'> Under 18 at time of disposition</span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 18 && decimalAgeInYears(count.dispositionDate) < 21" class='pill pill--rounded pill--outline-green'> Under 21 </span>
+                <span v-if="decimalAgeInYears(count.dispositionDate) >= 21 && decimalAgeInYears(count.dispositionDate) < 25" class='pill pill--rounded pill--outline-green'> Under 25 </span>
                 <span v-if="decimalAgeInYears(count.dispositionDate) >= 21" class='pill pill--rounded pill--outline-black'> Adult </span>
                 </template>
                 <span v-if="count.outstandingPayment == true" class='pill pill--rounded pill--outline-black'>Surcharge</span>
@@ -147,7 +148,16 @@ Vue.component('pills-row', {
       if (!this.dob) return '';
       let fromTime = moment(value).diff(moment(this.dob));
       let duration = moment.duration(fromTime);
-      return duration.asDays() / 365.25;
+      return (duration.asDays() / 365.25).toFixed(2);
+    },
+    dispositionTrimmer: function (dispo) {
+      let trimmedDisp = '';
+      if (dispo.length > 15) {
+        trimmedDisp = dispo.substring(0, 15) + '...';
+      } else {
+        trimmedDisp = dispo;
+      }
+      return trimmedDisp;
     },
   },
 });
