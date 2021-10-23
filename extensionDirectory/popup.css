@@ -343,8 +343,15 @@ hr {
   margin:15px auto 0px auto;
   width:70%;
   text-align: center;
-  border: 2px solid black;
+  border: 2px solid #003300;
+  color: #4d99d3;
   font-weight: 800;
+}
+
+.popup-edition-sub {
+  text-align: center;
+  color: #4d99d3;
+  font-style: italic;
 }
 
 .donate-box {
