@@ -89,9 +89,7 @@
           </p>
         </a>
         <a target="_blank" href="disclaimer.html" class="title-page__link">
-          <p>
-            Terms &amp; Conditions <i class="fas fa-external-link-alt"></i>
-          </p>
+          <p>Terms &amp; Conditions <i class="fas fa-external-link-alt"></i></p>
         </a>
         <div class="donate-box">
           <a
@@ -99,7 +97,9 @@
             href="https://www.paypal.com/paypalme/c4btv"
             target="_blank"
           >
-            Donate to Code for BTV!&nbsp;&nbsp;&nbsp;<i class="fas fa-hand-holding-usd"></i>
+            Donate to Code for BTV!&nbsp;&nbsp;&nbsp;<i
+              class="fas fa-hand-holding-usd"
+            ></i>
           </a>
         </div>
       </div>
@@ -161,7 +161,26 @@
             />
           </div>
         </div>
-
+        <div class="pet-item pet-label-info">
+          <span>
+            <a
+              class=""
+              data-toggle="collapse"
+              href="#bugWarning"
+              role="button"
+              aria-expanded="false"
+              aria-controls="bugWarning"
+            >
+              <i class="fas fa-exclamation-triangle"></i>
+              Issues and Bugs?
+            </a>
+          </span>
+          <div class="collapse" id="bugWarning">
+            <div class="card card-body">
+              Closing all petition windows (without closing browser) may help stop unexpected behavior. Save your file in the petitions screen before closing the browser, and try restarting the browser. If you are still experiencing issues, contact <a href="https://codeforbtv.org/contact/" target="_blank">Code for BTV for assistance.</a>
+            </div>
+          </div>
+        </div>
         <div class="popTop inset text-center bottom-div">
           <div class="inset text-center button-div">
             <button v-on:click="addDocketCounts" class="btn btn-primary">
@@ -270,21 +289,26 @@
                 <div class="row text-left">
                   <div class="col-4">
                     Offense Date:<br />
-                    {{count.allegedOffenseDate | dateFormatSimple}} ({{count.allegedOffenseDate | stringAgeInYearsAtDate(saved.defDOB)}})
+                    {{count.allegedOffenseDate | dateFormatSimple}}
+                    ({{count.allegedOffenseDate |
+                    stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.allegedOffenseDate"
                       >&nbsp;Not Entered</span
                     >
                   </div>
                   <div class="col-4">
                     Arrest/Citation Date:<br />
-                    {{count.arrestCitationDate | dateFormatSimple}} ({{count.arrestCitationDate | stringAgeInYearsAtDate(saved.defDOB)}})
+                    {{count.arrestCitationDate | dateFormatSimple}}
+                    ({{count.arrestCitationDate |
+                    stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.arrestCitationDate"
                       >&nbsp;Not Entered</span
                     >
                   </div>
                   <div class="col-4">
                     Disposition Date:<br />{{count.dispositionDate |
-                    dateFormatSimple}} ({{count.dispositionDate | stringAgeInYearsAtDate(saved.defDOB)}})
+                    dateFormatSimple}} ({{count.dispositionDate |
+                    stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.dispositionDate">&nbsp;Pending</span>
                   </div>
                 </div>
