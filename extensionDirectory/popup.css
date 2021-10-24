@@ -53,6 +53,33 @@ p.pet-detail {
   font-weight: bold;
   font-family: Helvetica, Arial, sans-serif;
 }
+.pet-label-info {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.pet-label-info a,
+.pet-label-info a:hover,
+.pet-label-info a:link,
+.pet-label-info a:active,
+.pet-label-info a:visited {
+  text-decoration: none;
+}
+
+.pet-label-info .card {
+  display: block;
+}
+
+.fa-exclamation-triangle {
+  color: red;
+}
 
 .pet-detail[contenteditable='true'] {
   outline: 1px solid black;
@@ -223,7 +250,7 @@ hr {
   flex-direction: row;
   width: auto;
   justify-content: center;
-  margin: 25px 10px 5px 10px;
+  margin: 15px 10px 5px 10px;
   text-align: center;
 }
 
@@ -337,14 +364,21 @@ hr {
   background-color: transparent;
 }
 .popup-edition-wrap {
-  width:100%;
+  width: 100%;
 }
 .popup-edition {
-  margin:15px auto 0px auto;
-  width:70%;
+  margin: 15px auto 0px auto;
+  width: 70%;
   text-align: center;
-  border: 2px solid black;
+  border: 2px solid #003300;
+  color: #4d99d3;
   font-weight: 800;
+}
+
+.popup-edition-sub {
+  text-align: center;
+  color: #4d99d3;
+  font-style: italic;
 }
 
 .donate-box {

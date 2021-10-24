@@ -27,7 +27,7 @@ function devLog(data) {
   // see https://developer.chrome.com/extensions/management#method-getSelf
   chrome.management.getSelf(function (self) {
     if (self.installType == 'development') {
-      // console.log(data);
+      console.log(data);
     }
   });
 }
@@ -69,7 +69,6 @@ function initSmoothScroll() {
 
 function detectChangesInChromeStorage() {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
-    console.log(changes);
     var countsChange = changes['counts'];
     var responsesChange = changes['responses'];
 
@@ -916,19 +915,14 @@ var app = new Vue({
       let concatDocket = shortDocket + ' ' + countyCodeFromCounty(county);
 
       if (concatDocket !== longDocket) {
-        console.log('FALSE');
-
         return false;
       } else {
-        console.log('TRUE');
-
         return true;
       }
     },
     getFeeWaiverStatusFromFiling: function (filingId) {
       docket =
         'NoA-' + filingId.substring(filingId.indexOf('-') + 1) + '-feeForm';
-      console.log(app.responses[docket]);
       return app.responses[docket];
     },
     numOfFeeWaiversInGroup: function (filings) {
@@ -1146,7 +1140,6 @@ var app = new Vue({
       return surcharge;
     },
     stringAgeInYearsAtDate: function (date, dob) {
-      console.log(date);
       if (!date) return '';
       if (!dob) return '';
       let fromTime = moment(date).diff(moment(dob));
