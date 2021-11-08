@@ -177,6 +177,7 @@ var app = new Vue({
       role: 'AttyConsult',
       forVla: true,
       emailConsent: false,
+      affidavitRequired: false,
       groupCounts: false,
       groupNoas: false,
     },
@@ -232,7 +233,13 @@ var app = new Vue({
     },
     saved: {
       handler() {
-        devLog('counts updated');
+        devLog(
+          'counts updated - line:' +
+            new Error().stack
+              .split('\n')[1]
+              .split('filings.js')[1]
+              .replace(')', '')
+        );
         this.saveCounts();
         app.$nextTick(function () {
           //call any vanilla js functions after update.
@@ -251,7 +258,13 @@ var app = new Vue({
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog('adminConfig data has been set: ');
+        devLog(
+          'adminConfig data has been set at line: ' +
+            new Error().stack
+              .split('\n')[1]
+              .split('filings.js')[1]
+              .replace(')', '')
+        );
         devLog(data);
       }.bind(this)
     );
@@ -271,7 +284,13 @@ var app = new Vue({
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      devLog('save responses');
+      devLog(
+        'save responses' +
+          new Error().stack
+            .split('\n')[1]
+            .split('filings.js')[1]
+            .replace(')', '')
+      );
       chrome.storage.local.set({
         responses: app.responses,
       });
@@ -674,7 +693,7 @@ var app = new Vue({
         case 'feeWaiver':
           return 'Motion to Waive Legal Financial Obligations';
         case 'feeWaiverAffidavit':
-          return "Petitioner's Affidavit in Support of Motion to Waive Legal Financial Obligations";
+          return "Petitioner's Sworn Statement in Support of Motion to Waive Legal Financial Obligations";
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -887,7 +906,6 @@ var app = new Vue({
         };
       }
     },
-
     printDocument: function () {
       window.print();
     },
@@ -942,6 +960,21 @@ var app = new Vue({
       function isOdd(num) {
         let numInt = parseInt(num.format('YYYY'));
         return numInt % 2;
+      }
+    },
+    notarizableFilings: function (filings) {
+      let affidavitCount = 0;
+      filings.forEach((county) => {
+        county.filings.forEach((filing) => {
+          if (filing.type === 'feeWaiverAffidavit') {
+            affidavitCount++;
+          }
+        });
+      });
+      if (affidavitCount > 0) {
+        return true;
+      } else {
+        return false;
       }
     },
   },

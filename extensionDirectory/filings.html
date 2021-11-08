@@ -177,6 +177,16 @@
                   <input type="checkbox" v-model="settings.emailConsent" />
                 </label>
               </div>
+              <div v-if="notarizableFilings(filings)">
+                <span
+                  >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b
+                    >Affidavits Required:
+                  </b></span
+                >
+                <label>
+                  <input type="checkbox" v-model="settings.affidavitRequired" />
+                </label>
+              </div>
               <button
                 v-on:click="printDocument"
                 class="btn btn-primary no-print"
@@ -310,8 +320,8 @@
                                 {{group.county}} county.</span
                               ><span
                                 v-if="numOfFeeWaiversInGroup(group.filings) > 1"
-                                >{{numOfFeeWaiversInGroup(group.filings)}}
-                                fee waivers for {{group.county}} county and an
+                                >{{numOfFeeWaiversInGroup(group.filings)}} fee
+                                waivers for {{group.county}} county and an
                                 affidavit for each.</span
                               >
                             </li>
@@ -1342,9 +1352,10 @@
                       </template>
                       <template v-if="filing.type == 'feeWaiverAffidavit'">
                         <div class="filing-closing">
-                          I do swear and affirm that the above statement made by
-                          me is true and accurate to the best of my knowledge
-                          and belief.
+                          I declare that the above statement is true and
+                          accurate to the best of my knowledge and belief. I
+                          understand that if the above statement is false, I may
+                          be subject to sanctions by the Court for contempt.
                           <filing-dated-city
                             v-if="!proSeFromRole(settings.role)"
                           ></filing-dated-city>
@@ -1371,7 +1382,7 @@
                           </div>
                         </div>
                         <div class="filing-closing">
-                          <template>
+                          <template v-if="settings.affidavitRequired">
                             <div class="notary-block">
                               <br />
                               <p>STATE OF VERMONT</p>
