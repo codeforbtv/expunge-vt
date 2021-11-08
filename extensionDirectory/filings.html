@@ -180,7 +180,7 @@
               <div v-if="notarizableFilings(filings)">
                 <span
                   >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b
-                    >Affidavits Required:
+                    >Fee Affidavits Required:
                   </b></span
                 >
                 <label>
@@ -316,13 +316,13 @@
                             <li>
                               <span
                                 v-if="numOfFeeWaiversInGroup(group.filings) == 1"
-                                >One fee waiver and affidavit for
+                                >One fee waiver and supporting sworn statement for
                                 {{group.county}} county.</span
                               ><span
                                 v-if="numOfFeeWaiversInGroup(group.filings) > 1"
                                 >{{numOfFeeWaiversInGroup(group.filings)}} fee
-                                waivers for {{group.county}} county and an
-                                affidavit for each.</span
+                                waivers for {{group.county}} county and a supporting
+                                sworn statement for each.</span
                               >
                             </li>
                           </span>
@@ -749,7 +749,7 @@
                               <li>
                                 Waiver of legal financial obligations would
                                 further the interests of justice for the reasons
-                                set forth in the attached affidavit and because
+                                set forth in the attached sworn statement and because
                                 the relief petitioner seeks should not be barred
                                 due to economic status.
                               </li>
