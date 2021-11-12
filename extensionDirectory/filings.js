@@ -882,8 +882,8 @@ var app = new Vue({
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
     loadCaseFile: function () {
-      // alert("So do we run payload here?")
       chrome.tabs.executeScript(null, { file: 'payload.js' });
+      // chrome.tabs.create({url: "chrome://extensions/?id=" + chrome.runtime.id});
     },
     confirmClearData: function () {
       if (
