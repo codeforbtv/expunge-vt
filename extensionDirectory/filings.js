@@ -881,7 +881,27 @@ var app = new Vue({
       // see: https://stackoverflow.com/a/42989406/263900
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
-    loadCaseFile: function () {
+    loadCaseFile: async function () {
+      var query = { active: true, currentWindow: true };
+      function getTabUrl() {
+        return new Promise((resolve, reject) => {
+          try {
+            chrome.tabs.query(query, function (tabs) {
+              resolve(tabs[0].url);
+            });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+      let url = await getTabUrl();
+      if (url.split('/')[0] != 'file:') {
+        alert(
+          'The Load Case File function only works for expungeVT files saved on your computer. You may need to right click or ctrl+click (on Mac) on the file to open the file in Chrome. Then follow the instructions on your screen.'
+        );
+        return;
+      }
+
       chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
         if (isAllowedAccess) {
           // alert for a quick demonstration, please create your own user-friendly UI
