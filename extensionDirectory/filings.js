@@ -888,7 +888,7 @@ var app = new Vue({
           chrome.tabs.executeScript(null, { file: 'payload.js' });
         } else {
           var goToSettings = confirm(
-            'You need to grant file permissions to load a case file. Would you like to go to settings?'
+            'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
           );
           if (goToSettings) {
             chrome.tabs.create({
