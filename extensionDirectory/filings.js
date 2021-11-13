@@ -882,8 +882,21 @@ var app = new Vue({
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
     loadCaseFile: function () {
-      chrome.tabs.executeScript(null, { file: 'payload.js' });
-      // chrome.tabs.create({url: "chrome://extensions/?id=" + chrome.runtime.id});
+      chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
+        if (isAllowedAccess) {
+          // alert for a quick demonstration, please create your own user-friendly UI
+          chrome.tabs.executeScript(null, { file: 'payload.js' });
+        } else {
+          var goToSettings = confirm(
+            'You need to grant file permissions to load a case file. Would you like to go to settings?'
+          );
+          if (goToSettings) {
+            chrome.tabs.create({
+              url: 'chrome://extensions/?id=' + chrome.runtime.id,
+            });
+          }
+        }
+      });
     },
     confirmClearData: function () {
       if (
