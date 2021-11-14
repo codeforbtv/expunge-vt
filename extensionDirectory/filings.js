@@ -176,7 +176,7 @@ var app = new Vue({
       customNote: '',
       role: 'AttyConsult',
       forVla: true,
-      emailConsent: false,
+      emailConsent: true,
       affidavitRequired: false,
       groupCounts: false,
       groupNoas: false,
