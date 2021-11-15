@@ -176,7 +176,8 @@ var app = new Vue({
       customNote: '',
       role: 'AttyConsult',
       forVla: true,
-      emailConsent: false,
+      emailConsent: true,
+      affidavitRequired: false,
       groupCounts: false,
       groupNoas: false,
     },
@@ -232,7 +233,13 @@ var app = new Vue({
     },
     saved: {
       handler() {
-        devLog('counts updated');
+        devLog(
+          'counts updated - line:' +
+            new Error().stack
+              .split('\n')[1]
+              .split('filings.js')[1]
+              .replace(')', '')
+        );
         this.saveCounts();
         app.$nextTick(function () {
           //call any vanilla js functions after update.
@@ -251,7 +258,13 @@ var app = new Vue({
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog('adminConfig data has been set: ');
+        devLog(
+          'adminConfig data has been set at line: ' +
+            new Error().stack
+              .split('\n')[1]
+              .split('filings.js')[1]
+              .replace(')', '')
+        );
         devLog(data);
       }.bind(this)
     );
@@ -271,7 +284,13 @@ var app = new Vue({
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      devLog('save responses');
+      devLog(
+        'save responses' +
+          new Error().stack
+            .split('\n')[1]
+            .split('filings.js')[1]
+            .replace(')', '')
+      );
       chrome.storage.local.set({
         responses: app.responses,
       });
@@ -674,7 +693,7 @@ var app = new Vue({
         case 'feeWaiver':
           return 'Motion to Waive Legal Financial Obligations';
         case 'feeWaiverAffidavit':
-          return "Petitioner's Affidavit in Support of Motion to Waive Legal Financial Obligations";
+          return "Petitioner's Sworn Statement in Support of Motion to Waive Legal Financial Obligations";
         case 'StipExC':
           return 'Stipulated Petition to Expunge Conviction';
         case 'ExC':
@@ -862,9 +881,42 @@ var app = new Vue({
       // see: https://stackoverflow.com/a/42989406/263900
       chrome.tabs.executeScript(null, { file: 'payload.js' });
     },
-    loadCaseFile: function () {
-      // alert("So do we run payload here?")
-      chrome.tabs.executeScript(null, { file: 'payload.js' });
+    loadCaseFile: async function () {
+      var query = { active: true, currentWindow: true };
+      function getTabUrl() {
+        return new Promise((resolve, reject) => {
+          try {
+            chrome.tabs.query(query, function (tabs) {
+              resolve(tabs[0].url);
+            });
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }
+      let url = await getTabUrl();
+      if (url.split('/')[0] != 'file:') {
+        alert(
+          'The Load Case File function only works for expungeVT files saved on your computer. You may need to right click or ctrl+click (on Mac) on the file to open the file in Chrome. Then follow the instructions on your screen.'
+        );
+        return;
+      }
+
+      chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
+        if (isAllowedAccess) {
+          // alert for a quick demonstration, please create your own user-friendly UI
+          chrome.tabs.executeScript(null, { file: 'payload.js' });
+        } else {
+          var goToSettings = confirm(
+            'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
+          );
+          if (goToSettings) {
+            chrome.tabs.create({
+              url: 'chrome://extensions/?id=' + chrome.runtime.id,
+            });
+          }
+        }
+      });
     },
     confirmClearData: function () {
       if (
@@ -887,7 +939,6 @@ var app = new Vue({
         };
       }
     },
-
     printDocument: function () {
       window.print();
     },
@@ -942,6 +993,21 @@ var app = new Vue({
       function isOdd(num) {
         let numInt = parseInt(num.format('YYYY'));
         return numInt % 2;
+      }
+    },
+    notarizableFilings: function (filings) {
+      let affidavitCount = 0;
+      filings.forEach((county) => {
+        county.filings.forEach((filing) => {
+          if (filing.type === 'feeWaiverAffidavit') {
+            affidavitCount++;
+          }
+        });
+      });
+      if (affidavitCount > 0) {
+        return true;
+      } else {
+        return false;
       }
     },
   },

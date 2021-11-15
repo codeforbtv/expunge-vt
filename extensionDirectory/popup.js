@@ -520,11 +520,15 @@ function beautifyDisposition(text) {
  * @returns string
  */
 function generateCountUID(offense) {
+  let dispo = '';
+  offense.offenseDisposition
+    ? (dispo = beautifyDisposition(offense.offenseDisposition))
+    : 'No Disposition';
   const uid =
     offense.docketSheetNum +
     `_Count${offense.countNum}_` +
     `${offense.description}_` +
-    beautifyDisposition(offense.offenseDisposition);
+    dispo;
   return uid.split(' ').join('_');
 }
 

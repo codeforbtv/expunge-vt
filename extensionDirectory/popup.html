@@ -50,7 +50,7 @@
           />
         </div>
         <div class="popup-edition-wrap">
-          <p class="popup-edition">ExpungeVT 4.0 - Co-counsel Edition</p>
+          <p class="popup-edition">ExpungeVT 4.1 - Co-counsel Edition</p>
           <p class="popup-edition-sub">Expunge Harder. Expunge Smarter.</p>
         </div>
         <div class="inset text-center button-div">
@@ -177,7 +177,13 @@
           </span>
           <div class="collapse" id="bugWarning">
             <div class="card card-body">
-              Closing all petition windows (without closing browser) may help stop unexpected behavior. Save your file in the petitions screen before closing the browser, and try restarting the browser. If you are still experiencing issues, contact <a href="https://codeforbtv.org/contact/" target="_blank">Code for BTV for assistance.</a>
+              Closing all petition windows (without closing browser) may help
+              stop unexpected behavior. Save your file in the petitions screen
+              before closing the browser, and try restarting the browser. If you
+              are still experiencing issues, contact
+              <a href="https://codeforbtv.org/contact/" target="_blank"
+                >Code for BTV for assistance.</a
+              >
             </div>
           </div>
         </div>
@@ -289,27 +295,34 @@
                 <div class="row text-left">
                   <div class="col-4">
                     Offense Date:<br />
-                    {{count.allegedOffenseDate | dateFormatSimple}}
-                    ({{count.allegedOffenseDate |
-                    stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.allegedOffenseDate"
                       >&nbsp;Not Entered</span
+                    >
+                    <span v-else
+                      >{{count.allegedOffenseDate | dateFormatSimple}}
+                      ({{count.allegedOffenseDate |
+                      stringAgeInYearsAtDate(saved.defDOB)}})</span
                     >
                   </div>
                   <div class="col-4">
                     Arrest/Citation Date:<br />
-                    {{count.arrestCitationDate | dateFormatSimple}}
-                    ({{count.arrestCitationDate |
-                    stringAgeInYearsAtDate(saved.defDOB)}})
                     <span v-if="!count.arrestCitationDate"
                       >&nbsp;Not Entered</span
                     >
+                    <span v-else
+                      >{{count.arrestCitationDate | dateFormatSimple}}
+                      ({{count.arrestCitationDate |
+                      stringAgeInYearsAtDate(saved.defDOB)}})</span
+                    >
                   </div>
                   <div class="col-4">
-                    Disposition Date:<br />{{count.dispositionDate |
-                    dateFormatSimple}} ({{count.dispositionDate |
-                    stringAgeInYearsAtDate(saved.defDOB)}})
+                    Disposition Date:<br />
                     <span v-if="!count.dispositionDate">&nbsp;Pending</span>
+                    <span v-else
+                      >{{count.dispositionDate | dateFormatSimple}}
+                      ({{count.dispositionDate |
+                      stringAgeInYearsAtDate(saved.defDOB)}})</span
+                    >
                   </div>
                 </div>
               </div>
