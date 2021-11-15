@@ -313,16 +313,18 @@
                                 ({{returnCountyContact(group.county)}})</span
                               >
                             </li>
-                            <li v-if="numOfFeeWaiversInGroup(group.filings) > 0">
+                            <li
+                              v-if="numOfFeeWaiversInGroup(group.filings) > 0"
+                            >
                               <span
                                 v-if="numOfFeeWaiversInGroup(group.filings) == 1"
-                                >One fee waiver and supporting sworn statement for
-                                {{group.county}} county.</span
+                                >One fee waiver and supporting sworn statement
+                                for {{group.county}} county.</span
                               ><span
                                 v-if="numOfFeeWaiversInGroup(group.filings) > 1"
                                 >{{numOfFeeWaiversInGroup(group.filings)}} fee
-                                waivers for {{group.county}} county and a supporting
-                                sworn statement for each.</span
+                                waivers for {{group.county}} county and a
+                                supporting sworn statement for each.</span
                               >
                             </li>
                           </span>
@@ -692,21 +694,21 @@
                                 <span>{{settings['attorney']}}</span> </template
                               >, and hereby moves the Court to
                               <span
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                              v-if="$options.filters.returnSurcharge(filing.id)>0"
                                 >waive surcharges </span
                               ><span
                                 v-if="$options.filters.returnFine(filing.id)>0 && $options.filters.returnSurcharge(filing.id)>0"
                                 >and
                               </span>
                               <span
-                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                v-if="$options.filters.returnFine(filing.id)>0"
                                 >suspend the fines </span
                               >associated with the above-captioned case for the
                               reasons set forth herein.
                             </p>
                             <ol>
                               <li
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                                v-if="$options.filters.returnSurcharge(filing.id)>0"
                               >
                                 Pursuant to 13 V.S.A. &#167; 7282(b), surcharges
                                 can be waived in an expungement or sealing
@@ -714,7 +716,7 @@
                                 inability to pay."
                               </li>
                               <li
-                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                v-if="$options.filters.returnFine(filing.id)>0"
                               >
                                 Pursuant to 13 V.S.A &#167; 7178 "[a] Superior
                                 judge, in his or her discretion, may suspend all
@@ -749,9 +751,9 @@
                               <li>
                                 Waiver of legal financial obligations would
                                 further the interests of justice for the reasons
-                                set forth in the attached sworn statement and because
-                                the relief petitioner seeks should not be barred
-                                due to economic status.
+                                set forth in the attached sworn statement and
+                                because the relief petitioner seeks should not
+                                be barred due to economic status.
                               </li>
                             </ol>
                           </template>
