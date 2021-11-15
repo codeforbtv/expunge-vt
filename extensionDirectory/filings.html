@@ -313,7 +313,7 @@
                                 ({{returnCountyContact(group.county)}})</span
                               >
                             </li>
-                            <li>
+                            <li v-if="numOfFeeWaiversInGroup(group.filings) > 0">
                               <span
                                 v-if="numOfFeeWaiversInGroup(group.filings) == 1"
                                 >One fee waiver and supporting sworn statement for
