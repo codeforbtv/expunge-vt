@@ -1,6 +1,6 @@
 {
   "name": "ExpungeVT!",
-  "version": "4.1",
+  "version": "4.1.1",
   "description": "Co-counsel Edition - Expunge Harder. Expunge Smarter.",
   "permissions": [
     "storage",
