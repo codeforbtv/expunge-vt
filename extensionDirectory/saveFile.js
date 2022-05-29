@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 function saveAllCountsToHtml(savedData) {
   
   if (savedData == null || !savedData.length) {

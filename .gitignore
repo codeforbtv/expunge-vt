@@ -68,3 +68,4 @@ typings/
 .vscode/
 extensionDirectory-build/index.css
 extensionDirectory-build/index.js
+extensionDirectory-build/payload.js
