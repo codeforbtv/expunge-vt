@@ -1,4 +1,5 @@
 // const moment = require('moment');
+import './filings.css';
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;

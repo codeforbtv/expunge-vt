@@ -14,12 +14,15 @@
     "vue": "^2.6.11"
   },
   "devDependencies": {
+    "esbuild": "^0.14.42",
     "prettier": "^2.0.5"
   },
   "scripts": {
     "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild --bundle ./index.js --outfile=../extensionDirectory-build/index.js", 
+    "build:watch": "esbuild --bundle ./index.js --outfile=../extensionDirectory-build/index.js --watch"
   },
   "keywords": [],
   "author": "",

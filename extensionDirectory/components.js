@@ -1,4 +1,6 @@
 //Vue Components
+import Vue from 'vue';
+console.log(Vue);
 
 Vue.component('docket-caption', {
   template: `<div class="docket-caption"> 
