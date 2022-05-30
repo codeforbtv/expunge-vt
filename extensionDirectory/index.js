@@ -1,6 +1,8 @@
 require('jquery');
 require('bootstrap');
 require('bootstrap/dist/css/bootstrap.min.css');
+require('bootstrap4-toggle');
+require('bootstrap4-toggle/css/bootstrap4-toggle.min.css');
 require('./components.js');
 require('./filings.js');
 require('./saveFile.js');
