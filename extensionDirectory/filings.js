@@ -2,6 +2,7 @@ import './filings.css';
 import Vue from 'vue/dist/vue.js';
 import $ from 'jquery';
 import moment from 'moment';
+import Gumshoe from 'gumshoejs'
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
