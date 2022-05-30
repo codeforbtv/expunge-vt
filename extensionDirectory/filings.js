@@ -3,6 +3,7 @@ import Vue from 'vue/dist/vue.js';
 import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'
+import SmoothScroll from 'smooth-scroll';
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
