@@ -1,4 +1,6 @@
 //Vue Components
+import Vue from 'vue/dist/vue.js';
+import moment from 'moment';
 
 Vue.component('docket-caption', {
   template: `<div class="docket-caption"> 

@@ -1,4 +1,9 @@
-// const moment = require('moment');
+import './filings.css';
+import Vue from 'vue/dist/vue.js';
+import $ from 'jquery';
+import moment from 'moment';
+import Gumshoe from 'gumshoejs'
+import SmoothScroll from 'smooth-scroll';
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
@@ -124,7 +129,7 @@ function autoExpand(field) {
   field.style.height = height + 'px';
 }
 
-function countyNameFromCountyCode(countyCode) {
+export function countyNameFromCountyCode(countyCode) {
   counties = {
     Ancr: 'Addison',
     Bncr: 'Bennington',
@@ -234,11 +239,7 @@ var app = new Vue({
     saved: {
       handler() {
         devLog(
-          'counts updated - line:' +
-            new Error().stack
-              .split('\n')[1]
-              .split('filings.js')[1]
-              .replace(')', '')
+          'counts updated - line:' + getError()
         );
         this.saveCounts();
         app.$nextTick(function () {
@@ -259,11 +260,7 @@ var app = new Vue({
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
         devLog(
-          'adminConfig data has been set at line: ' +
-            new Error().stack
-              .split('\n')[1]
-              .split('filings.js')[1]
-              .replace(')', '')
+          'adminConfig data has been set at line: ' + getError()
         );
         devLog(data);
       }.bind(this)
@@ -285,11 +282,7 @@ var app = new Vue({
     },
     saveResponses: function () {
       devLog(
-        'save responses' +
-          new Error().stack
-            .split('\n')[1]
-            .split('filings.js')[1]
-            .replace(')', '')
+        'save responses' + getError()
       );
       chrome.storage.local.set({
         responses: app.responses,
@@ -1214,3 +1207,11 @@ var app = new Vue({
     },
   },
 });
+
+function getError() {
+  return 'TOOD: getError should work :('; // TODO: The code below explodes, so just no-op for now
+  // return new Error().stack
+  //   .split('\n')[1]
+  //   .split('filings.js')[1]
+  //   .replace(')', '')
+}
