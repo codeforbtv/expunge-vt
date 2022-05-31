@@ -211,7 +211,7 @@
           </div>
         </div>
 
-        <filing-nav v-bind:filings="filings"></filing-nav>
+        <filingNav v-bind:filings="filings"></filingNav>
 
         <!-- Cover letter & checkout sheet wrapper -->
         <table class="extra-pages">
@@ -425,7 +425,7 @@
                               <tr
                                 v-if="countsExpungedC.length > 0"
                                 v-bind:key="countsExpungedC + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in countsExpungedC"
                                 v-bind:filing="filing"
                               ></tr>
@@ -439,7 +439,7 @@
                               <tr
                                 v-if="countsExpungedNC.length > 0"
                                 v-bind:key="countsExpungedNC + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in countsExpungedNC"
                                 v-bind:filing="filing"
                               ></tr>
@@ -453,7 +453,7 @@
                               <tr
                                 v-if="countsExpungedNCrim.length > 0"
                                 v-bind:key="countsExpungedNCrim + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in countsExpungedNCrim"
                                 v-bind:filing="filing"
                               ></tr>
@@ -467,7 +467,7 @@
                               <tr
                                 v-if="countsSealC.length > 0"
                                 v-bind:key="countsSealC + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in countsSealC"
                                 v-bind:filing="filing"
                               ></tr>
@@ -481,7 +481,7 @@
                               <tr
                                 v-if="countsSealDui.length > 0"
                                 v-bind:key="countsSealDui + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in countsSealDui"
                                 v-bind:filing="filing"
                               ></tr>
@@ -495,7 +495,7 @@
                               <tr
                                 v-if="ineligible.length > 0"
                                 v-bind:key="ineligible + uniqueId + idx"
-                                is="checkout-offense-row"
+                                is="checkoutOffenseRow"
                                 v-for="(filing, idx) in ineligible"
                                 v-bind:filing="filing"
                               ></tr>
@@ -546,9 +546,9 @@
                             <p>Superior Court</p>
                             <p>{{filing.county}} Unit</p>
                           </div>
-                          <docket-caption
+                          <docketCaption
                             v-bind:name="petitioner.name"
-                          ></docket-caption>
+                          ></docketCaption>
                         </div>
                         <div class="filing-header__half text-right">
                           <div
@@ -1284,17 +1284,17 @@
                             </div>
                           </div>
 
-                          <filing-footer
+                          <filingFooter
                             v-bind:type="filing.type"
                             v-bind:stipulated="filing.isStipulated"
-                          ></filing-footer>
+                          ></filingFooter>
                         </div>
                       </template>
                       <template v-if="filing.type == 'NoA'">
                         <div class="filing-closing">
-                          <filing-dated-city
+                          <filingDatedCity
                             v-if="!proSeFromRole(settings.role)"
-                          ></filing-dated-city>
+                          ></filingDatedCity>
                           <div
                             class="filing-closing__signature-area filing-closing--align-right"
                           >
@@ -1358,9 +1358,9 @@
                           accurate to the best of my knowledge and belief. I
                           understand that if the above statement is false, I may
                           be subject to sanctions by the Court for contempt.
-                          <filing-dated-city
+                          <filingDatedCity
                             v-if="!proSeFromRole(settings.role)"
-                          ></filing-dated-city>
+                          ></filingDatedCity>
                           <div
                             class="filing-closing__signature-area filing-closing--align-right"
                           >
@@ -1468,7 +1468,6 @@
     </div>
     <!-- End Vue App -->
 
-    <script id="script" src="components.js"></script>
     <script id="script" src="filings.js"></script>
     <script id="script" src="saveFile.js"></script>
   </body>

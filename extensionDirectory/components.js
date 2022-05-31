@@ -1,5 +1,5 @@
 //Vue Components
-import Vue from 'vue/dist/vue.js';
+import Vue from 'vue/dist/vue';
 import moment from 'moment';
 
 Vue.component('docket-caption', {
@@ -264,23 +264,3 @@ Vue.component('checkout-offense-row', {
   </tr>`,
   props: ['filing'],
 });
-
-function countyCodeFromCounty(county) {
-  countyCodes = {
-    Addison: 'Ancr',
-    Bennington: 'Bncr',
-    Caledonia: 'Cacr',
-    Chittenden: 'Cncr',
-    Essex: 'Excr',
-    Franklin: 'Frcr',
-    'Grand Isle': 'Gicr',
-    Lamoille: 'Lecr',
-    Orange: 'Oecr',
-    Orleans: 'Oscr',
-    Rutland: 'Rdcr',
-    Washington: 'Wncr',
-    Windham: 'Wmcr',
-    Windsor: 'Wrcr',
-  };
-  return countyCodes[county];
-}

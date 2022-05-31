@@ -1,9 +1,17 @@
 import './filings.css';
-import Vue from 'vue/dist/vue.js';
+import Vue from 'vue/dist/vue.runtime.global.js';
 import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
+
+import pillsRow from './components/pills-row.Vue';
+import checkoutOffenseRow from './components/checkout-offense-row.Vue'
+import docketCaption from './components/docket-caption.Vue'
+import filingDatedCity from './components/filing-dated-city.Vue'
+import filingFooter from './components/filing-footer.Vue'
+import filingNav from './components/filing-nav.Vue'
+import filingTypeHeading from './components/filing-type-heading.Vue'
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;
@@ -82,7 +90,7 @@ function detectChangesInChromeStorage() {
       app.clearAll();
       return;
     }
-    app.loadAll(function () {});
+    app.loadAll(function () { });
   });
 }
 
@@ -171,6 +179,15 @@ function countyCodeFromCounty(county) {
 //Vue app
 var app = new Vue({
   el: '#filing-app',
+  components: {
+    pillsRow,
+    checkoutOffenseRow,
+    docketCaption,
+    filingDatedCity,
+    filingFooter,
+    filingNav,
+    filingTypeHeading
+  },
   data: {
     settings: {
       attorney: '',
@@ -296,7 +313,7 @@ var app = new Vue({
     },
     loadAll: function (callback) {
       if (callback === undefined) {
-        callback = function () {};
+        callback = function () { };
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
       localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
@@ -346,10 +363,10 @@ var app = new Vue({
 
       devLog(
         'there are ' +
-          filingCounties.length +
-          ' counties for ' +
-          counts.length +
-          ' counts'
+        filingCounties.length +
+        ' counties for ' +
+        counts.length +
+        ' counts'
       );
 
       //create an array to hold all county filing objects
@@ -372,9 +389,9 @@ var app = new Vue({
 
         devLog(
           'there are ' +
-            filingsForThisCounty.length +
-            ' different filings needed in ' +
-            countyName
+          filingsForThisCounty.length +
+          ' different filings needed in ' +
+          countyName
         );
 
         //if there are no filings needed for this county, move along to the next one.
@@ -1097,10 +1114,10 @@ var app = new Vue({
       var date = new Date();
       return this.slugify(
         'filings for ' +
-          app.petitioner.name +
-          ' ' +
-          date.toDateString() +
-          '.csv'
+        app.petitioner.name +
+        ' ' +
+        date.toDateString() +
+        '.csv'
       );
     },
     csvData: function () {
