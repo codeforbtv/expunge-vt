@@ -9,7 +9,8 @@
     "bootstrap4-toggle": "^3.6.1",
     "gumshoejs": "^5.1.2",
     "jquery": "^3.6.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.3",
+    "popper.js": "^1.16.1",
     "smooth-scroll": "^16.1.3",
     "vue": "^2.6.11"
   },
@@ -22,7 +23,7 @@
     "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "run-p :build:index :build:payload", 
+    "build": "run-p :build:index :build:payload",
     ":build:index": "esbuild --bundle ./index.js --outfile=../extensionDirectory-build/index.js",
     ":build:payload": "esbuild --bundle ./payload.js --outfile=../extensionDirectory-build/payload.js",
     "build:watch": "run-p :build:watch:index :build:watch:payload",
