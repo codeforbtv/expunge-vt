@@ -9,19 +9,16 @@
     "downloads"
   ],
   "background": {
-    "scripts": [
-      "background.js"
-    ],
-    "persistent": false
+    "service_worker": "background.js"
   },
-  "page_action": {
-    "default_popup": "popup.html",
+  "action": {
     "default_icon": {
       "16": "images/icon_16.png",
       "32": "images/icon_32.png",
       "48": "images/icon_48.png",
       "128": "images/icon_128.png"
-    }
+    },
+    "default_popup": "popup.html"
   },
   "icons": {
     "16": "images/icon_16.png",
@@ -29,8 +26,10 @@
     "48": "images/icon_48.png",
     "128": "images/icon_128.png"
   },
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "externally_connectable": {
     "ids": [
       "*"
