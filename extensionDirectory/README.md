@@ -112,3 +112,10 @@ _TODO_ - I forget how to do this. Next time we go through [the instructions](htt
 
 ### Switching to the publisher acct
 Simple, but hard to find: check the [top-right corner for a dropdown](https://developer.chrome.com/docs/webstore/group-publishers/) and switch from your user name to  `expungevt`. If it's not there, then you'll need to be added to the group.
+
+## Next Steps
+
+* npm run build:watch works
+* Fix images in components/popup.vue
+* Create a eseparate components/filings.vue and somehow get filings.js to use the right app (filings Or popup) based on... presence of a div??
+* Move shared code between components/popup.vue and components/filings.vue so its imported instead of duplicated
