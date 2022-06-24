@@ -4,7 +4,7 @@ const esbuild = require('esbuild');
 esbuild.build({
     entryPoints: ['index.js'],
     bundle: true,
-    outfile: '../extensionDirectory-build/index.js',
+    outfile: 'build/index.js',
     plugins: [vuePlugin()],
     define: {
         "process.env.NODE_ENV": JSON.stringify("development"),
@@ -14,7 +14,7 @@ esbuild.build({
 esbuild.build({
     entryPoints: ['payload.js'],
     bundle: true,
-    outfile: '../extensionDirectory-build/payload.js',
+    outfile: 'build/payload.js',
     plugins: [vuePlugin()],
     define: {
         "process.env.NODE_ENV": JSON.stringify("development"),
