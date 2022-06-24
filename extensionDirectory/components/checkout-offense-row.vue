@@ -19,7 +19,11 @@ export default {
       return countyCodeFromCounty(value);
     },
   },
-  template: `
+  props: ["filing"],
+};
+</script>
+
+<template>
 <tr class="count-row">
     <td>
       <span v-if='isStipulated(filing.filingType)'><i class='fas fa-handshake'></i>&nbsp;</span>
@@ -38,7 +42,4 @@ export default {
     <td>{{filing.offenseDisposition}}</td>
     <td>{{filing.docketNum}} {{toCountyCode(filing.county)}}</td>
   </tr>
-`,
-  props: ["filing"],
-};
-</script>
+</template>

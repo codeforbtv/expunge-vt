@@ -5,13 +5,13 @@ import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
 
-import pillsRow from './components/pills-row.Vue';
-import checkoutOffenseRow from './components/checkout-offense-row.Vue'
-import docketCaption from './components/docket-caption.Vue'
-import filingDatedCity from './components/filing-dated-city.Vue'
-import filingFooter from './components/filing-footer.Vue'
-import filingNav from './components/filing-nav.Vue'
-import filingTypeHeading from './components/filing-type-heading.Vue'
+import pillsRow from './components/pills-row.vue';
+import checkoutOffenseRow from './components/checkout-offense-row.vue'
+import docketCaption from './components/docket-caption.vue'
+import filingDatedCity from './components/filing-dated-city.vue'
+import filingFooter from './components/filing-footer.vue'
+import filingNav from './components/filing-nav.vue'
+import filingTypeHeading from './components/filing-type-heading.vue'
 
 const maxCountsOnNoA = 10;
 Vue.config.devtools = true;

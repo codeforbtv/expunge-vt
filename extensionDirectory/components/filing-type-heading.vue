@@ -45,13 +45,14 @@ export default {
       }
     },
   },
-  template: `
+  props: ["heading"],
+};
+</script>
+
+<template>
   <div>
       <p>
         {{getCheckoutPhrases(heading)}}
       </p>
   </div>
-  `,
-  props: ["heading"],
-};
-</script>
+</template>

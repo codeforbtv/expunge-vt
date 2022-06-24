@@ -1,31 +1,5 @@
 <script>
 export default {
-  template: `<div class="filing-nav no-print" id="filing-nav"> 
-      <ol>
-        <li class="cover-sheet filing-nav__parent-link">
-          <a href="#extra-documents">Cover Sheet</a>
-          <ol>
-            <li class="filing-nav__child-link">
-              <a href="#clinic-checkout">Cover Letter</a>
-            </li>
-            <li class="filing-nav__child-link">
-              <a href="#client-checkout">Checkout Sheet</a>
-            </li>
-          </ol>
-        </li>
-        <br>
-        <li v-for="group in filings" class="filing-nav__parent-link">
-          <a href v-bind:href="'#'+group.county">{{group.county}}</a>
-          <ol>
-            <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
-              <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
-            </li>
-          </ol>
-        </li>
-      </ol>
-      </div>
-      `,
   filters: {
     navTitleFilter(txt) {
       const trimStip = txt.startsWith("Stipulated ")
@@ -75,3 +49,31 @@ export default {
   props: ["filings"],
 };
 </script>
+
+<template>
+<div class="filing-nav no-print" id="filing-nav"> 
+      <ol>
+        <li class="cover-sheet filing-nav__parent-link">
+          <a href="#extra-documents">Cover Sheet</a>
+          <ol>
+            <li class="filing-nav__child-link">
+              <a href="#clinic-checkout">Cover Letter</a>
+            </li>
+            <li class="filing-nav__child-link">
+              <a href="#client-checkout">Checkout Sheet</a>
+            </li>
+          </ol>
+        </li>
+        <br>
+        <li v-for="group in filings" class="filing-nav__parent-link">
+          <a href v-bind:href="'#'+group.county">{{group.county}}</a>
+          <ol>
+            <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
+              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
+              <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
+            </li>
+          </ol>
+        </li>
+      </ol>
+      </div>
+</template>
