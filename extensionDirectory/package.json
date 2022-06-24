@@ -25,12 +25,8 @@
     "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "run-p :build:index :build:payload",
-    ":build:index": "esbuild --bundle ./index.js --outfile=../extensionDirectory-build/index.js",
-    ":build:payload": "esbuild --bundle ./payload.js --outfile=../extensionDirectory-build/payload.js",
-    "build:watch": "run-p :build:watch:index :build:watch:payload",
-    ":build:watch:index": "esbuild --bundle ./index.js --outfile=../extensionDirectory-build/index.js --watch",
-    ":build:watch:payload": "esbuild --bundle ./payload.js --outfile=../extensionDirectory-build/payload.js --watch"
+    "build": "node build.js",
+    "build:watch": "echo 'TODO: Setup watch building'"
   },
   "keywords": [],
   "author": "",
