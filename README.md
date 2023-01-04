@@ -44,7 +44,7 @@ Although you can't generate real petitions without data access, you can give it 
 
 You can also view our working draft of [user documentation here](https://docs.google.com/document/d/1tsb6ATu75B6rkEfKKBy32mENy5KHYtM-_wrg36Plc50/edit?usp=sharing).
 
-## Setup for local development
+## Setup for local development - Manifest 3
 
 If you are a programmer and are interested in how the extension works, it's easy to run locally too. For more information on how you can pitch in (because that would be super helpful) visit the `#expunge-vt` channel in [Code for BTV's Slack](http://cfbtv-slackin.herokuapp.com/).
 
@@ -52,9 +52,15 @@ If you are a programmer and are interested in how the extension works, it's easy
 
 1. Open [chrome://extensions/](chrome://extensions/) on your chrome browser.
 
+1. Use NVM install or similar app to ensure you are using node 19.2.0.
+
+1. cd into extension directory, and run the following:
+   - npm install
+   - npm run build
+
 1. Ensure "Developer mode" is switched on in the top right of the screen.
 
-1. Select `Load unpacked` from the top left, and select the `extensionDirectory` folder from the project folder.
+1. Select `Load unpacked` from the top left, and select the `extensionDirectory/build` folder from the project folder.
 
 1. Open a sample html docket from the "sampleDocketHTML" folder.
 
