@@ -11,6 +11,9 @@ esbuild.build({
           src: './static',
           dest: './build'
         })],
+    loader: {
+        '.png': 'file'
+    },
     define: {
         "process.env.NODE_ENV": JSON.stringify("development"),
     },
