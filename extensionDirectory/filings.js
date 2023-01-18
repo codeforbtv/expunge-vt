@@ -1,5 +1,5 @@
 import './filings.css';
-import { createApp } from 'vue/dist/vue.esm-bundler.js';
+import { createApp } from 'vue';
 import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'

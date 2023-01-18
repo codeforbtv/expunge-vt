@@ -30,6 +30,27 @@ esbuild.build({
 });
 
 esbuild.build({
+    entryPoints: ['filings.js'],
+    bundle: true,
+    outfile: 'build/filings.js',
+    plugins: [vuePlugin()],
+    define: {
+        "process.env.NODE_ENV": JSON.stringify("development"),
+    },
+});
+
+esbuild.build({
+    entryPoints: ['saveFile.js'],
+    bundle: true,
+    outfile: 'build/saveFile.js',
+    //plugins: [vuePlugin()],
+    define: {
+        "process.env.NODE_ENV": JSON.stringify("development"),
+    },
+});
+
+
+esbuild.build({
     entryPoints: ['background.js'],
     bundle: true,
     outfile: 'build/background.js',

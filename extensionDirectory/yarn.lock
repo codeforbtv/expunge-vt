@@ -298,11 +298,6 @@
   "resolved" "https://registry.npmjs.org/esbuild-copy-static-files/-/esbuild-copy-static-files-0.1.0.tgz"
   "version" "0.1.0"
 
-"esbuild-darwin-arm64@0.14.42":
-  "integrity" "sha512-bU2tHRqTPOaoH/4m0zYHbFWpiYDmaA0gt90/3BMEFaM0PqVK/a6MA2V/ypV5PO0v8QxN6gH5hBPY4YJ2lopXgA=="
-  "resolved" "https://registry.npmjs.org/esbuild-darwin-arm64/-/esbuild-darwin-arm64-0.14.42.tgz"
-  "version" "0.14.42"
-
 "esbuild-plugin-vue3@^0.3.0":
   "integrity" "sha512-b8ypadGLuxJ02cPUXn/2yKhwMsEQ/JZMO3lN871X12ZKigXymZStBCexVI4C7lr7lguxa+IpU94pRQ/BtInMsQ=="
   "resolved" "https://registry.npmjs.org/esbuild-plugin-vue3/-/esbuild-plugin-vue3-0.3.0.tgz"
@@ -311,6 +306,11 @@
     "@vue/compiler-core" "^3.2.22"
     "@vue/compiler-sfc" "^3.2.22"
     "esbuild" "^0.12.22"
+
+"esbuild-windows-64@0.14.42":
+  "integrity" "sha512-j3cdK+Y3+a5H0wHKmLGTJcq0+/2mMBHPWkItR3vytp/aUGD/ua/t2BLdfBIzbNN9nLCRL9sywCRpOpFMx3CxzA=="
+  "resolved" "https://registry.npmjs.org/esbuild-windows-64/-/esbuild-windows-64-0.14.42.tgz"
+  "version" "0.14.42"
 
 "esbuild@^0.12.22":
   "integrity" "sha512-w/XuoBCSwepyiZtIRsKsetiLDUVGPVw1E/R3VTFSecIy8UR7Cq3SOtwKHJMFoVqqVG36aGkzh4e8BvpO1Fdc7g=="
