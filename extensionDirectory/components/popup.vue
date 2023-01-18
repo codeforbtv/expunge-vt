@@ -3,7 +3,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
-import Vue as * from 'vue';
+// import Vue as * from 'vue';
 
 import pillsRow from './pills-row.vue';
 import checkoutOffenseRow from './checkout-offense-row.vue'
@@ -565,7 +565,7 @@ export default {
           filingsWithNOAs.push(noa);
 
           if (this.responses[noa.id + '-feeForm'] === undefined) {
-            Vue.set(this.responses, noa.id + '-feeForm', false);
+            this.responses[noa.id + '-feeForm'] = false;
           } else if (this.responses[noa.id + '-feeForm']) {
             const feeFiling = this.createFeeFiling(
               thisFiling.county,
@@ -624,7 +624,7 @@ export default {
           filingsWithNOAs.push(noa);
 
           if (this.responses[noa.id + '-feeForm'] === undefined) {
-            Vue.set(this.responses, noa.id + '-feeForm', false);
+            this.responses[noa.id + '-feeForm'] = false;
           } else if (this.responses[noa.id + '-feeForm']) {
             const feeFiling = this.createFeeFiling(
               thisFiling.county,
@@ -649,7 +649,7 @@ export default {
 
     createResponseObjectForFiling: function (id) {
       if (this.responses[id] === undefined) {
-        Vue.set(this.responses, id, '');
+        this.responses[id] = '';
       }
     },
 
@@ -918,7 +918,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.extension.getURL('./filings.html'),
+            url: chrome.runtime.getURL('./filings.html'),
             index: index + 1,
           });
         }
@@ -927,7 +927,7 @@ export default {
     addAndOpenManagePage: function () {
       if (this.saved.counts.length == 0) {
         this.newCount();
-        Vue.set(this.saved, 'defName', 'New Petitioner');
+        this.saved['defName'] = 'New Petitioner';
       }
       this.openManagePage();
     },
@@ -940,7 +940,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.extension.getURL('./manage-counts.html'),
+            url: chrome.runtime.getURL('./manage-counts.html'),
             index: index + 1,
           });
         }
@@ -950,7 +950,13 @@ export default {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
       // see: https://stackoverflow.com/a/42989406/263900
-      chrome.tabs.executeScript(null, { file: 'payload.js' });
+      chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
+        chrome.scripting.executeScript(
+        {
+          target: {tabId: tab.id},
+          files: ['payload.js']
+        });
+      })
     },
     loadCaseFile: async function () {
       var query = { active: true, currentWindow: true };
@@ -976,7 +982,13 @@ export default {
       chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
         if (isAllowedAccess) {
           // alert for a quick demonstration, please create your own user-friendly UI
-          chrome.tabs.executeScript(null, { file: 'payload.js' });
+          chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
+            chrome.scripting.executeScript(
+            {
+              target: {tabId: tab.id},
+              files: ['payload.js']
+            });
+          })
         } else {
           var goToSettings = confirm(
             'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'

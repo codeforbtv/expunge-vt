@@ -27,7 +27,8 @@
     "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node build.js",
-    "build:watch": "echo 'TODO: Setup watch building'"
+    "build:watch": "echo 'TODO: Setup watch building'",
+    "postbuild": "npm i --production --prefix=./build"
   },
   "keywords": [],
   "author": "",
