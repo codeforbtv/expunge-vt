@@ -3,7 +3,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
-import Vue as * from 'vue';
+// import Vue as * from 'vue';
 
 import pillsRow from './pills-row.vue';
 import checkoutOffenseRow from './checkout-offense-row.vue'
@@ -12,6 +12,8 @@ import filingDatedCity from './filing-dated-city.vue'
 import filingFooter from './filing-footer.vue'
 import filingNav from './filing-nav.vue'
 import filingTypeHeading from './filing-type-heading.vue'
+
+import { devLog, getError } from '../utils';
 
 const maxCountsOnNoA = 10;
 // Vue.config.devtools = true;
@@ -27,23 +29,6 @@ $(document).on('keydown', function (e) {
     app.printDocument();
   }
 });
-
-/**
- * Replaces console.log() statements with a wrapper that prevents the extension from logging
- * to the console unless it was installed by a developer. This will keep the console clean; a
- * practice recommended for chrome extensions.
- *
- * @param {any} data Data to log to the console
- * @todo find a way to make this reusuable, then delete the duplicate fn() in popup.js
- */
-function devLog(data) {
-  // see https://developer.chrome.com/extensions/management#method-getSelf
-  chrome.management.getSelf(function (self) {
-    if (self.installType == 'development') {
-      console.log(data);
-    }
-  });
-}
 
 function initAfterVue() {
   //sets intital height of all text areas to show all text.
@@ -80,7 +65,7 @@ function initSmoothScroll() {
   });
 }
 
-function detectChangesInChromeStorage() {
+function detectChangesInChromeStorage(app) {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     var countsChange = changes['counts'];
     var responsesChange = changes['responses'];
@@ -174,31 +159,6 @@ function countyCodeFromCounty(county) {
     Windsor: 'Wrcr',
   };
   return countyCodes[county];
-}
-
-function getError() {
-  return 'TOOD: getError should work :('; // TODO: The code below explodes, so just no-op for now
-  // return new Error().stack
-  //   .split('\n')[1]
-  //   .split('filings.js')[1]
-  //   .replace(')', '')
-}
-
-/**
- * Replaces console.log() statements with a wrapper that prevents the extension from logging
- * to the console unless it was installed by a developer. This will keep the console clean; a
- * practice recommended for chrome extensions.
- *
- * @param {any} data Data to log to the console
- * @todo find a way to make this reusuable, then delete the duplicate fn() in popup.js
- */
-function devLog(data) {
-  // see https://developer.chrome.com/extensions/management#method-getSelf
-  chrome.management.getSelf(function (self) {
-    if (self.installType == 'development') {
-      console.log(data);
-    }
-  });
 }
 
 export default {
@@ -344,7 +304,7 @@ export default {
   mounted() {
     devLog('App mounted!');
     this.loadAll();
-    detectChangesInChromeStorage();
+    detectChangesInChromeStorage(this);
 
     //This is to make sure dynamically created table are unique across tab in order to avoid errors
     this.uniqueId = this._uid;
@@ -370,6 +330,7 @@ export default {
       });
     },
     loadAll: function (callback) {
+      var self = this;
       if (callback === undefined) {
         callback = function () { };
       }
@@ -394,11 +355,11 @@ export default {
         devLog(JSON.stringify(result));
         if (result.counts !== undefined) {
           devLog(result.counts);
-          this.saved = result.counts;
+          self.saved = result.counts;
         }
 
         if (result.responses !== undefined) {
-          this.responses = result.responses;
+          self.responses = result.responses;
         }
 
         callback();
@@ -565,7 +526,7 @@ export default {
           filingsWithNOAs.push(noa);
 
           if (this.responses[noa.id + '-feeForm'] === undefined) {
-            Vue.set(this.responses, noa.id + '-feeForm', false);
+            this.responses[noa.id + '-feeForm'] = false;
           } else if (this.responses[noa.id + '-feeForm']) {
             const feeFiling = this.createFeeFiling(
               thisFiling.county,
@@ -624,7 +585,7 @@ export default {
           filingsWithNOAs.push(noa);
 
           if (this.responses[noa.id + '-feeForm'] === undefined) {
-            Vue.set(this.responses, noa.id + '-feeForm', false);
+            this.responses[noa.id + '-feeForm'] = false;
           } else if (this.responses[noa.id + '-feeForm']) {
             const feeFiling = this.createFeeFiling(
               thisFiling.county,
@@ -649,7 +610,7 @@ export default {
 
     createResponseObjectForFiling: function (id) {
       if (this.responses[id] === undefined) {
-        Vue.set(this.responses, id, '');
+        this.responses[id] = '';
       }
     },
 
@@ -918,7 +879,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.extension.getURL('./filings.html'),
+            url: chrome.runtime.getURL('./filings.html'),
             index: index + 1,
           });
         }
@@ -927,7 +888,7 @@ export default {
     addAndOpenManagePage: function () {
       if (this.saved.counts.length == 0) {
         this.newCount();
-        Vue.set(this.saved, 'defName', 'New Petitioner');
+        this.saved['defName'] = 'New Petitioner';
       }
       this.openManagePage();
     },
@@ -940,7 +901,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.extension.getURL('./manage-counts.html'),
+            url: chrome.runtime.getURL('./manage-counts.html'),
             index: index + 1,
           });
         }
@@ -950,7 +911,13 @@ export default {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
       // see: https://stackoverflow.com/a/42989406/263900
-      chrome.tabs.executeScript(null, { file: 'payload.js' });
+      chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
+        chrome.scripting.executeScript(
+        {
+          target: {tabId: tab.id},
+          files: ['payload.js']
+        });
+      })
     },
     loadCaseFile: async function () {
       var query = { active: true, currentWindow: true };
@@ -976,7 +943,13 @@ export default {
       chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
         if (isAllowedAccess) {
           // alert for a quick demonstration, please create your own user-friendly UI
-          chrome.tabs.executeScript(null, { file: 'payload.js' });
+          chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
+            chrome.scripting.executeScript(
+            {
+              target: {tabId: tab.id},
+              files: ['payload.js']
+            });
+          })
         } else {
           var goToSettings = confirm(
             'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
@@ -1080,6 +1053,38 @@ export default {
       } else {
         return false;
       }
+    },
+    stringAgeInYearsAtDate: function (date, dob) {
+      if (!date) return '';
+      if (!dob) return '';
+      let fromTime = moment(date).diff(moment(dob));
+      let duration = moment.duration(fromTime);
+      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
+    },
+    sinceNow: function (value) {
+      if (!value) return '';
+
+      let fromTime = moment(value).diff(moment(), 'milliseconds');
+      let duration = moment.duration(fromTime);
+      let years = duration.years() / -1;
+      let months = duration.months() / -1;
+      let days = duration.days() / -1;
+      if (years > 0) {
+        var Ys = years == 1 ? years + 'y ' : years + 'y ';
+        var Ms = months == 1 ? months + 'm ' : months + 'm ';
+        return Ys + Ms;
+      } else {
+        if (months > 0) return months == 1 ? months + 'm ' : months + 'm ';
+        else return days == 1 ? days + 'd ' : days + 'd ';
+      }
+    },
+    dateFormatSimple: function (value) {
+      if (!value) return '';
+      return moment(value).format('MM/DD/YYYY');
+    },
+    toCountyCode: function (value) {
+      if (!value) return '';
+      return countyCodeFromCounty(value);
     },
   },
   computed: {
@@ -1217,31 +1222,6 @@ export default {
       value = value.toString();
       return value.charAt(0).toLowerCase() + value.slice(1);
     },
-    sinceNow: function (value) {
-      if (!value) return '';
-
-      let fromTime = moment(value).diff(moment(), 'milliseconds');
-      let duration = moment.duration(fromTime);
-      let years = duration.years() / -1;
-      let months = duration.months() / -1;
-      let days = duration.days() / -1;
-      if (years > 0) {
-        var Ys = years == 1 ? years + 'y ' : years + 'y ';
-        var Ms = months == 1 ? months + 'm ' : months + 'm ';
-        return Ys + Ms;
-      } else {
-        if (months > 0) return months == 1 ? months + 'm ' : months + 'm ';
-        else return days == 1 ? days + 'd ' : days + 'd ';
-      }
-    },
-    dateFormatSimple: function (value) {
-      if (!value) return '';
-      return moment(value).format('MM/DD/YYYY');
-    },
-    toCountyCode: function (value) {
-      if (!value) return '';
-      return countyCodeFromCounty(value);
-    },
 
     /** Takes an array of filings and figures out how many there are after omitting the NOAs
      * @param array   An array of filings
@@ -1275,14 +1255,7 @@ export default {
         2
       );
       return surcharge;
-    },
-    stringAgeInYearsAtDate: function (date, dob) {
-      if (!date) return '';
-      if (!dob) return '';
-      let fromTime = moment(date).diff(moment(dob));
-      let duration = moment.duration(fromTime);
-      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
-    },
+    }
   },
 }
 </script>
@@ -1404,10 +1377,12 @@ export default {
           Clear All
         </button>
         <img
+          src="/images/code4BTV-logo-300-300.png"
           alt="Home"
           class="logos"
         />
         <img
+          src="/images/VLA_logo-200-97px.png"
           alt="Home"
           class="logos"
         />
