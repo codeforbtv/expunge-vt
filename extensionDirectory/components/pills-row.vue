@@ -1,4 +1,6 @@
 <script>
+import moment from 'moment';
+
 export default {
   props: ["count", "dob"],
   methods: {
