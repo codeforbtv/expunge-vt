@@ -3,7 +3,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
-// import Vue as * from 'vue';
+import { toRaw } from 'vue';
 
 import pillsRow from './pills-row.vue';
 import checkoutOffenseRow from './checkout-offense-row.vue'
@@ -326,7 +326,7 @@ export default {
     saveCounts: function () {
       devLog('saving counts');
       chrome.storage.local.set({
-        counts: this.saved,
+        counts: toRaw(this.saved),
       });
     },
     loadAll: function (callback) {
@@ -1525,9 +1525,8 @@ export default {
                   >&nbsp;Not Entered</span
                 >
                 <span v-else
-                  >{{count.allegedOffenseDate | dateFormatSimple}}
-                  ({{count.allegedOffenseDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{dateFormatSimple(count.allegedOffenseDate)}}
+                  ({{stringAgeInYearsAtDate(count.allegedOffenseDate, saved.defDOB)}})</span
                 >
               </div>
               <div class="col-4">
@@ -1536,18 +1535,16 @@ export default {
                   >&nbsp;Not Entered</span
                 >
                 <span v-else
-                  >{{count.arrestCitationDate | dateFormatSimple}}
-                  ({{count.arrestCitationDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{dateFormatSimple(count.arrestCitationDate)}}
+                  ({{stringAgeInYearsAtDate(count.arrestCitationDate, saved.defDOB)}})</span
                 >
               </div>
               <div class="col-4">
                 Disposition Date:<br />
                 <span v-if="!count.dispositionDate">&nbsp;Pending</span>
                 <span v-else
-                  >{{count.dispositionDate | dateFormatSimple}}
-                  ({{count.dispositionDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{dateFormatSimple(count.dispositionDate)}}
+                  ({{stringAgeInYearsAtDate(count.dispositionDate, saved.defDOB)}})</span
                 >
               </div>
             </div>
