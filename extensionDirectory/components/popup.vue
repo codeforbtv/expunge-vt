@@ -1,62 +1,30 @@
 <script>
 import $ from 'jquery';
 import moment from 'moment';
-import Gumshoe from 'gumshoejs'
+import Gumshoe from 'gumshoejs';
 import SmoothScroll from 'smooth-scroll';
 // import Vue as * from 'vue';
 
 import pillsRow from './pills-row.vue';
-import checkoutOffenseRow from './checkout-offense-row.vue'
-import docketCaption from './docket-caption.vue'
-import filingDatedCity from './filing-dated-city.vue'
-import filingFooter from './filing-footer.vue'
-import filingNav from './filing-nav.vue'
-import filingTypeHeading from './filing-type-heading.vue'
+import checkoutOffenseRow from './checkout-offense-row.vue';
+import docketCaption from './docket-caption.vue';
+import filingDatedCity from './filing-dated-city.vue';
+import filingFooter from './filing-footer.vue';
+import filingNav from './filing-nav.vue';
+import filingTypeHeading from './filing-type-heading.vue';
 
-import { devLog, getError } from '../utils';
+import {
+  devLog,
+  getError,
+  printListener,
+  initAfterVue,
+  initTextAreaAutoExpand,
+} from '../utils';
 
 const maxCountsOnNoA = 10;
 // Vue.config.devtools = true;
 
-$(document).on('keydown', function (e) {
-  if (
-    (e.ctrlKey || e.metaKey) &&
-    (e.key == 'p' || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80)
-  ) {
-    e.cancelBubble = true;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    app.printDocument();
-  }
-});
-
-function initAfterVue() {
-  //sets intital height of all text areas to show all text.
-  devLog(document.getElementsByTagName('body')[0].id);
-  if (document.getElementsByTagName('body')[0].id === 'filing-page') {
-    initScrollDetection();
-    setInitialExpandForTextAreas();
-    initTextAreaAutoExpand();
-    initSmoothScroll();
-  }
-}
-
-// TODO: implement or delete
-function initAfterFilingRefresh() {
-  setInitialExpandForTextAreas();
-  initScrollDetection();
-}
-
-function initTextAreaAutoExpand() {
-  document.addEventListener(
-    'input',
-    function (event) {
-      if (event.target.tagName.toLowerCase() !== 'textarea') return;
-      autoExpand(event.target);
-    },
-    false
-  );
-}
+printListener();
 
 function initSmoothScroll() {
   var scroll = new SmoothScroll('a[href*="#"]', {
@@ -75,7 +43,7 @@ function detectChangesInChromeStorage(app) {
       app.clearAll();
       return;
     }
-    app.loadAll(function () { });
+    app.loadAll(function () {});
   });
 }
 
@@ -170,7 +138,7 @@ export default {
     filingDatedCity,
     filingFooter,
     filingNav,
-    filingTypeHeading
+    filingTypeHeading,
   },
   data() {
     return {
@@ -265,21 +233,15 @@ export default {
       handler() {
         this.saveSettings();
         //this.$nextTick(function () {
-          //vanilla js
+        //vanilla js
         //});
       },
       deep: true,
     },
     saved: {
       handler() {
-        devLog(
-          'counts updated - line:' + getError()
-        );
+        devLog('counts updated - line:' + getError());
         this.saveCounts();
-        //this.$nextTick(function () {
-          //call any vanilla js functions after update.
-          //initAfterFilingRefresh();
-        //});
       },
       deep: true,
     },
@@ -288,15 +250,13 @@ export default {
     $.getJSON(
       'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
       function (data) {
-          console.log(this);
+        console.log(this);
         this.countiesContact = data['countyContacts'];
         this.popupHeadline = data['expungeHeadline'];
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog(
-          'adminConfig data has been set at line: ' + getError()
-        );
+        devLog('adminConfig data has been set at line: ' + getError());
         devLog(data);
       }
     );
@@ -316,9 +276,7 @@ export default {
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      devLog(
-        'save responses' + getError()
-      );
+      devLog('save responses' + getError());
       chrome.storage.local.set({
         responses: this.responses,
       });
@@ -332,7 +290,7 @@ export default {
     loadAll: function (callback) {
       var self = this;
       if (callback === undefined) {
-        callback = function () { };
+        callback = function () {};
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
       localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
@@ -364,8 +322,8 @@ export default {
 
         callback();
         //this.$nextTick(function () {
-          //call any vanilla js functions that need to run after vue is all done setting up.
-          //initAfterVue();
+        //call any vanilla js functions that need to run after vue is all done setting up.
+        //initAfterVue();
         //});
         setTimeout(() => {
           initAfterVue();
@@ -385,10 +343,10 @@ export default {
 
       devLog(
         'there are ' +
-        filingCounties.length +
-        ' counties for ' +
-        counts.length +
-        ' counts'
+          filingCounties.length +
+          ' counties for ' +
+          counts.length +
+          ' counts'
       );
 
       //create an array to hold all county filing objects
@@ -411,9 +369,9 @@ export default {
 
         devLog(
           'there are ' +
-          filingsForThisCounty.length +
-          ' different filings needed in ' +
-          countyName
+            filingsForThisCounty.length +
+            ' different filings needed in ' +
+            countyName
         );
 
         //if there are no filings needed for this county, move along to the next one.
@@ -425,10 +383,11 @@ export default {
         //add the notice of appearance filing to this county because we have petitions to file
         //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
         var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented = this.groupCountsByMaxDocketNumber(
-          allEligibleCountsForThisCounty,
-          maxDocketsPerNoA
-        );
+        var allEligibleCountsForThisCountySegmented =
+          this.groupCountsByMaxDocketNumber(
+            allEligibleCountsForThisCounty,
+            maxDocketsPerNoA
+          );
 
         //iterate through the filing types needed for this county and push them into the array
         for (var i in filingsForThisCounty) {
@@ -911,13 +870,12 @@ export default {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
       // see: https://stackoverflow.com/a/42989406/263900
-      chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
-        chrome.scripting.executeScript(
-        {
-          target: {tabId: tab.id},
-          files: ['payload.js']
+      chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['payload.js'],
         });
-      })
+      });
     },
     loadCaseFile: async function () {
       var query = { active: true, currentWindow: true };
@@ -943,13 +901,14 @@ export default {
       chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
         if (isAllowedAccess) {
           // alert for a quick demonstration, please create your own user-friendly UI
-          chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
-            chrome.scripting.executeScript(
-            {
-              target: {tabId: tab.id},
-              files: ['payload.js']
+          chrome.tabs
+            .query({ active: true, currentWindow: true })
+            .then(([tab]) => {
+              chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['payload.js'],
+              });
             });
-          })
         } else {
           var goToSettings = confirm(
             'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
@@ -1180,10 +1139,10 @@ export default {
       var date = new Date();
       return this.slugify(
         'filings for ' +
-        this.petitioner.name +
-        ' ' +
-        date.toDateString() +
-        '.csv'
+          this.petitioner.name +
+          ' ' +
+          date.toDateString() +
+          '.csv'
       );
     },
     csvData: function () {
@@ -1255,9 +1214,9 @@ export default {
         2
       );
       return surcharge;
-    }
+    },
   },
-}
+};
 </script>
 
 <template>
@@ -1287,10 +1246,7 @@ export default {
       >
         Add From Page <i class="fas fa-plus-circle"></i>
       </button>
-      <button
-        v-on:click="loadCaseFile"
-        class="add-docket-info btn btn-primary"
-      >
+      <button v-on:click="loadCaseFile" class="add-docket-info btn btn-primary">
         Load Case File<br /><i class="fas fa-file"></i>
       </button>
       <button
@@ -1376,16 +1332,8 @@ export default {
         >
           Clear All
         </button>
-        <img
-          src="/images/code4BTV-logo-300-300.png"
-          alt="Home"
-          class="logos"
-        />
-        <img
-          src="/images/VLA_logo-200-97px.png"
-          alt="Home"
-          class="logos"
-        />
+        <img src="/images/code4BTV-logo-300-300.png" alt="Home" class="logos" />
+        <img src="/images/VLA_logo-200-97px.png" alt="Home" class="logos" />
       </div>
     </div>
     <div class="pet-item pet-label-info">
@@ -1404,10 +1352,10 @@ export default {
       </span>
       <div class="collapse" id="bugWarning">
         <div class="card card-body">
-          Closing all petition windows (without closing browser) may help
-          stop unexpected behavior. Save your file in the petitions screen
-          before closing the browser, and try restarting the browser. If you
-          are still experiencing issues, contact
+          Closing all petition windows (without closing browser) may help stop
+          unexpected behavior. Save your file in the petitions screen before
+          closing the browser, and try restarting the browser. If you are still
+          experiencing issues, contact
           <a href="https://codeforbtv.org/contact/" target="_blank"
             >Code for BTV for assistance.</a
           >
@@ -1432,7 +1380,7 @@ export default {
       </div>
     </div>
     <p id="runningCount" class="section-label">
-      Counts ({{saved.counts.length}})
+      Counts ({{ saved.counts.length }})
     </p>
     <div id="countCards" class="count-cards inset text-center">
       <!-- begin card -->
@@ -1450,28 +1398,34 @@ export default {
                   <p v-if="count.docketNum">
                     <b>
                       <a v-bind:href="count.url" target="_blank">
-                        {{count.docketNum}} {{count.county | toCountyCode
-                        }}</a
+                        {{ count.docketNum }}
+                        {{ count.county | toCountyCode }}</a
                       ></b
                     >
                   </p>
                   <p v-if="count.description">
-                    <b>{{count.description}}</b>
+                    <b>{{ count.description }}</b>
                   </p>
                 </div>
                 <p
                   class="card-header__disposition-date"
                   v-if="count.dispositionDate"
                 >
-                  Est. Disposition: {{count.dispositionDate |
-                  dateFormatSimple}} ({{count.dispositionDate | sinceNow}}
+                  Est. Disposition:
+                  {{ count.dispositionDate | dateFormatSimple }} ({{
+                    count.dispositionDate | sinceNow
+                  }}
                   ago)
                 </p>
               </div>
               <div class="card-header__select">
                 <select
                   v-model="count.filingType"
-                  class="form-control form-control-sm petitionSelect selectpicker"
+                  class="
+                    form-control form-control-sm
+                    petitionSelect
+                    selectpicker
+                  "
                 >
                   <option value="X">No Filing</option>
                   <option value="ExC">Expunge Conviction</option>
@@ -1480,12 +1434,12 @@ export default {
                   <option value="SC">Seal Conviction</option>
                   <option value="SDui">Seal DUI</option>
                   <option value="StipExC">(Stip) Expunge Conviction</option>
-                  <option value="StipExNC"
-                    >(Stip) Expunge Non-Conviction</option
-                  >
-                  <option value="StipExNCrim"
-                    >(Stip) Expunge Non-Criminal</option
-                  >
+                  <option value="StipExNC">
+                    (Stip) Expunge Non-Conviction
+                  </option>
+                  <option value="StipExNCrim">
+                    (Stip) Expunge Non-Criminal
+                  </option>
                   <option value="StipSC">(Stip) Seal Conviction</option>
                   <option value="StipSDui">(Stip) Seal DUI</option>
                 </select>
@@ -1502,52 +1456,49 @@ export default {
 
         <div class="collapse-section">
           <div class="card-body">
-            <p>County:&nbsp;{{count.county}}</p>
+            <p>County:&nbsp;{{ count.county }}</p>
 
             <p v-if="count.titleNum || count.sectionNum">
-              Statute:&nbsp;{{count.titleNum}} V.S.A.
+              Statute:&nbsp;{{ count.titleNum }} V.S.A.
               <span
-                v-html="'&nbsp;&sect; ' + count.sectionNum "
+                v-html="'&nbsp;&sect; ' + count.sectionNum"
                 v-if="count.sectionNum"
               ></span
-              >&nbsp;({{count.offenseClass}})
+              >&nbsp;({{ count.offenseClass }})
             </p>
             <p>
-              Disposition:&nbsp;{{count.offenseDisposition}}
-              <span v-if="!count.offenseDisposition"
-                >Check Docket Sheet</span
-              >
+              Disposition:&nbsp;{{ count.offenseDisposition }}
+              <span v-if="!count.offenseDisposition">Check Docket Sheet</span>
             </p>
             <div class="row text-left">
               <div class="col-4">
                 Offense Date:<br />
-                <span v-if="!count.allegedOffenseDate"
-                  >&nbsp;Not Entered</span
-                >
+                <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span>
                 <span v-else
-                  >{{count.allegedOffenseDate | dateFormatSimple}}
-                  ({{count.allegedOffenseDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{ count.allegedOffenseDate | dateFormatSimple }} ({{
+                    count.allegedOffenseDate
+                      | stringAgeInYearsAtDate(saved.defDOB)
+                  }})</span
                 >
               </div>
               <div class="col-4">
                 Arrest/Citation Date:<br />
-                <span v-if="!count.arrestCitationDate"
-                  >&nbsp;Not Entered</span
-                >
+                <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span>
                 <span v-else
-                  >{{count.arrestCitationDate | dateFormatSimple}}
-                  ({{count.arrestCitationDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{ count.arrestCitationDate | dateFormatSimple }} ({{
+                    count.arrestCitationDate
+                      | stringAgeInYearsAtDate(saved.defDOB)
+                  }})</span
                 >
               </div>
               <div class="col-4">
                 Disposition Date:<br />
                 <span v-if="!count.dispositionDate">&nbsp;Pending</span>
                 <span v-else
-                  >{{count.dispositionDate | dateFormatSimple}}
-                  ({{count.dispositionDate |
-                  stringAgeInYearsAtDate(saved.defDOB)}})</span
+                  >{{ count.dispositionDate | dateFormatSimple }} ({{
+                    count.dispositionDate
+                      | stringAgeInYearsAtDate(saved.defDOB)
+                  }})</span
                 >
               </div>
             </div>

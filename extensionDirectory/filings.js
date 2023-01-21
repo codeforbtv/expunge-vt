@@ -56,11 +56,6 @@ function initAfterVue() {
   }
 }
 
-// TODO: implement or delete
-function initAfterFilingRefresh() {
-  setInitialExpandForTextAreas();
-  initScrollDetection();
-}
 
 function initTextAreaAutoExpand() {
   document.addEventListener(

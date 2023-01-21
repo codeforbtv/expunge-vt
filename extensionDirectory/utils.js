@@ -22,3 +22,39 @@ export function getError() {
   //   .split('filings.js')[1]
   //   .replace(')', '')
 }
+
+export function printListener() {
+  $(document).on('keydown', function (e) {
+    if (
+      (e.ctrlKey || e.metaKey) &&
+      (e.key == 'p' || e.charCode == 16 || e.charCode == 112 || e.keyCode == 80)
+    ) {
+      e.cancelBubble = true;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      app.printDocument();
+    }
+  });
+}
+
+export function initAfterVue() {
+  //sets intital height of all text areas to show all text.
+  devLog(document.getElementsByTagName('body')[0].id);
+  if (document.getElementsByTagName('body')[0].id === 'filing-page') {
+    initScrollDetection();
+    setInitialExpandForTextAreas();
+    initTextAreaAutoExpand();
+    initSmoothScroll();
+  }
+}
+
+export function initTextAreaAutoExpand() {
+  document.addEventListener(
+    'input',
+    function (event) {
+      if (event.target.tagName.toLowerCase() !== 'textarea') return;
+      autoExpand(event.target);
+    },
+    false
+  );
+}
