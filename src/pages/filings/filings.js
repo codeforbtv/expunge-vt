@@ -35,7 +35,7 @@ $(document).on('keydown', function (e) {
  * practice recommended for chrome extensions.
  *
  * @param {any} data Data to log to the console
- * @todo find a way to make this reusuable, then delete the duplicate fn() in popup.js
+ * @todo find a way to make this reusable, then delete the duplicate fn() in popup.js
  */
 function devLog(data) {
   // see https://developer.chrome.com/extensions/management#method-getSelf
@@ -96,13 +96,13 @@ function detectChangesInChromeStorage() {
 }
 
 function initScrollDetection() {
-  // initates the scrollspy for the filing-nav module.
+  // initiates the scrollspy for the filing-nav module.
   // see: https://www.npmjs.com/package/gumshoejs#nested-navigation
   var spy = new Gumshoe('#filing-nav a', {
     nested: true,
     nestedClass: 'active-parent',
     offset: 200, // how far from the top of the page to activate a content area
-    reflow: true, // will update when the navigation chages (eg, user adds/changes a petition, or consolidates petitions/NOAs)
+    reflow: true, // will update when the navigation changes (eg, user adds/changes a petition, or consolidates petitions/NOAs)
   });
 }
 
