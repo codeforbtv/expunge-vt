@@ -312,7 +312,7 @@ export default {
   methods: {
     saveSettings: function () {
       // devLog("save settings", this.settings)
-      settingString = JSON.stringify(this.settings);
+      var settingString = JSON.stringify(this.settings);
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
@@ -335,7 +335,7 @@ export default {
         callback = function () { };
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
-      localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
+      var localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
       if (
         localResult !== undefined &&
         localResult !== '' &&
