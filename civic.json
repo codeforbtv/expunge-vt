@@ -1,40 +1,40 @@
 {
-    "name": "ExpungeVT", 
-    "description": "A chrome extension to help attorneys generate expungment & sealing petitions efficiently", 
-    "license": "MIT", 
-    "status": "Production", 
-    "type": "Chrome Browser Extension", 
-    "homepage": "https://codeforbtv.github.io/expunge-vt/", 
-    "repository": "https://github.com/codeforbtv/expunge-vt", 
-    "thumbnail": "https://codeforbtv.github.io/expunge-vt/extensionDirectory/images/icon_128.png", 
+    "name": "ExpungeVT",
+    "description": "A chrome extension to help attorneys generate expungement & sealing petitions efficiently",
+    "license": "MIT",
+    "status": "Production",
+    "type": "Chrome Browser Extension",
+    "homepage": "https://codeforbtv.github.io/expunge-vt/",
+    "repository": "https://github.com/codeforbtv/expunge-vt",
+    "thumbnail": "https://codeforbtv.github.io/expunge-vt/extensionDirectory/images/icon_128.png",
     "geography": [
         "Vermont"
-    ], 
+    ],
     "contact": {
-        "name": "Jake Durell", 
-        "email": "expungevt@codeforbtv.org", 
+        "name": "Jake Durell",
+        "email": "expungevt@codeforbtv.org",
         "url": ""
-    }, 
+    },
     "partners": [
         {
-            "url": "https://www.vtlegalaid.org/", 
-            "name": "Vermont Legal Aid", 
+            "url": "https://www.vtlegalaid.org/",
+            "name": "Vermont Legal Aid",
             "email": ""
         }
-    ], 
-    "data": [], 
+    ],
+    "data": [],
     "tags": [
         "civictechindex",
         "code-for-all",
         "code-for-america",
         "code-for-btv"
-    ], 
+    ],
     "links": [
         "https://vtdigger.org/2019/11/12/legal-expungement-clinic-offers-vermonters-a-chance-to-start-over/",
         "https://vermontbiz.com/news/2020/october/24/state-hold-expungement-tele-clinic-brattleboro-nov-13",
         "https://www.govtech.com/civic/Vermont-Attorneys-Leverage-Open-Source-Expungement-Plug-In.html",
         "https://pmicv.org/index.php?option=com_content&view=article&id=369:pmi-cv-volunteerism-at-work-expunge-vt-with-code-for-btv&catid=112&acm=_304",
         "https://rotaryclubofcsh.org/Stories/code-for-btv"
-    ], 
+    ],
     "id": "https://raw.githubusercontent.com/DCgov/civic.json/master/schemas/schema-v1.json"
 }

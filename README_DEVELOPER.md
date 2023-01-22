@@ -4,7 +4,7 @@
 
 From the user's perspective this extension can be divided as follows:
 
-- **Extention Popup**: the popup shown when the user clicks on the extension icon in the browser.
+- **Extension Popup**: the popup shown when the user clicks on the extension icon in the browser.
 - **Manage Counts Page**: an edit page offering the user a web form where they can manually edit the information used by the extension
 - **Petition Page**: a read-only page that provides the user with a print-view of the petitions to be printed and a side navigation with summary information and links to each section
   - **CSV Export**: a button exporting (some? all?) information to CSV for download.
@@ -16,7 +16,7 @@ From the developer's perspective all code for the chrome extension itself is fou
 
 **Chrome Extention Boilerplate**
 
-The following files are part of any extension. The `manifest.json` is effectively a configuration file for the extention, but generally these files aren't used much:
+The following files are part of any extension. The `manifest.json` is effectively a configuration file for the extension, but generally these files aren't used much:
 
 ```
 ├── extensionDirectory
@@ -117,5 +117,5 @@ Simple, but hard to find: check the [top-right corner for a dropdown](https://de
 
 * npm run build:watch works
 * Fix images in components/popup.vue
-* Create a eseparate components/filings.vue and somehow get filings.js to use the right app (filings Or popup) based on... presence of a div??
+* Create a separate components/filings.vue and somehow get filings.js to use the right app (filings Or popup) based on... presence of a div??
 * Move shared code between components/popup.vue and components/filings.vue so its imported instead of duplicated

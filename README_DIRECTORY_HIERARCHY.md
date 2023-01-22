@@ -24,7 +24,7 @@ This directory contains the code for the ExpungeVT extension and is detailed in 
 Contains meeting notes from the earliest meetings with VLA during the initial attempts to define the ExpungeVT direction & purpose. Kept around mainly due nostalgia and laziness. Kinda neat tho.
 
 ## sampleDocketHTML/
-Contains sample criminal dockets that have been anonomized. Very useful for testing and allows the public to demo the extension if they don't have access via the offical Vermont Case Management System.
+Contains sample criminal dockets that have been anonymized. Very useful for testing and allows the public to demo the extension if they don't have access via the official Vermont Case Management System.
 
 ## civic.json
 Metadata for the project. See http://open.dc.gov/civic.json/

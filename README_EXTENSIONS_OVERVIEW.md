@@ -14,7 +14,7 @@ The structure of a chrome extension is primarily defined in the manifest.json fi
 
 - `background` [[Docs](https://developer.chrome.com/extensions/background_pages)]: Background scripts are triggered by browser events such as navigating toa new page, closing a tab, etc.
 
-* `permissions`​​ [[Docs](https://developer.chrome.com/extensions/permission_warnings)]: Chrome extensions can behave in ways that most web content is prohibited from doing. Permissions allow extensions to use certain features, such as ​access the ​cookies​ & ​storage​ for other tabs​ and​ perform​ Cross-Origin XMLHttpRequsts. Reviewing [the permission list](https://developer.chrome.com/extensions/declare_permissions) gives you a good idea of the kinds of features an extension could implement.
+* `permissions`​​ [[Docs](https://developer.chrome.com/extensions/permission_warnings)]: Chrome extensions can behave in ways that most web content is prohibited from doing. Permissions allow extensions to use certain features, such as ​access the ​cookies​ & ​storage​ for other tabs​ and​ perform​ Cross-Origin `XMLHttpRequest`s. Reviewing [the permission list](https://developer.chrome.com/extensions/declare_permissions) gives you a good idea of the kinds of features an extension could implement.
 
 ## Common Extension Elements
 
