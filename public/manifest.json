@@ -6,7 +6,8 @@
     "storage",
     "declarativeContent",
     "activeTab",
-    "downloads"
+    "downloads",
+    "scripting"
   ],
   "background": {
     "service_worker": "background.js"
@@ -18,7 +19,7 @@
       "48": "images/icon_48.png",
       "128": "images/icon_128.png"
     },
-    "default_popup": "popup.html"
+    "default_popup": "popup/index.html"
   },
   "icons": {
     "16": "images/icon_16.png",
