@@ -18,8 +18,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  root: 'src',
-  publicDir: '../public',
+  root: 'src/pages',
+  publicDir: '../../public',
   build: {
     rollupOptions: {
       input: {
@@ -32,7 +32,7 @@ export default defineConfig({
         // entryFileNames: '[name].html'
       }
     },
-    outDir: '../dist',
+    outDir: '../../dist',
     minify: false
   },
 })

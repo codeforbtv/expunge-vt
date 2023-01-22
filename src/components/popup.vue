@@ -1265,13 +1265,13 @@ export default {
     <div id="logoDivCover">
       <img
         id="code4btv"
-        src="/images/code4BTV-logo-300-300.png"
+        src="../images/code4BTV-logo-300-300.png"
         alt="Home"
         class="logos"
       />
       <img
         id="legal-aid"
-        src="/images/VLA_logo-200-97px.png"
+        src="../images/VLA_logo-200-97px.png"
         alt="Home"
         class="logos"
       />
@@ -1377,12 +1377,12 @@ export default {
           Clear All
         </button>
         <img
-          src="/images/code4BTV-logo-300-300.png"
+          src="../images/code4BTV-logo-300-300.png"
           alt="Home"
           class="logos"
         />
         <img
-          src="/images/VLA_logo-200-97px.png"
+          src="../images/VLA_logo-200-97px.png"
           alt="Home"
           class="logos"
         />
