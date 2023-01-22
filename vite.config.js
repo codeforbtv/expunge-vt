@@ -23,13 +23,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        popup: './src/pages/popup/index.html',
+        popup: './src/pages/popup/popup.html',
         // filings: './src/filings.html',
         // counts: './src/manage-counts.html',
         // disclaimer: './src/disclaimer.html'
       },
       output: {
-        entryFileNames: '[name].html'
+        // entryFileNames: '[name].html'
       }
     },
     outDir: '../dist',
