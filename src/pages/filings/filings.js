@@ -139,7 +139,7 @@ function autoExpand(field) {
 }
 
 export function countyNameFromCountyCode(countyCode) {
-  counties = {
+  var counties = {
     Ancr: 'Addison',
     Bncr: 'Bennington',
     Cacr: 'Caledonia',
@@ -158,7 +158,7 @@ export function countyNameFromCountyCode(countyCode) {
   return counties[countyCode];
 }
 function countyCodeFromCounty(county) {
-  countyCodes = {
+  var countyCodes = {
     Addison: 'Ancr',
     Bennington: 'Bncr',
     Caledonia: 'Cacr',

@@ -52,7 +52,7 @@ function initListeners() {
 
     function setParsedCounts() {
       chrome.storage.local.get('counts', function (result) {
-        combinedData = appendDataWithConfirmation(parsedData, result.counts);
+        var combinedData = appendDataWithConfirmation(parsedData, result.counts);
         chrome.storage.local.set({
           counts: combinedData,
         });
