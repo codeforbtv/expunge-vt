@@ -1,4 +1,3 @@
-
 # Directory Hierarchy
 
 This is a brief orientation to the most significant parts of this repo directory:
