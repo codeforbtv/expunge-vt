@@ -3,6 +3,15 @@
   "version": "3.3.0",
   "description": "",
   "main": "background.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
+    "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:old": "node build.js",
+    "build:watch": "echo 'TODO: Setup watch building'"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "bootstrap": "^4.4.1",
@@ -15,20 +24,15 @@
     "vue": "^3.1.0"
   },
   "devDependencies": {
+    "@rollup/plugin-inject": "^5.0.3",
+    "@vitejs/plugin-vue": "^4.0.0",
     "@vue/compiler-sfc": "^3.2.37",
     "esbuild": "^0.14.42",
     "esbuild-copy-static-files": "^0.1.0",
     "esbuild-plugin-vue3": "^0.3.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^2.0.5"
-  },
-  "scripts": {
-    "pretty-up": "npx prettier --write \"./**/*.{js,html,css}\"",
-    "pretty-check": "npx prettier --check \"./**/*.{js,html,css}\"",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node build.js",
-    "build:watch": "echo 'TODO: Setup watch building'",
-    "postbuild": "npm i --production --prefix=./build"
+    "prettier": "^2.0.5",
+    "vite": "^4.0.4"
   },
   "keywords": [],
   "author": "",
