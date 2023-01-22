@@ -23,7 +23,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        popup: './src/pages/popup/popup.html',
+        popup: './src/pages/popup/index.html',
         // filings: './src/filings.html',
         // counts: './src/manage-counts.html',
         // disclaimer: './src/disclaimer.html'
