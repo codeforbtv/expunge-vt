@@ -1,6 +1,6 @@
 import './popup.css';
 import moment from 'moment';
-import { countyNameFromCountyCode } from './filings';
+import { countyNameFromCountyCode } from '../filings/filings.js';
 
 let loadedMessage;
 

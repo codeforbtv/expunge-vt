@@ -5,13 +5,14 @@ import moment from 'moment';
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
 
-import pillsRow from './components/pills-row.vue';
-import checkoutOffenseRow from './components/checkout-offense-row.vue'
-import docketCaption from './components/docket-caption.vue'
-import filingDatedCity from './components/filing-dated-city.vue'
-import filingFooter from './components/filing-footer.vue'
-import filingNav from './components/filing-nav.vue'
-import filingTypeHeading from './components/filing-type-heading.vue'
+import PopupApp from '../../components/popup.vue';
+import pillsRow from '../../components/pills-row.vue';
+import checkoutOffenseRow from '../../components/checkout-offense-row.vue'
+import docketCaption from '../../components/docket-caption.vue'
+import filingDatedCity from '../../components/filing-dated-city.vue'
+import filingFooter from '../../components/filing-footer.vue'
+import filingNav from '../../components/filing-nav.vue'
+import filingTypeHeading from '../../components/filing-type-heading.vue'
 
 const maxCountsOnNoA = 10;
 // Vue.config.devtools = true;
@@ -176,13 +177,12 @@ function countyCodeFromCounty(county) {
   return countyCodes[county];
 }
 
-import PopupApp from './components/popup.vue';
 
 //Vue app
 var app = createApp(PopupApp).mount('#filing-app');
 
 function getError() {
-  return 'TOOD: getError should work :('; // TODO: The code below explodes, so just no-op for now
+  return 'TODO: getError should work :('; // TODO: The code below explodes, so just no-op for now
   // return new Error().stack
   //   .split('\n')[1]
   //   .split('filings.js')[1]
