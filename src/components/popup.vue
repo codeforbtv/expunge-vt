@@ -13,7 +13,7 @@ import filingFooter from './filing-footer.vue'
 import filingNav from './filing-nav.vue'
 import filingTypeHeading from './filing-type-heading.vue'
 
-import { devLog, getError } from '../utils';
+import { devLog, getError } from '../scripts/utils';
 
 const maxCountsOnNoA = 10;
 // Vue.config.devtools = true;
