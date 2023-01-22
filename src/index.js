@@ -1,13 +1,11 @@
-const jQuery = require('jquery'); 
-window.$ = jQuery; 
-window.jQuery = jQuery;
-const Vue = require('vue');
-require('bootstrap');
-require('bootstrap/dist/css/bootstrap.min.css');
-require('bootstrap4-toggle');
-require('bootstrap4-toggle/css/bootstrap4-toggle.min.css');
+Object.assign(window, { $: jQuery, jQuery })
+import Vue from 'vue';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap4-toggle';
+import 'bootstrap4-toggle/css/bootstrap4-toggle.min.css';
 // require('./components.js');
-require('./filings.js');
-require('./saveFile.js');
-require('./popup.js');
+import './filings.js';
+import './saveFile.js';
+import './popup.js';
 //require('./background.js');
