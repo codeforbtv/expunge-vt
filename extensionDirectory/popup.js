@@ -1,9 +1,50 @@
 import './popup.css';
 import $ from 'jquery';
 import moment from 'moment';
-import { countyNameFromCountyCode } from './filings';
+import { createApp } from 'vue';
+
+import PopupApp from './components/popup.vue';
 
 let loadedMessage;
+
+export function countyNameFromCountyCode(countyCode) {
+  counties = {
+    Ancr: 'Addison',
+    Bncr: 'Bennington',
+    Cacr: 'Caledonia',
+    Cncr: 'Chittenden',
+    Excr: 'Essex',
+    Frcr: 'Franklin',
+    Gicr: 'Grand Isle',
+    Lecr: 'Lamoille',
+    Oecr: 'Orange',
+    Oscr: 'Orleans',
+    Rdcr: 'Rutland',
+    Wncr: 'Washington',
+    Wmcr: 'Windham',
+    Wrcr: 'Windsor',
+  };
+  return counties[countyCode];
+}
+function countyCodeFromCounty(county) {
+  countyCodes = {
+    Addison: 'Ancr',
+    Bennington: 'Bncr',
+    Caledonia: 'Cacr',
+    Chittenden: 'Cncr',
+    Essex: 'Excr',
+    Franklin: 'Frcr',
+    'Grand Isle': 'Gicr',
+    Lamoille: 'Lecr',
+    Orange: 'Oecr',
+    Orleans: 'Oscr',
+    Rutland: 'Rdcr',
+    Washington: 'Wncr',
+    Windham: 'Wmcr',
+    Windsor: 'Wrcr',
+  };
+  return countyCodes[county];
+}
 
 initListeners();
 
@@ -661,3 +702,6 @@ var Base64 = {
     return t;
   },
 };
+
+//Vue app
+var app = createApp(PopupApp).mount('#filing-app');

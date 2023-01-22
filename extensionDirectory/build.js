@@ -3,7 +3,7 @@ const esbuild = require('esbuild');
 const copyStaticFiles = require('esbuild-copy-static-files')
 
 esbuild.build({
-    entryPoints: ['background.js', 'filings.js', 'index.js', 'payload.js', 'saveFile.js'],
+    entryPoints: ['background.js', 'index.js', 'manage-counts.js', 'payload.js', 'filings.js', 'saveFile.js'],
     bundle: true,
     outdir: 'build/',
     plugins: [vuePlugin(),
