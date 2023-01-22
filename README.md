@@ -4,7 +4,7 @@ This project originated as a way for Vermont Legal Aid (VLA) to generate petitio
 
 VLA runs free clinics throughout the year, but copying information off state databases and filling out petitions by hand is slow. By creating a chrome extension that generates printable files at the push of a button, volunteer attorneys help more people clear their records in every clinic.
 
-# The Chrome extension
+## The Chrome extension
 
 [<img src="https://uploads-ssl.webflow.com/5f4f5872323e026126988212/5f56321f2220c927ad18423e_ChromeWebStore_BadgeWBorder_v2_496x150.png" width=300/>](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn)
 
@@ -76,4 +76,4 @@ Please send questions, comments, or feedback to expungevt@codeforbtv.org
 
 ## Acronyms
 
-* **VCOL** - TODO
+- **VCOL** - TODO
