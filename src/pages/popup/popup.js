@@ -85,7 +85,7 @@ function appendDataWithConfirmation(newData, oldData) {
   var returnData = oldData;
   var newCounts = newData.counts;
   var totalNumMatchingExistingCounts = 0;
-  for (count in newCounts) {
+  for (var count in newCounts) {
     var currentCount = newCounts[count];
     devLog(currentCount.uid);
     var numMatchingExistingCounts = oldData.counts.filter(

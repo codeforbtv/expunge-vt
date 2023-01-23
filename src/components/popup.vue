@@ -1315,7 +1315,7 @@ export default {
         ></b>
       </p>
     </a>
-    <a target="_blank" href="disclaimer.html" class="title-page__link">
+    <a target="_blank" href="disclaimer/index.html" class="title-page__link">
       <p>Terms &amp; Conditions <i class="fas fa-external-link-alt"></i></p>
     </a>
     <div class="donate-box">
