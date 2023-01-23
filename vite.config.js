@@ -25,8 +25,8 @@ export default defineConfig({
       input: {
         popup: './src/pages/popup/index.html',
         filings: './src/pages/filings/index.html',
-        // counts: './src/manage-counts.html',
-        // disclaimer: './src/disclaimer.html'
+        counts: './src/pages/manage-counts/index.html',
+        // disclaimer: './src/pages/disclaimer.html'
       },
       output: {
         // entryFileNames: '[name].html'

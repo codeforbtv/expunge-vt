@@ -879,7 +879,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.runtime.getURL('./filings.html'),
+            url: chrome.runtime.getURL('./filings/index.html'),
             index: index + 1,
           });
         }
@@ -901,7 +901,7 @@ export default {
         (tabs) => {
           let index = tabs[0].index;
           chrome.tabs.create({
-            url: chrome.runtime.getURL('./manage-counts.html'),
+            url: chrome.runtime.getURL('./manage-counts/index.html'),
             index: index + 1,
           });
         }
