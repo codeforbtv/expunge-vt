@@ -27,9 +27,6 @@ export default defineConfig({
         filings: './src/pages/filings/index.html',
         counts: './src/pages/manage-counts/index.html',
         disclaimer: './src/pages/disclaimer/index.html'
-      },
-      output: {
-        // entryFileNames: '[name].html'
       }
     },
     outDir: '../../dist',

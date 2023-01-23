@@ -3,7 +3,7 @@ import Vue from 'vue/dist/vue';
 import moment from 'moment';
 
 Vue.component('docket-caption', {
-  template: `<div class="docket-caption"> 
+  template: /*html*/`<div class="docket-caption"> 
       <div class="docket-caption__names">
         <p class="">STATE OF VERMONT,</p>
         <p><i>Respondent</i></p>
@@ -17,7 +17,7 @@ Vue.component('docket-caption', {
 });
 
 Vue.component('filing-nav', {
-  template: `<div class="filing-nav no-print" id="filing-nav"> 
+  template: /*html*/`<div class="filing-nav no-print" id="filing-nav"> 
       <ol>
         <li class="cover-sheet filing-nav__parent-link">
           <a href="#extra-documents">Cover Sheet</a>
@@ -95,7 +95,7 @@ Vue.component('filing-nav', {
 });
 
 Vue.component('filing-footer', {
-  template: `<div class="stipulated-closing" v-if="stipulated">
+  template: /*html*/`<div class="stipulated-closing" v-if="stipulated">
                   <p class="stipulated-closing__dates"><span class="bold">Stipulated and agreed</span> this <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> day of <span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>, 20<span class="fill-in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>.</p>
                   <div class="filing-closing__signature-box">
                       <p class="filing-closing__name">State's Attorney/Attorney General</p>
@@ -107,7 +107,7 @@ Vue.component('filing-footer', {
 });
 
 Vue.component('filing-dated-city', {
-  template: `
+  template: /*html*/`
   <p class="filing-dated-city indent">
     Dated in the city of <span class="fill-in quarter-width"></span>,
     on the day of <span class="fill-in digit-width"></span>,
@@ -118,7 +118,7 @@ Vue.component('filing-dated-city', {
 });
 
 Vue.component('pills-row', {
-  template: `<div class="card-header__pills-row">
+  template: /*html*/`<div class="card-header__pills-row">
                 <span v-if="count.offenseClass =='mis'" class="pill pill--rounded pill--outline-green">
                         Mis
                 </span>
@@ -213,7 +213,7 @@ Vue.component('filing-type-heading', {
       }
     },
   },
-  template: `
+  template: /*html*/`
   <div>
       <p>
         {{getCheckoutPhrases(heading)}}
@@ -243,7 +243,7 @@ Vue.component('checkout-offense-row', {
       return countyCodeFromCounty(value);
     },
   },
-  template: `
+  template: /*html*/`
   <tr class='count-row'>
     <td>
       <span v-if='isStipulated(filing.filingType)'><i class='fas fa-handshake'></i>&nbsp;</span>
