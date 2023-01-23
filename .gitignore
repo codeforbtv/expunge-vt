@@ -65,7 +65,9 @@ typings/
 
 #remove vs code files
 .vs/
-.vscode/
 extensionDirectory-build/index.css
 extensionDirectory-build/index.js
 extensionDirectory-build/payload.js
+
+build
+dist

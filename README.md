@@ -4,7 +4,7 @@ This project originated as a way for Vermont Legal Aid (VLA) to generate petitio
 
 VLA runs free clinics throughout the year, but copying information off state databases and filling out petitions by hand is slow. By creating a chrome extension that generates printable files at the push of a button, volunteer attorneys help more people clear their records in every clinic.
 
-# The Chrome extension
+## The Chrome extension
 
 [<img src="https://uploads-ssl.webflow.com/5f4f5872323e026126988212/5f56321f2220c927ad18423e_ChromeWebStore_BadgeWBorder_v2_496x150.png" width=300/>](https://chrome.google.com/webstore/detail/expungevt/kkooclhchngcejjphmbafbkkpnaimadn)
 
@@ -30,11 +30,11 @@ But equally important are the things it **does not** do:
 
 ## Who can use Expunge-VT?
 
-This tool was originally developed exclusively for use by VLA in their clincs in 2018. But as volunteer attorneys use the tool in clincs, they have started using it in their own practices as well.
+This tool was originally developed exclusively for use by VLA in their clinics in 2018. But as volunteer attorneys use the tool in clinics, they have started using it in their own practices as well.
 
 - **Anyone with data access...** The extension can only be used by people who already have access to state criminal databases - the extension does not grant any data access itself. But the extension will work for anyone who has access to criminal dockets through [VT Courts Online](https://secure.vermont.gov/vtcdas/user) or [Vermont Judiciary Public Portal](https://publicportal.courts.vt.gov/Portal).
 
-- **... but primarily attorneys.** Although anyone with data access can use this tool to generate petitions, they will need to be reviewed (and possibly corrected or modified) by an attorney familiar with expungement statutues. There are a lot of intracasies in expunging & sealing records and conflicts and inaccuracies in the official records that require expert review.
+- **... but primarily attorneys.** Although anyone with data access can use this tool to generate petitions, they will need to be reviewed (and possibly corrected or modified) by an attorney familiar with expungement statutes. There are a lot of intricacies in expunging & sealing records and conflicts and inaccuracies in the official records that require expert review.
 
 ## Demo Expunge-VT
 
@@ -64,12 +64,16 @@ If you are a programmer and are interested in how the extension works, it's easy
 
 1. Open a sample html docket from the "sampleDocketHTML" folder.
 
-1. While viewing the sample docket page, click the chrome extension icon to begin using the exention.
+1. While viewing the sample docket page, click the chrome extension icon to begin using the extension.
 
-1. Familiarlize yourself with [how chrome extensions work](./README_EXTENSIONS_OVERVIEW.md).
+1. Familiarize yourself with [how chrome extensions work](./README_EXTENSIONS_OVERVIEW.md).
 
 ## Contact Us
 
 This tool was created by Code for BTV, in partnership with [Vermont Legal Aid](https://www.vtlegalaid.org/).
 
 Please send questions, comments, or feedback to expungevt@codeforbtv.org
+
+## Acronyms
+
+- **VCOL** - TODO

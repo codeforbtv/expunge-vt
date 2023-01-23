@@ -1,0 +1,30 @@
+{
+    "json.schemas": [{
+        "fileMatch": [
+            "manifest.json"
+        ],
+        "url": "https://json.schemastore.org/chrome-manifest"
+    }],
+    "markdownlint.config": {
+        "MD004": {
+            "style": "dash"
+        },
+        "MD014": false
+    },
+    "cSpell.words": [
+        "Ancr",
+        "Bncr",
+        "Cacr",
+        "Cncr",
+        "Excr",
+        "Frcr",
+        "Gicr",
+        "Lecr",
+        "Oecr",
+        "Oscr",
+        "Rdcr",
+        "Wncr",
+        "Wmcr",
+        "Wrcr"
+    ]
+}
