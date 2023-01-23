@@ -1,18 +1,27 @@
 import './filings.css';
+import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css"
+import "../../../node_modules/bootstrap4-toggle/css/bootstrap4-toggle.min.css"
+import "../../../node_modules/@fortawesome/fontawesome-free/css/all.css"
+
 import { createApp } from 'vue';
-import $ from 'jquery';
-import moment from 'moment';
+// import $ from 'jquery';
+// import moment from 'moment';
+
+import "../../../node_modules/jquery/dist/jquery.js"
+import "../../../node_modules/bootstrap/dist/js/bootstrap.min.js"
+import "../../../node_modules/bootstrap4-toggle/js/bootstrap4-toggle.min.js"
+import "../../../node_modules/vue/dist/vue.global.js"
+import "../../../node_modules/smooth-scroll/dist/smooth-scroll.polyfills.min.js"
+import "../../../node_modules/gumshoejs/dist/gumshoe.polyfills.min.js"
+import "../../../node_modules/moment/min/moment.min.js"
+
 import Gumshoe from 'gumshoejs'
 import SmoothScroll from 'smooth-scroll';
 
 import PopupApp from '../../components/popup.vue';
-import pillsRow from '../../components/pills-row.vue';
-import checkoutOffenseRow from '../../components/checkout-offense-row.vue'
-import docketCaption from '../../components/docket-caption.vue'
-import filingDatedCity from '../../components/filing-dated-city.vue'
-import filingFooter from '../../components/filing-footer.vue'
-import filingNav from '../../components/filing-nav.vue'
-import filingTypeHeading from '../../components/filing-type-heading.vue'
+
+import '../../scripts/saveFile.js'
+
 
 const maxCountsOnNoA = 10;
 // Vue.config.devtools = true;
