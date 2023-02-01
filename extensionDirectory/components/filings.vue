@@ -651,8 +651,8 @@ export default {
     },
     confirmDeleteCount: function (event, countId) {
       event.stopPropagation();
-      if (this.saved.counts.length > 1) {
-        var currentCount = this.saved.counts.filter(
+      if (this.rawCounts.length > 1) {
+        var currentCount = this.rawCounts.filter(
           (count) => count.uid === countId
         )[0];
         if (
@@ -724,7 +724,7 @@ export default {
       );
     },
     addAndOpenManagePage: function () {
-      if (this.saved.counts.length == 0) {
+      if (this.rawCounts.length == 0) {
         this.newCount();
         this.saved['defName'] = 'New Petitioner';
       }
@@ -971,28 +971,28 @@ export default {
         this.settings.groupCounts !== undefined
           ? this.settings.groupCounts
           : true;
-      return this.createFilingsFromCounts(this.saved.counts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
+      return this.createFilingsFromCounts(this.rawCounts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
-      return this.saved.counts.filter((count) => count.filingType !== 'X')
+      return this.rawCounts.filter((count) => count.filingType !== 'X')
         .length;
     },
     numCountsNoAction: function () {
-      return this.saved.counts.filter((count) => count.filingType === 'X')
+      return this.rawCounts.filter((count) => count.filingType === 'X')
         .length;
     },
     ineligible: function () {
-      return this.groupIneligibleCounts(this.saved.counts);
+      return this.groupIneligibleCounts(this.rawCounts);
     },
     noAction: function () {
-      return this.groupNoAction(this.saved.counts);
+      return this.groupNoAction(this.rawCounts);
     },
     numCountsIneligible: function () {
       return this.ineligible.length;
     },
     numCountsStipulated: function () {
       let stipCount = 0;
-      this.saved.counts.forEach((element) => {
+      this.rawCounts.forEach((element) => {
         if (element.filingType.includes('Stip')) {
           stipCount++;
         }
@@ -1000,29 +1000,29 @@ export default {
       return stipCount;
     },
     countsExpungedNC: function () {
-      return this.saved.counts.filter(
+      return this.rawCounts.filter(
         (count) =>
           count.filingType === 'ExNC' || count.filingType === 'StipExNC'
       );
     },
     countsExpungedC: function () {
-      return this.saved.counts.filter(
+      return this.rawCounts.filter(
         (count) => count.filingType === 'ExC' || count.filingType === 'StipExC'
       );
     },
     countsExpungedNCrim: function () {
-      return this.saved.counts.filter(
+      return this.rawCounts.filter(
         (count) =>
           count.filingType === 'ExNCrim' || count.filingType === 'StipExNCrim'
       );
     },
     countsSealC: function () {
-      return this.saved.counts.filter(
+      return this.rawCounts.filter(
         (count) => count.filingType === 'SC' || count.filingType === 'StipSC'
       );
     },
     countsSealDui: function () {
-      return this.saved.counts.filter(
+      return this.rawCounts.filter(
         (count) =>
           count.filingType === 'SDui' || count.filingType === 'StipSDui'
       );
@@ -1055,7 +1055,7 @@ export default {
       );
     },
     csvData: function () {
-      return this.saved.counts.map(function (count) {
+      return this.rawCounts.map(function (count) {
         return {
           Petitioner_Name: this.petitioner['name'],
           Petitioner_DOB: this.petitioner.dob,
@@ -1078,6 +1078,9 @@ export default {
       date = moment().format('MMMM D[, ]YYYY');
       return date;
     },
+    rawCounts: function() {
+      return toRaw(this.saved.counts);
+    }
   },
   filters: {
     uppercase: function (value) {
@@ -1473,13 +1476,12 @@ export default {
                               >
                                 CONVICTION petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedC.length > 0"
                                 v-bind:key="countsExpungedC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -1487,13 +1489,12 @@ export default {
                               >
                                 NON-CONVICTION petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedNC.length > 0"
                                 v-bind:key="countsExpungedNC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedNC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -1501,13 +1502,12 @@ export default {
                               >
                                 NON-CRIME petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedNCrim.length > 0"
                                 v-bind:key="countsExpungedNCrim + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedNCrim"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -1515,13 +1515,12 @@ export default {
                               >
                                 SEALED petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsSealC.length > 0"
                                 v-bind:key="countsSealC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsSealC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -1529,13 +1528,12 @@ export default {
                               >
                                 SEALED DUI petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsSealDui.length > 0"
                                 v-bind:key="countsSealDui + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsSealDui"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -1543,13 +1541,12 @@ export default {
                               >
                                 NO ACTION TAKEN:
                               </th>
-                              <tr
-                                v-if="ineligible.length > 0"
+                              <checkout-offense-row
+                                v-if="this.numCountsIneligible > 0"
                                 v-bind:key="ineligible + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in ineligible"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                             </tbody>
                           </table>
                         </dl>
