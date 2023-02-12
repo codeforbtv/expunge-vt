@@ -2453,13 +2453,13 @@ export default {
               </td>
             </tr>
           </tbody>
-          <tfoot class="footer-space">
+          <!-- <tfoot class="footer-space">
             <tr>
               <td>
                 <p class="footer-space__vertical-spacer">&nbsp;</p>
               </td>
             </tr>
-          </tfoot>
+          </tfoot> -->
         </table>
         <!-- End petition wrapper -->
 

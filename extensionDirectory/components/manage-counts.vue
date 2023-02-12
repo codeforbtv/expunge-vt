@@ -146,7 +146,7 @@ export default {
       });
     },
     saveCounts: function () {
-      devLog('saving counts');
+      devLog(`saving counts: ${JSON.stringify(this.saved)}`);
       chrome.storage.local.set({
         counts: toRaw(this.saved),
       });
@@ -222,7 +222,7 @@ export default {
     },
     deleteCount: function (countId) {
       index = this.saved.counts.findIndex((x) => x.uid === countId);
-      Vue.delete(this.saved.counts, index);
+      this.saved.counts.splice(index, 1);
     },
     clearAll: function () {
       chrome.storage.local.remove(['counts', 'responses'], function () {
