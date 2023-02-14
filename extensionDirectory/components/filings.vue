@@ -3,7 +3,7 @@ import $ from 'jquery';
 import moment from 'moment';
 import 'bootstrap';
 import 'bootstrap4-toggle';
-import { toRaw } from 'vue';
+import { nextTick, toRaw } from 'vue';
 
 import checkoutOffenseRow from './checkout-offense-row.vue'
 import docketCaption from './docket-caption.vue'
@@ -12,7 +12,7 @@ import filingFooter from './filing-footer.vue'
 import filingNav from './filing-nav.vue'
 import filingTypeHeading from './filing-type-heading.vue'
 
-import { countyCodeFromCounty, devLog, getError, handlePrintMacro, initAfterVue, toCountyCode } from '../utils';
+import { countyCodeFromCounty, devLog, getError, handlePrintMacro, initAfterVue, initScrollDetection, setInitialExpandForTextAreas, initTextAreaAutoExpand, initSmoothScroll, toCountyCode } from '../utils';
 
 const maxCountsOnNoA = 10;
 
@@ -143,9 +143,20 @@ export default {
     this.loadAll();
     detectChangesInChromeStorage(this);
     handlePrintMacro(this);
+    initAfterVue();
     
     //This is to make sure dynamically created table are unique across tab in order to avoid errors
     this.uniqueId = this._uid;
+  },
+  updated() {
+    nextTick(function () {
+
+          // call any vanilla js functions that need to run after vue is all done setting up.
+          initScrollDetection();
+          setInitialExpandForTextAreas();
+          initTextAreaAutoExpand();
+          initSmoothScroll();
+    });
   },
   methods: {
     saveSettings: function () {
@@ -201,13 +212,13 @@ export default {
         }
 
         callback();
-        //this.$nextTick(function () {
-          //call any vanilla js functions that need to run after vue is all done setting up.
-          //initAfterVue();
-        //});
-        setTimeout(() => {
-          initAfterVue();
-        }, 0);
+        // nextTick(function () {
+        //   // call any vanilla js functions that need to run after vue is all done setting up.
+        //   initAfterVue();
+        // });
+        // setTimeout(() => {
+        //   initAfterVue();
+        // }, 0);
       });
     },
 

@@ -109,8 +109,9 @@ export function initAfterFilingRefresh() {
 
 export function initAfterVue() {
   //sets intital height of all text areas to show all text.
-  devLog(document.getElementsByTagName('body')[0].id);
-  if (document.getElementsByTagName('body')[0].id === 'filing-page') {
+  devLog('initAfterVue');
+  devLog(`document.getElementsByTagName('body')[0].id ${JSON.stringify(document.getElementsByTagName('body'))}`);
+  if (document.getElementsByTagName('body')[0].id === 'filing-app') {
     initScrollDetection();
     setInitialExpandForTextAreas();
     initTextAreaAutoExpand();
