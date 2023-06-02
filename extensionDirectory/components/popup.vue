@@ -417,8 +417,8 @@ export default {
       />
     </div>
     <div class="popup-edition-wrap">
-      <p class="popup-edition">ExpungeVT 4.1.1 - Co-counsel Edition</p>
-      <p class="popup-edition-sub">Expunge Harder. Expunge Smarter.</p>
+      <p class="popup-edition">ExpungeVT 5.0 - A New Manifest</p>
+      <p class="popup-edition-sub">Expungement never dies...</p>
     </div>
     <div class="inset text-center button-div">
       <button

@@ -1315,7 +1315,7 @@ export default {
                           <img
                             v-else
                             class="generic-logo"
-                            src="images/icon_128.png"
+                            src="images/icon_128x.png"
                           />
                           <div class="atty-block">
                             <p
