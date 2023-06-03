@@ -148,16 +148,6 @@ export default {
     //This is to make sure dynamically created table are unique across tab in order to avoid errors
     this.uniqueId = this._uid;
   },
-  updated() {
-    nextTick(function () {
-
-          // call any vanilla js functions that need to run after vue is all done setting up.
-          initScrollDetection();
-          setInitialExpandForTextAreas();
-          initTextAreaAutoExpand();
-          initSmoothScroll();
-    });
-  },
   methods: {
     saveSettings: function () {
       // devLog("save settings", this.settings)
