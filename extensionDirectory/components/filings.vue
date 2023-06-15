@@ -139,7 +139,9 @@ export default {
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog('adminConfig data has been set in filings.vue at line: ' + getError());
+        devLog(
+          'adminConfig data has been set in filings.vue at line: ' + getError()
+        );
         devLog(data);
       }.bind(this)
     );
@@ -1065,7 +1067,8 @@ export default {
     },
     countsSealCAdult: function () {
       return this.rawCounts.filter(
-        (count) => count.filingType === 'SCAdult' || count.filingType === 'StipSCAdult'
+        (count) =>
+          count.filingType === 'SCAdult' || count.filingType === 'StipSCAdult'
       );
     },
     countsSealDui: function () {
@@ -2287,7 +2290,7 @@ export default {
                           >, and hereby moves the Court to seal the record of
                           the above-captioned conviction
                           <span v-if="filing.multipleCounts">s</span> pursuant
-                          to <span v-if="2==2">33 V.S.A. &sect; 5119(g)</span><span v-else>13 V.S.A. 7602</span>.
+                          to 13 V.S.A. &sect; 7602.
                         </p>
                         <p>
                           1. Petitioner was convicted of the following
@@ -2335,22 +2338,15 @@ export default {
                           </tbody>
                         </table>
                         <p>
-                          2. Petitioner was under 25 when the crime<span
-                            v-if="filing.multipleCounts"
-                            >s were</span
-                          ><span v-else> was</span> committed.
+                          2. The qualifying crime<span v-if="filing.multipleCounts">s were</span><span v-else> was</span> committed after the Petition reached the age of 19.
                         </p>
 
                         <p>
-                          3. Petitioner was not later convicted of a listed
-                          crime, pursuant to 13 V.S.A. &sect; 5301(7), within
-                          the last 10 years, nor is petitioner currently being
-                          charged of such an offense.
+                          3. All restitution ordered here has been paid in full.
                         </p>
                         <p>
-                          4. Petitioner believes the court will find that they
-                          have been rehabilitated, as evidenced by the
-                          following:
+                          4. Sealing this record serves the interests of
+                          justice, as
                         </p>
                       </div>
 
@@ -2419,13 +2415,21 @@ export default {
                           </tbody>
                         </table>
                         <p>
-                          2. The qualifying crime<span v-if="filing.multipleCounts">s were</span><span v-else> was</span> committed after the Petition reached the age of 19.
+                          2. At least 10 years have elapsed since the date
+                          petitioner successfully completed their sentence.
+                        </p>
+
+                        <p>
+                          3. This conviction is the only violation of 23 V.S.A.
+                          &sect; 1201 that petitioner has on their record, and
+                          petitioner has not been convicted of any new crime
+                          since they were convicted of this offense.
                         </p>
                         <p>
-                          3. All restitution ordered here has been paid in full.
+                          4. All restitution ordered here has been paid in full.
                         </p>
                         <p>
-                          4. Sealing this record serves the interests of
+                          5. Sealing this record serves the interests of
                           justice, as
                         </p>
                       </div>
