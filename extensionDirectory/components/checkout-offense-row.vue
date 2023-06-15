@@ -9,7 +9,9 @@ export default {
         filingType == "StipExNC" ||
         filingType == "StipExNCrim" ||
         filingType == "StipSC" ||
-        filingType == "StipSDui"
+        filingType == "StipSCAdult" ||
+        filingType == "StipSDui" ||
+        filingType == "StipNegOp"
       );
     },
     dateFormatSimple: function (value) {

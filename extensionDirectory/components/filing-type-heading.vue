@@ -25,13 +25,25 @@ export default {
           type: "SC",
           stipType: "StipSC",
           phrase:
-            "The following are prior convictions and we prepared a petition to seal:",
+            "The following are prior convictions from under the age of 25 and we prepared a petition to seal:",
+        },
+        {
+          type: 'SCAdult',
+          stipType: 'StipSCAdult',
+          phrase:
+            'The following are prior convictions and we prepared a petition to seal:',
         },
         {
           type: "SDui",
           stipType: "StipSDui",
           phrase:
             "The following is a prior DUI conviction and we filed a petition to seal:",
+        },
+        {
+          type: 'NegOp',
+          stipType: 'StipNegOp',
+          phrase:
+            'The following is a prior Negligent Operation conviction and we filed a petition to seal:',
         },
       ];
 

@@ -117,10 +117,10 @@ export default {
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
         devLog(
-          'adminConfig data has been set at line: ' + getError()
+          'adminConfig data has been set in manage counts at line: ' + getError()
         );
         devLog(data);
-      }
+      }.bind(this)
     );
   },
   mounted() {
@@ -489,8 +489,10 @@ export default {
                 <option value="ExC">Expunge Conviction</option>
                 <option value="ExNC">Expunge Non-Conviction</option>
                 <option value="ExNCrim">Expunge Non-Criminal</option>
-                <option value="SC">Seal Conviction</option>
+                <option value="SC">Seal Conviction Under 25</option>
+                <option value="SCAdult">Seal Conviction Adult</option>
                 <option value="SDui">Seal DUI</option>
+                <option value="NegOp">Seal Neg Op</option>
                 <option value="StipExC">(Stipulated) Expunge Conviction</option>
                 <option value="StipExNC"
                   >(Stipulated) Expunge Non-Conviction</option
@@ -498,8 +500,10 @@ export default {
                 <option value="StipExNCrim"
                   >(Stipulated) Expunge Non-Criminal</option
                 >
-                <option value="StipSC">(Stipulated) Seal Conviction</option>
+                <option value="StipSC">(Stipulated) Seal Conviction Under 25</option>
+                <option value="StipSCAdult">(Stipulated) Seal Conviction Adult</option>
                 <option value="StipSDui">(Stipulated) Seal DUI</option>
+                <option value="StipNegOp">(Stipulated) Seal Neg Op</option>
               </select>
             </label>
           </div>

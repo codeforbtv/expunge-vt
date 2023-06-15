@@ -323,13 +323,21 @@ function getOdysseyCountInfo(docket, docketUrl) {
   // parse docket number & county (eg, "1899-5-12 Cncr")
   const caseNumSpans = docket.find('#roa-header span').get();
   const isCaseNumberSpan = caseNumSpans[1].textContent.trim().includes('Case');
-  const docketSheetNum = isCaseNumberSpan
+  let docketSheetNum = isCaseNumberSpan
     ? caseNumSpans[2].textContent.trim()
     : null;
-  const [docketNum, docketCounty] = isCaseNumberSpan
+  let [docketNum, docketCounty] = isCaseNumberSpan
     ? docketSheetNum.split(' ')
     : [null, null];
-  const county = countyNameFromCountyCode(docketCounty);
+  let county = countyNameFromCountyCode(docketCounty);
+
+  if (typeof docketCounty === 'undefined') {
+    const countyTitle = docket.find('#roa-header div').get();
+    county = countyTitle[0].textContent.trim().replace(' Unit', '');
+    docketSheetNum = docketNum + ' ' + countyCodeFromCounty(county);
+    console.log('county', county);
+  }
+  console.log('docketlog', docketNum, county);
 
   // parse each offense
   let offenseArray = [];

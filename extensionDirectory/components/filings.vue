@@ -5,14 +5,25 @@ import 'bootstrap';
 import 'bootstrap4-toggle';
 import { nextTick, toRaw } from 'vue';
 
-import checkoutOffenseRow from './checkout-offense-row.vue'
-import docketCaption from './docket-caption.vue'
-import filingDatedCity from './filing-dated-city.vue'
-import filingFooter from './filing-footer.vue'
-import filingNav from './filing-nav.vue'
-import filingTypeHeading from './filing-type-heading.vue'
+import checkoutOffenseRow from './checkout-offense-row.vue';
+import docketCaption from './docket-caption.vue';
+import filingDatedCity from './filing-dated-city.vue';
+import filingFooter from './filing-footer.vue';
+import filingNav from './filing-nav.vue';
+import filingTypeHeading from './filing-type-heading.vue';
 
-import { countyCodeFromCounty, devLog, getError, handlePrintMacro, initAfterVue, initScrollDetection, setInitialExpandForTextAreas, initTextAreaAutoExpand, initSmoothScroll, toCountyCode } from '../utils';
+import {
+  countyCodeFromCounty,
+  devLog,
+  getError,
+  handlePrintMacro,
+  initAfterVue,
+  initScrollDetection,
+  setInitialExpandForTextAreas,
+  initTextAreaAutoExpand,
+  initSmoothScroll,
+  toCountyCode,
+} from '../utils';
 
 const maxCountsOnNoA = 10;
 
@@ -26,7 +37,7 @@ function detectChangesInChromeStorage(app) {
     //   app.clearAll();
     //   return;
     // }
-    app.loadAll(function () { });
+    app.loadAll(function () {});
   });
 }
 
@@ -38,7 +49,7 @@ export default {
     filingDatedCity,
     filingFooter,
     filingNav,
-    filingTypeHeading
+    filingTypeHeading,
   },
   data() {
     return {
@@ -102,20 +113,18 @@ export default {
       handler() {
         this.saveSettings();
         //this.$nextTick(function () {
-          //vanilla js
+        //vanilla js
         //});
       },
       deep: true,
     },
     saved: {
       handler() {
-        devLog(
-          'counts updated - line:' + getError()
-        );
+        devLog('counts updated - line:' + getError());
         this.saveCounts();
         //this.$nextTick(function () {
-          //call any vanilla js functions after update.
-          //initAfterFilingRefresh();
+        //call any vanilla js functions after update.
+        //initAfterFilingRefresh();
         //});
       },
       deep: true,
@@ -125,17 +134,14 @@ export default {
     $.getJSON(
       'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
       function (data) {
-          console.log(this);
         this.countiesContact = data['countyContacts'];
         this.popupHeadline = data['expungeHeadline'];
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog(
-          'adminConfig data has been set at line: ' + getError()
-        );
+        devLog('adminConfig data has been set in filings.vue at line: ' + getError());
         devLog(data);
-      }
+      }.bind(this)
     );
   },
   mounted() {
@@ -144,18 +150,17 @@ export default {
     detectChangesInChromeStorage(this);
     handlePrintMacro(this);
     initAfterVue();
-    
+
     //This is to make sure dynamically created table are unique across tab in order to avoid errors
     this.uniqueId = this._uid;
   },
   updated() {
     nextTick(function () {
-
-          // call any vanilla js functions that need to run after vue is all done setting up.
-          initScrollDetection();
-          setInitialExpandForTextAreas();
-          initTextAreaAutoExpand();
-          initSmoothScroll();
+      // call any vanilla js functions that need to run after vue is all done setting up.
+      initScrollDetection();
+      setInitialExpandForTextAreas();
+      initTextAreaAutoExpand();
+      initSmoothScroll();
     });
   },
   methods: {
@@ -165,9 +170,7 @@ export default {
       localStorage.setItem('localExpungeVTSettings', settingString);
     },
     saveResponses: function () {
-      devLog(
-        'save responses' + getError()
-      );
+      devLog('save responses' + getError());
       chrome.storage.local.set({
         responses: this.responses,
       });
@@ -178,10 +181,17 @@ export default {
         counts: toRaw(this.saved),
       });
     },
+    handleNewDocketNums: function (sheetNum) {
+      if (sheetNum.toLowerCase().includes('-cr-')) {
+        return sheetNum.split(' ')[0];
+      } else {
+        return sheetNum;
+      }
+    },
     loadAll: function (callback) {
       var self = this;
       if (callback === undefined) {
-        callback = function () { };
+        callback = function () {};
       }
       devLog(localStorage.getItem('localExpungeVTSettings'));
       localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
@@ -234,10 +244,10 @@ export default {
 
       devLog(
         'there are ' +
-        filingCounties.length +
-        ' counties for ' +
-        counts.length +
-        ' counts'
+          filingCounties.length +
+          ' counties for ' +
+          counts.length +
+          ' counts'
       );
 
       //create an array to hold all county filing objects
@@ -260,9 +270,9 @@ export default {
 
         devLog(
           'there are ' +
-          filingsForThisCounty.length +
-          ' different filings needed in ' +
-          countyName
+            filingsForThisCounty.length +
+            ' different filings needed in ' +
+            countyName
         );
 
         //if there are no filings needed for this county, move along to the next one.
@@ -274,10 +284,11 @@ export default {
         //add the notice of appearance filing to this county because we have petitions to file
         //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
         var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented = this.groupCountsByMaxDocketNumber(
-          allEligibleCountsForThisCounty,
-          maxDocketsPerNoA
-        );
+        var allEligibleCountsForThisCountySegmented =
+          this.groupCountsByMaxDocketNumber(
+            allEligibleCountsForThisCounty,
+            maxDocketsPerNoA
+          );
 
         //iterate through the filing types needed for this county and push them into the array
         for (var i in filingsForThisCounty) {
@@ -538,7 +549,9 @@ export default {
         filingType == 'StipExNC' ||
         filingType == 'StipExNCrim' ||
         filingType == 'StipSC' ||
-        filingType == 'StipSDui'
+        filingType == 'StipSCAdult' ||
+        filingType == 'StipSDui' ||
+        filingType == 'StipNegOp'
       );
     },
     isEligible: function (filingType) {
@@ -557,9 +570,13 @@ export default {
         case 'StipExNCrim':
         case 'ExNCrim':
         case 'StipSC':
+        case 'StipSCAdult':
         case 'StipSDui':
         case 'SC':
+        case 'SCAdult':
         case 'SDui':
+        case 'NegOp':
+        case 'StipNegOp':
         case 'X':
           return true;
         default:
@@ -588,13 +605,21 @@ export default {
         case 'ExNCrim':
           return 'Petition to Expunge Non-Criminal Conviction';
         case 'StipSC':
-          return 'Stipulated Petition to Seal Conviction';
+          return 'Stipulated Petition to Seal Conviction of Minor';
         case 'SC':
+          return 'Petition to Seal Conviction of Minor';
+        case 'StipSCAdult':
+          return 'Stipulated Petition to Seal Conviction';
+        case 'SCAdult':
           return 'Petition to Seal Conviction';
         case 'StipSDui':
           return 'Stipulated Petition to Seal DUI Conviction';
         case 'SDui':
           return 'Petition to Seal DUI Conviction';
+        case 'StipNegOp':
+          return 'Stipulated Petition to Seal Negligent Operation Conviction';
+        case 'NegOp':
+          return 'Petition to Seal Negligent Operation Conviction';
         case 'X':
           return 'Ineligible';
         default:
@@ -637,6 +662,10 @@ export default {
       var docketSheetNums = this.allDocketSheetNumsObject(countsOnThisFiling);
       var numDocketSheets = docketSheetNums.length;
       var isMultipleCounts = numCounts > 1;
+      console.log('filingType', filingType);
+      console.log('county', county);
+      console.log('docketNums', docketNums);
+
       var filingId = filingType + '-' + county + '-' + docketNums[0].num;
 
       return {
@@ -760,13 +789,12 @@ export default {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
       // see: https://stackoverflow.com/a/42989406/263900
-      chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
-        chrome.scripting.executeScript(
-        {
-          target: {tabId: tab.id},
-          files: ['payload.js']
+      chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['payload.js'],
         });
-      })
+      });
     },
     loadCaseFile: async function () {
       var query = { active: true, currentWindow: true };
@@ -792,13 +820,14 @@ export default {
       chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
         if (isAllowedAccess) {
           // alert for a quick demonstration, please create your own user-friendly UI
-          chrome.tabs.query({active: true, currentWindow: true}).then(([tab]) => {
-            chrome.scripting.executeScript(
-            {
-              target: {tabId: tab.id},
-              files: ['payload.js']
+          chrome.tabs
+            .query({ active: true, currentWindow: true })
+            .then(([tab]) => {
+              chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                files: ['payload.js'],
+              });
             });
-          })
         } else {
           var goToSettings = confirm(
             'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
@@ -904,10 +933,14 @@ export default {
       }
     },
     stringAgeInYearsAtDate: function (date, dob) {
+      console.log('date', date);
+      console.log('dob', dob);
+
       if (!date) return '';
       if (!dob) return '';
       let fromTime = moment(date).diff(moment(dob));
       let duration = moment.duration(fromTime);
+      console.log('duration', duration);
       return (duration.asDays() / 365.25).toFixed(0) + ' yo';
     },
     sinceNow: function (value) {
@@ -932,11 +965,11 @@ export default {
       return moment(value).format('MM/DD/YYYY');
     },
     toCountyCode,
-        /** Takes an array of filings and figures out how many there are after omitting the NOAs
+    /** Takes an array of filings and figures out how many there are after omitting the NOAs
      * @param array   An array of filings
      * @return int    The number of filings that are not NOAs
      */
-     numWithoutNOAs: function (filings) {
+    numWithoutNOAs: function (filings) {
       return filings.filter((f) => {
         if (
           f.type == 'NoA' ||
@@ -964,7 +997,7 @@ export default {
         2
       );
       return surcharge;
-    }
+    },
   },
   computed: {
     petitioner: function () {
@@ -985,12 +1018,10 @@ export default {
       return this.createFilingsFromCounts(this.rawCounts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
     numCountsToExpungeOrSeal: function () {
-      return this.rawCounts.filter((count) => count.filingType !== 'X')
-        .length;
+      return this.rawCounts.filter((count) => count.filingType !== 'X').length;
     },
     numCountsNoAction: function () {
-      return this.rawCounts.filter((count) => count.filingType === 'X')
-        .length;
+      return this.rawCounts.filter((count) => count.filingType === 'X').length;
     },
     ineligible: function () {
       return this.groupIneligibleCounts(this.rawCounts);
@@ -1032,10 +1063,21 @@ export default {
         (count) => count.filingType === 'SC' || count.filingType === 'StipSC'
       );
     },
+    countsSealCAdult: function () {
+      return this.rawCounts.filter(
+        (count) => count.filingType === 'SCAdult' || count.filingType === 'StipSCAdult'
+      );
+    },
     countsSealDui: function () {
       return this.rawCounts.filter(
         (count) =>
           count.filingType === 'SDui' || count.filingType === 'StipSDui'
+      );
+    },
+    countsSealNegOp: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'NegOp' || count.filingType === 'StipNegOp'
       );
     },
     /* Checks the computed `filings` property to see how many unique dockets there are */
@@ -1059,10 +1101,10 @@ export default {
       var date = new Date();
       return this.slugify(
         'filings for ' +
-        this.petitioner.name +
-        ' ' +
-        date.toDateString() +
-        '.csv'
+          this.petitioner.name +
+          ' ' +
+          date.toDateString() +
+          '.csv'
       );
     },
     csvData: function () {
@@ -1089,9 +1131,9 @@ export default {
       date = moment().format('MMMM D[, ]YYYY');
       return date;
     },
-    rawCounts: function() {
+    rawCounts: function () {
       return toRaw(this.saved.counts);
-    }
+    },
   },
   filters: {
     uppercase: function (value) {
@@ -1105,7 +1147,7 @@ export default {
       return value.charAt(0).toLowerCase() + value.slice(1);
     },
   },
-}
+};
 </script>
 
 <template>
@@ -1524,12 +1566,25 @@ export default {
                                 colspan="3"
                                 v-if="countsSealC.length > 0"
                               >
-                                SEALED petitions drafted:
+                                SEALED petitions drafted for offenses from under age of 25:
                               </th>
                               <checkout-offense-row
                                 v-if="countsSealC.length > 0"
                                 v-bind:key="countsSealC + uniqueId + idx"
                                 v-for="(filing, idx) in countsSealC"
+                                v-bind:filing="filing"
+                              ></checkout-offense-row>
+                              <th
+                                scope="col"
+                                colspan="3"
+                                v-if="countsSealCAdult.length > 0"
+                              >
+                                SEALED petitions drafted for offenses from age 25 or over:
+                              </th>
+                              <checkout-offense-row
+                                v-if="countsSealCAdult.length > 0"
+                                v-bind:key="countsSealCAdult + uniqueId + idx"
+                                v-for="(filing, idx) in countsSealCAdult"
                                 v-bind:filing="filing"
                               ></checkout-offense-row>
                               <th
@@ -1543,6 +1598,19 @@ export default {
                                 v-if="countsSealDui.length > 0"
                                 v-bind:key="countsSealDui + uniqueId + idx"
                                 v-for="(filing, idx) in countsSealDui"
+                                v-bind:filing="filing"
+                              ></checkout-offense-row>
+                              <th
+                                scope="col"
+                                colspan="3"
+                                v-if="countsSealNegOp.length > 0"
+                              >
+                                SEALED Negligent Operation petitions drafted:
+                              </th>
+                              <checkout-offense-row
+                                v-if="countsSealNegOp.length > 0"
+                                v-bind:key="countsSealNegOp + uniqueId + idx"
+                                v-for="(filing, idx) in countsSealNegOp"
                                 v-bind:filing="filing"
                               ></checkout-offense-row>
                               <th
@@ -1618,13 +1686,14 @@ export default {
                             </p>
 
                             <p
-                              v-for="docketNum in filing.docketNums"
+                              v-for="(docketNum, index) in filing.docketNums"
+                              :key="index"
                               class="docket-number__numbers"
                             >
                               <span class="docket-number__label"
                                 >Docket No.&nbsp;</span
                               ><span class="docket-number__number"
-                                >{{docketNum.string}}</span
+                                >{{handleNewDocketNums(docketNum.string)}}</span
                               >
                             </p>
                           </div>
@@ -2116,7 +2185,7 @@ export default {
                         </p>
                       </div>
 
-                      <!-- (Stipulated) Petiton To Seal Conviction -->
+                      <!--Petiton To Seal Conviction Minor-->
                       <div
                         class="filing-body"
                         v-if="filing.type == 'SC' || filing.type == 'StipSC'"
@@ -2133,7 +2202,92 @@ export default {
                           >, and hereby moves the Court to seal the record of
                           the above-captioned conviction
                           <span v-if="filing.multipleCounts">s</span> pursuant
-                          to 33 V.S.A. &sect; 5119(g).
+                          to <span v-if="2==2">33 V.S.A. &sect; 5119(g)</span><span v-else>13 V.S.A. 7602</span>.
+                        </p>
+                        <p>
+                          1. Petitioner was convicted of the following
+                          crime<span v-if="filing.multipleCounts">s</span>:
+                        </p>
+                        <table class="count-table">
+                          <thead class="count-table__header">
+                            <th valign="middle" scope="col">Conviction Date</th>
+                            <th valign="middle" colspan="2" scope="col">
+                              Offense Description
+                            </th>
+                          </thead>
+                          <tbody class="count-table__body">
+                            <tr
+                              class="count-item"
+                              v-for="count in filing.counts"
+                            >
+                              <td class="count-item__date">
+                                <span class="no-visible"
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
+                                >
+                                <input
+                                  type="date"
+                                  class="no-print"
+                                  v-model="count.dispositionDate"
+                                />
+                              </td>
+                              <td class="count-item__description">
+                                <span class="no-visible"
+                                  >{{count.description}} ({{count.docketNum}}
+                                  {{toCountyCode(count.county)}})</span
+                                >
+                                <textarea
+                                  rows="1"
+                                  class="no-print count-item__textarea"
+                                  v-model="count.description"
+                                ></textarea>
+                              </td>
+                              <td class="no-print">
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p>
+                          2. Petitioner was under 25 when the crime<span
+                            v-if="filing.multipleCounts"
+                            >s were</span
+                          ><span v-else> was</span> committed.
+                        </p>
+
+                        <p>
+                          3. Petitioner was not later convicted of a listed
+                          crime, pursuant to 13 V.S.A. &sect; 5301(7), within
+                          the last 10 years, nor is petitioner currently being
+                          charged of such an offense.
+                        </p>
+                        <p>
+                          4. Petitioner believes the court will find that they
+                          have been rehabilitated, as evidenced by the
+                          following:
+                        </p>
+                      </div>
+
+
+                      <!--Petiton To Seal Conviction ADULT-->
+                      <div
+                        class="filing-body"
+                        v-if="filing.type == 'SCAdult' || filing.type == 'StipSCAdult'"
+                      >
+                        <p class="indent">
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
+                            >appearing <span class="italic">pro se</span>
+                          </span>
+                          <span v-else>
+                            by and through counsel,
+                            <span>{{settings['attorney']}}</span> </span
+                          >, and hereby moves the Court to seal the record of
+                          the above-captioned conviction
+                          <span v-if="filing.multipleCounts">s</span> pursuant
+                          to <span v-if="2==2">33 V.S.A. &sect; 5119(g)</span><span v-else>13 V.S.A. 7602</span>.
                         </p>
                         <p>
                           1. Petitioner was convicted of the following
@@ -2204,6 +2358,82 @@ export default {
                       <div
                         class="filing-body"
                         v-if="filing.type == 'SDui' || filing.type == 'StipSDui'"
+                      >
+                        <p class="indent">
+                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
+                          }}),
+                          <span v-if="proSeFromRole(settings.role)"
+                            >appearing <span class="italic">pro se</span>
+                        </span>
+                          <span v-else>
+                            by and through counsel,
+                            <span>{{settings['attorney']}}</span> </span
+                          >, and hereby moves the Court to seal the record of
+                          the above-captioned conviction
+                          <span v-if="filing.multipleCounts">s</span> pursuant
+                          to 13 V.S.A. &sect; 7602(a)(1)(C).
+                        </p>
+                        <p>
+                          1. Petitioner was convicted of the following
+                          crime<span v-if="filing.multipleCounts">s</span>:
+                        </p>
+                        <table class="count-table">
+                          <thead class="count-table__header">
+                            <th valign="middle" scope="col">Conviction Date</th>
+                            <th valign="middle" colspan="2" scope="col">
+                              Offense Description
+                            </th>
+                          </thead>
+                          <tbody class="count-table__body">
+                            <tr
+                              class="count-item"
+                              v-for="count in filing.counts"
+                            >
+                              <td class="count-item__date">
+                                <span class="no-visible"
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
+                                >
+                                <input
+                                  type="date"
+                                  class="no-print"
+                                  v-model="count.dispositionDate"
+                                />
+                              </td>
+                              <td class="count-item__description">
+                                <span class="no-visible"
+                                  >{{count.description}} ({{count.docketNum}}
+                                  {{toCountyCode(count.county)}})</span
+                                >
+                                <textarea
+                                  rows="1"
+                                  class="no-print count-item__textarea"
+                                  v-model="count.description"
+                                ></textarea>
+                              </td>
+                              <td class="no-print">
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p>
+                          2. The qualifying crime<span v-if="filing.multipleCounts">s were</span><span v-else> was</span> committed after the Petition reached the age of 19.
+                        </p>
+                        <p>
+                          3. All restitution ordered here has been paid in full.
+                        </p>
+                        <p>
+                          4. Sealing this record serves the interests of
+                          justice, as
+                        </p>
+                      </div>
+
+                      <!-- (Stipulated) Petiton To Seal Negligent Operation Conviction -->
+                      <div
+                        class="filing-body"
+                        v-if="filing.type == 'NegOp' || filing.type == 'StipNegOp'"
                       >
                         <p class="indent">
                           NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
