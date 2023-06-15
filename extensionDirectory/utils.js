@@ -109,14 +109,12 @@ export function initAfterFilingRefresh() {
 
 export function initAfterVue() {
   //sets intital height of all text areas to show all text.
-  devLog('initAfterVue');
-  devLog(`document.getElementsByTagName('body')[0].id ${JSON.stringify(document.getElementsByTagName('body'))}`);
-  if (document.getElementsByTagName('body')[0].id === 'filing-app') {
+  document.addEventListener("DOMContentLoaded", () => {
     initScrollDetection();
     setInitialExpandForTextAreas();
     initTextAreaAutoExpand();
     initSmoothScroll();
-  }
+  });
 }
 
 export function initScrollDetection() {
