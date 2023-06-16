@@ -1,6 +1,6 @@
 <script>
 export default {
-  filters: {
+  methods: {
     navTitleFilter(txt) {
       const trimStip = txt.startsWith("Stipulated ")
         ? txt.substring(11) + " (Stip)"
@@ -19,7 +19,7 @@ export default {
       // NoA subtitle
       if (filing.type == "NoA") {
         // default (ungrouped): "####-##-## (N Counts)"
-        if (!this.app.groupCounts && !this.app.groupNoas) {
+        if (!this.settings.groupCounts && !this.settings.groupNoas) {
           return `${filing.docketNums[0].num} (${filing.numCountsString})`;
         }
         // two cases, same text: "N Dockets (N Counts)"
@@ -32,21 +32,21 @@ export default {
       // Petition subtitles
       else {
         // default (ungrouped): "N Counts" (or blank if counts == 1)
-        if (!this.app.groupCounts && !this.app.groupNoas) {
+        if (!this.settings.groupCounts && !this.settings.groupNoas) {
           return filing.counts.length > 1 ? `${filing.counts.length} Counts` : "";
         }
         // groupCounts: "####-##-##"
-        else if (this.app.groupNoas && !this.app.groupCounts) {
+        else if (this.settings.groupNoas && !this.settings.groupCounts) {
           return `${filing.docketNums[0].num}`;
         }
         // groupCounts: "N Dockets (N Counts)"
-        else if (this.app.groupNoas && this.app.groupCounts) {
+        else if (this.settings.groupNoas && this.settings.groupCounts) {
           return `${filing.docketNums.length} Dockets (${filing.numCountsString})`;
         }
       }
     },
   },
-  props: ["filings"],
+  props: ["filings", "settings"],
 };
 </script>
 
@@ -69,8 +69,8 @@ export default {
           <a href v-bind:href="'#'+group.county">{{group.county}}</a>
           <ol>
             <li v-for="filing in group.filings" class="filing-nav__child-link" v-bind:class="'petition-type__'+filing.type">
-              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{filing.title | navTitleFilter}}</a>
-              <p class="filing-nav__counts">{{filing | petitionCountFilter}}</p>
+              <a v-bind:href="'#'+filing.id" v-bind:class="'petition-type__'+filing.type">{{navTitleFilter(filing.title)}}</a>
+              <p class="filing-nav__counts">{{petitionCountFilter(filing)}}</p>
             </li>
           </ol>
         </li>
