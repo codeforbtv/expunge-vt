@@ -1,12 +1,13 @@
 {
   "name": "ExpungeVT!",
-  "version": "5.0",
-  "description": "Expungement never dies...",
+  "version": "5.0.2",
+  "description": "A New Manifest",
   "permissions": [
     "activeTab",
     "declarativeContent",
     "scripting",
-    "storage"
+    "storage",
+    "downloads"
   ],
   "background": {
     "service_worker": "background.js"

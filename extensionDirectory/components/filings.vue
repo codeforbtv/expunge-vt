@@ -4,7 +4,7 @@ import moment from 'moment';
 import 'bootstrap';
 import 'bootstrap4-toggle';
 import { nextTick, toRaw } from 'vue';
-
+import saveAllCountsToHtml from '../saveFile'
 import checkoutOffenseRow from './checkout-offense-row.vue';
 import docketCaption from './docket-caption.vue';
 import filingDatedCity from './filing-dated-city.vue';

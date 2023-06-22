@@ -1,6 +1,6 @@
 body {
   width: 475px;
-  min-height: 400px;
+  height: 800px;
   height: auto;
   box-sizing: border-box;
 }
@@ -30,7 +30,7 @@ button {
   height: 30px;
 }
 .pet-item .btn {
-  padding: 0 1rem;
+  padding: 0 0.5rem;
 }
 .pet-detail {
   padding: 0px 5px 0px 5px;
@@ -144,7 +144,7 @@ p.pet-detail {
   align-content: center;
   text-align: center;
   width: 100%;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 #mainButtonDiv {
@@ -183,7 +183,7 @@ p.pet-detail {
 }
 
 .title-page__link {
-  margin-top: 10px;
+  margin-top: 5px;
   margin-bottom: 10px;
   width: 70%;
   text-align: center;
@@ -191,8 +191,9 @@ p.pet-detail {
   margin-right: auto;
 }
 #vtCourtsOnlineA {
-  position: relative;
   z-index: 99;
+  width: auto !important;
+  margin: 0 auto 0 auto;
 }
 
 .section-label {
@@ -377,20 +378,32 @@ hr {
 
 .popup-edition-sub {
   width: 90%;
-  margin: auto;
+  margin: auto auto 5px auto;
   text-align: center;
   color: #4d99d3;
   font-style: italic;
+  font-size: 10px;
+}
+.act-image {
+  width: 100%;
+}
+
+.act-image-wrap {
+  margin: 0 auto 0 auto;
+  width: 200px;
 }
 
 .donate-box {
   width: 100%;
+  display: flex;
+  flex-direction: row;
   text-align: center;
-  margin-bottom: 10px;
+  margin: 0px auto 10px auto;
 }
 
 .donate {
-  margin: auto !important;
+  margin: 0 auto 0 auto !important;
+  width: 44%;
 }
 
 .asterisk {
@@ -400,7 +413,7 @@ hr {
   top: 15px;
   color: red;
   font-weight: 900;
-  opacity: .7;
+  opacity: 0.7;
 }
 
 .asterisk-text {
@@ -442,11 +455,11 @@ hr {
 }
 
 .checkbox-input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 .checkmark:after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
 }

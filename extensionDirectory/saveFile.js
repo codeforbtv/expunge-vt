@@ -198,3 +198,5 @@ var Base64 = {
     return t;
   },
 };
+
+export default saveAllCountsToHtml

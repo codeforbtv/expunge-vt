@@ -118,10 +118,12 @@ export default {
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog('adminConfig data has been set in popup.vue at line: ' + getError());
-        console.log("data",data);
+        devLog(
+          'adminConfig data has been set in popup.vue at line: ' + getError()
+        );
+        console.log('data', data);
 
-        console.log("popupHeadline",this.popupHeadline);
+        console.log('popupHeadline', this.popupHeadline);
       }.bind(this)
     );
   },
@@ -384,23 +386,26 @@ export default {
     </div>
     <div class="popup-edition-wrap">
       <p class="popup-edition">ExpungeVT 5.0 - A New Manifest</p>
-      <p class="popup-edition-sub">
-        Code for BTV is made possible with the support of the <a href="https://www.civictechnologists.org/">Alliance of Civic Technologists (ACT)</a> and the nationwide network of local orgs that ACT serves.
-      </p>
     </div>
     <div class="inset text-center button-div">
       <button
         v-on:click="addDocketCounts"
-        class="add-docket-info btn btn-primary" :disabled="!settings.termsChecked"
+        class="add-docket-info btn btn-primary"
+        :disabled="!settings.termsChecked"
       >
         Add From Page <i class="fas fa-plus-circle"></i>
       </button>
-      <button v-on:click="loadCaseFile" class="add-docket-info btn btn-primary" :disabled="!settings.termsChecked">
+      <button
+        v-on:click="loadCaseFile"
+        class="add-docket-info btn btn-primary"
+        :disabled="!settings.termsChecked"
+      >
         Load Case File<br /><i class="fas fa-file"></i>
       </button>
       <button
         v-on:click="addAndOpenManagePage"
-        class="edit-counts btn btn-primary" :disabled="!settings.termsChecked"
+        class="edit-counts btn btn-primary"
+        :disabled="!settings.termsChecked"
       >
         Add/Edit <i class="fas fa-edit"></i>
       </button>
@@ -409,21 +414,27 @@ export default {
       <div class="checkbox-container">
         <label for="checkbox">
           <input
-          type="checkbox"
-          id="checkbox"
-          v-model="settings.termsChecked"
-          class="checkbox-input"
+            type="checkbox"
+            id="checkbox"
+            v-model="settings.termsChecked"
+            class="checkbox-input"
           />
           <span class="checkmark"></span>
         </label>
-        <span>By checking this box to enable this app, you agree to all <a target="_blank" href="disclaimer.html"
-          >Terms &amp; Conditions.<i class="fas fa-external-link-alt"></i></a
-          ></span>
-        </div>
-        <p v-if="popupHeadline != ''" id="introText" v-html="popupHeadline"></p>
-        <p v-else></p>
+        <span
+          >By checking this box to enable this app, you agree to all
+          <a target="_blank" href="disclaimer.html"
+            >Terms &amp; Conditions.<i class="fas fa-external-link-alt"></i></a
+        ></span>
+      </div>
+      <div
+        v-if="popupHeadline != ''"
+        id="introText"
+        v-html="popupHeadline"
+      ></div>
+      <div v-else></div>
     </a>
-    <br>
+    <br />
     <a
       id="vtCourtsOnlineA"
       class="title-page__link"
@@ -442,12 +453,26 @@ export default {
         class="edit-counts btn btn-success donate title-page__link"
         href="https://www.paypal.com/paypalme/c4btv"
         target="_blank"
+        >Donate to<br />Code for BTV!&nbsp;&nbsp;&nbsp;<i
+          class="fas fa-hand-holding-usd"
+        ></i
+      ></a>
+      <a
+        class="edit-counts btn btn-primary donate title-page__link"
+        href="https://www.paypal.com/paypalme/c4btv"
+        target="_blank"
       >
-        Donate to Code for BTV!&nbsp;&nbsp;&nbsp;<i
+        Donate to the Alliance of Civic Technologists!&nbsp;&nbsp;&nbsp;<i
           class="fas fa-hand-holding-usd"
         ></i>
       </a>
     </div>
+    <a href="https://www.civictechnologists.org/">
+      <div class="act-image-wrap">
+        <img src="../images/ACT_logo_color.png" alt="" class="act-image" />
+      </div>
+    </a>
+    <p class="popup-edition-sub">Code for BTV is supported in part by ACT.</p>
   </div>
   <div class="active-state" v-else>
     <div class="popTop">
@@ -602,8 +627,12 @@ export default {
                   <option value="StipExNCrim">
                     (Stip) Expunge Non-Criminal
                   </option>
-                  <option value="StipSC">(Stip) Seal Conviction Under 25</option>
-                  <option value="StipSCAdult">(Stip) Seal Conviction Adult</option>
+                  <option value="StipSC">
+                    (Stip) Seal Conviction Under 25
+                  </option>
+                  <option value="StipSCAdult">
+                    (Stip) Seal Conviction Adult
+                  </option>
                   <option value="StipSDui">(Stip) Seal DUI</option>
                   <option value="StipNegOp">(Stip) Seal Neg Op</option>
                 </select>
