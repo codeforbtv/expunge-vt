@@ -587,6 +587,9 @@ p.filing-dated-city {
     padding-left: 0.25in;
     padding-right: 0.25in;
   }
+  .page:last-child {
+    page-break-after: avoid !important; 
+  }
   .count-table + p {
     padding-top: 0.5rem;
   }
