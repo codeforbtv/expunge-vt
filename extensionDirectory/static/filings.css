@@ -1,4 +1,4 @@
-/* Helpers */
+/* Helpers ----------------*/
 
 .indent {
   text-indent: 2em;
@@ -694,6 +694,7 @@ p.filing-dated-city {
 /*manage-counts page*/
 .edit-count {
   border: 1px solid #ddd;
+  background: #afcef0;
   padding: 30px;
   border-radius: 5px;
   position: relative;
