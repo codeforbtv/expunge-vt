@@ -459,7 +459,7 @@ export default {
       ></a>
       <a
         class="edit-counts btn btn-primary donate title-page__link"
-        href="https://www.paypal.com/paypalme/c4btv"
+        href="https://opencollective.com/act-fund"
         target="_blank"
       >
         Donate to the Alliance of Civic Technologists!&nbsp;&nbsp;&nbsp;<i
@@ -467,7 +467,7 @@ export default {
         ></i>
       </a>
     </div>
-    <a href="https://www.civictechnologists.org/">
+    <a href="https://www.civictechnologists.org/" target="_blank">
       <div class="act-image-wrap">
         <img src="../images/ACT_logo_color.png" alt="" class="act-image" />
       </div>
