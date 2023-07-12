@@ -193,6 +193,12 @@ Vue.component('filing-type-heading', {
           type: 'SC',
           stipType: 'StipSC',
           phrase:
+            'The following are prior convictions from under the age of 25, and we prepared a petition to seal:',
+        },
+        {
+          type: 'SCAdult',
+          stipType: 'StipSCAdult',
+          phrase:
             'The following are prior convictions and we prepared a petition to seal:',
         },
         {
@@ -200,6 +206,12 @@ Vue.component('filing-type-heading', {
           stipType: 'StipSDui',
           phrase:
             'The following is a prior DUI conviction and we filed a petition to seal:',
+        },
+        {
+          type: 'NegOp',
+          stipType: 'StipNegOp',
+          phrase:
+            'The following is a prior Negligent Operation conviction and we filed a petition to seal:',
         },
       ];
 
@@ -231,6 +243,7 @@ Vue.component('checkout-offense-row', {
         filingType == 'StipExNC' ||
         filingType == 'StipExNCrim' ||
         filingType == 'StipSC' ||
+        filingType == 'StipSCAdult' ||
         filingType == 'StipSDui'
       );
     },

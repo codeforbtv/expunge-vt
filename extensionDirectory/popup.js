@@ -1,9 +1,50 @@
 import './popup.css';
 import $ from 'jquery';
 import moment from 'moment';
-import { countyNameFromCountyCode } from './filings';
+import { createApp } from 'vue';
+
+import PopupApp from './components/popup.vue';
 
 let loadedMessage;
+
+export function countyNameFromCountyCode(countyCode) {
+  counties = {
+    Ancr: 'Addison',
+    Bncr: 'Bennington',
+    Cacr: 'Caledonia',
+    Cncr: 'Chittenden',
+    Excr: 'Essex',
+    Frcr: 'Franklin',
+    Gicr: 'Grand Isle',
+    Lecr: 'Lamoille',
+    Oecr: 'Orange',
+    Oscr: 'Orleans',
+    Rdcr: 'Rutland',
+    Wncr: 'Washington',
+    Wmcr: 'Windham',
+    Wrcr: 'Windsor',
+  };
+  return counties[countyCode];
+}
+function countyCodeFromCounty(county) {
+  countyCodes = {
+    Addison: 'Ancr',
+    Bennington: 'Bncr',
+    Caledonia: 'Cacr',
+    Chittenden: 'Cncr',
+    Essex: 'Excr',
+    Franklin: 'Frcr',
+    'Grand Isle': 'Gicr',
+    Lamoille: 'Lecr',
+    Orange: 'Oecr',
+    Orleans: 'Oscr',
+    Rutland: 'Rdcr',
+    Washington: 'Wncr',
+    Windham: 'Wmcr',
+    Windsor: 'Wrcr',
+  };
+  return countyCodes[county];
+}
 
 initListeners();
 
@@ -282,13 +323,21 @@ function getOdysseyCountInfo(docket, docketUrl) {
   // parse docket number & county (eg, "1899-5-12 Cncr")
   const caseNumSpans = docket.find('#roa-header span').get();
   const isCaseNumberSpan = caseNumSpans[1].textContent.trim().includes('Case');
-  const docketSheetNum = isCaseNumberSpan
+  let docketSheetNum = isCaseNumberSpan
     ? caseNumSpans[2].textContent.trim()
     : null;
-  const [docketNum, docketCounty] = isCaseNumberSpan
+  let [docketNum, docketCounty] = isCaseNumberSpan
     ? docketSheetNum.split(' ')
     : [null, null];
-  const county = countyNameFromCountyCode(docketCounty);
+  let county = countyNameFromCountyCode(docketCounty);
+
+  if (typeof docketCounty === 'undefined') {
+    const countyTitle = docket.find('#roa-header div').get();
+    county = countyTitle[0].textContent.trim().replace(' Unit', '');
+    docketSheetNum = docketNum + ' ' + countyCodeFromCounty(county);
+    console.log('county', county);
+  }
+  console.log('docketlog', docketNum, county);
 
   // parse each offense
   let offenseArray = [];
@@ -661,3 +710,6 @@ var Base64 = {
     return t;
   },
 };
+
+//Vue app
+var app = createApp(PopupApp).mount('#filing-app');
