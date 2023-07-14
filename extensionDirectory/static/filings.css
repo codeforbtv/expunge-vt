@@ -579,7 +579,7 @@ p.filing-dated-city {
     display: none !important;
   }
   .page {
-    page-break-after: always !important;
+    page-break-after: always;
     position: relative;
     overflow: visible;
     background: #fff;
@@ -609,7 +609,6 @@ p.filing-dated-city {
     width: 100%;
     margin-left: 0.75in;
     margin-right: 0.75in;
-    page-break-after: always;
   }
 
   .footer-space__vertical-spacer {
@@ -674,6 +673,16 @@ p.filing-dated-city {
     font-size: 14pt;
     line-height: 1.2em;
     font-family: 'Times New Roman', Times, serif;
+  }
+  
+  .extra-pages:not(table:only-of-type) {
+    page-break-after: always;
+  }
+  
+  table:only-of-type .page:last-child,
+  .all-filings section:last-child .page:nth-last-child(2) {
+    page-break-after: avoid !important;
+    height: 99vh;
   }
 }
 
