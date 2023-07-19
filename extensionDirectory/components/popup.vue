@@ -19,7 +19,9 @@ function detectChangesInChromeStorage(app) {
       app.clearAll();
       return;
     }
-    app.loadAll(function () {});
+    if (!document.hasFocus()) {
+      app.loadAll(function () { });
+    }
   });
 }
 
@@ -91,7 +93,7 @@ export default {
       handler() {
         this.saveSettings();
         //this.$nextTick(function () {
-        //vanilla js
+          //vanilla js
         //});
       },
       deep: true,
@@ -139,19 +141,27 @@ export default {
     saveSettings: function () {
       // devLog("save settings", this.settings)
       settingString = JSON.stringify(this.settings);
-      localStorage.setItem('localExpungeVTSettings', settingString);
+      if (document.hasFocus()) {
+        localStorage.setItem('localExpungeVTSettings', settingString);
+      }
     },
     saveResponses: function () {
-      devLog('save responses' + getError());
-      chrome.storage.local.set({
-        responses: this.responses,
-      });
+      devLog(
+        'save responses' + getError()
+      );
+      if (document.hasFocus()) {
+        chrome.storage.local.set({
+          responses: this.responses,
+        });
+      }
     },
     saveCounts: function () {
       devLog('saving counts');
-      chrome.storage.local.set({
-        counts: toRaw(this.saved),
-      });
+      if (document.hasFocus()) {
+        chrome.storage.local.set({
+          counts: toRaw(this.saved),
+        });
+      }
     },
     loadAll: function (callback) {
       var self = this;

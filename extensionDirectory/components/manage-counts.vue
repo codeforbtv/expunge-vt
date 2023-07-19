@@ -19,7 +19,9 @@ function detectChangesInChromeStorage(app) {
       app.clearAll();
       return;
     }
-    app.loadAll(function () { });
+    if (!document.hasFocus()) {
+      app.loadAll(function () { });
+    }
   });
 }
 
@@ -135,18 +137,23 @@ export default {
     saveSettings: function () {
       // devLog("save settings", this.settings)
       settingString = JSON.stringify(this.settings);
-      localStorage.setItem('localExpungeVTSettings', settingString);
+      if (document.hasFocus()) {
+        localStorage.setItem('localExpungeVTSettings', settingString);
+      }
     },
     saveResponses: function () {
       devLog(
         'save responses' + getError()
       );
-      chrome.storage.local.set({
-        responses: this.responses,
-      });
+      if (document.hasFocus()) {
+        chrome.storage.local.set({
+          responses: this.responses,
+        });
+      }
     },
     saveCounts: function () {
       devLog(`saving counts: ${JSON.stringify(this.saved)}`);
+      if (document.hasFocus())
       chrome.storage.local.set({
         counts: toRaw(this.saved),
       });
@@ -373,9 +380,9 @@ export default {
 
 <template>
   <div>
-    <div v-if="petitioner.name" class="header-bar-wrapper no-print">
+    <div class="header-bar-wrapper no-print">
         <div class="header-bar">
-          <h1>Counts for {{petitioner.name}}</h1>
+          <h1 v-if="petitioner.name">Counts for {{petitioner.name}}</h1>
           <div class="header-bar__controls">
             <button v-on:click="newCount" class="btn btn-primary">
               Add Count <i class="fas fa-plus-circle"></i>

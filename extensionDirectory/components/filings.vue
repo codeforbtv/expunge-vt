@@ -30,14 +30,15 @@ const maxCountsOnNoA = 10;
 function detectChangesInChromeStorage(app) {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     var countsChange = changes['counts'];
-    var responsesChange = changes['responses'];
-
+    var responsesChange = changes['responses']
     if (countsChange === undefined && responsesChange === undefined) return;
-    // if (countsChange.newValue === undefined) {
-    //   app.clearAll();
-    //   return;
-    // }
-    app.loadAll(function () {});
+    if (countsChange.newValue === undefined) {
+      app.clearAll();
+      return;
+    }
+    if (!document.hasFocus()) {
+      app.loadAll(function () { });
+    }
   });
 }
 
@@ -169,19 +170,27 @@ export default {
     saveSettings: function () {
       // devLog("save settings", this.settings)
       settingString = JSON.stringify(this.settings);
-      localStorage.setItem('localExpungeVTSettings', settingString);
+      if (document.hasFocus()) {
+        localStorage.setItem('localExpungeVTSettings', settingString);
+      }
     },
     saveResponses: function () {
-      devLog('save responses' + getError());
-      chrome.storage.local.set({
-        responses: this.responses,
-      });
+      devLog(
+        'save responses' + getError()
+      );
+      if (document.hasFocus()) {
+        chrome.storage.local.set({
+          responses: this.responses,
+        });
+      }
     },
     saveCounts: function () {
       devLog('saving counts');
-      chrome.storage.local.set({
-        counts: toRaw(this.saved),
-      });
+      if (document.hasFocus()) {
+        chrome.storage.local.set({
+          counts: toRaw(this.saved),
+        });
+      }
     },
     handleNewDocketNums: function (sheetNum) {
       if (sheetNum.toLowerCase().includes('-cr-')) {
@@ -224,13 +233,10 @@ export default {
         }
 
         callback();
-        // nextTick(function () {
-        //   // call any vanilla js functions that need to run after vue is all done setting up.
-        //   initAfterVue();
-        // });
-        // setTimeout(() => {
-        //   initAfterVue();
-        // }, 0);
+        //this.$nextTick(function () {
+        //call any vanilla js functions that need to run after vue is all done setting up.
+        //initAfterVue();
+        //});
       });
     },
 
@@ -1273,9 +1279,9 @@ export default {
       <!-- If there are filings to dispalay... -->
       <div v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
         <!-- Page header & page actions -->
-        <div v-if="petitioner.name" class="header-bar-wrapper no-print">
+        <div class="header-bar-wrapper no-print">
           <div class="header-bar">
-            <h1>Filings for {{petitioner.name}}</h1>
+            <h1 v-if="petitioner.name" >Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
               <div v-if="numDockets >= 1 && proSeFromRole(settings.role)">
                 <span
