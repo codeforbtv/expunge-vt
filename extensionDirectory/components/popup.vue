@@ -1,29 +1,29 @@
 <script>
 import $ from 'jquery';
-import moment from 'moment';
 import { toRaw } from 'vue';
 
 import pillsRow from './pills-row.vue';
 
-import { devLog, getError, toCountyCode } from '../utils';
+import {
+  openPetitionsPage,
+  confirmClearData,
+  dateFormatSimple,
+  detectChangesInChromeStorage,
+  devLog,
+  getError,
+  loadAll,
+  nl2br,
+  openManagePage,
+  saveCounts,
+  saveResponses,
+  saveSettings,
+  sinceNow,
+  stringAgeInYearsAtDate,
+  toCountyCode,
+  todayDate,
+} from '../utils';
 
 // Vue.config.devtools = true;
-
-function detectChangesInChromeStorage(app) {
-  chrome.storage.onChanged.addListener(function (changes, namespace) {
-    var countsChange = changes['counts'];
-    var responsesChange = changes['responses'];
-
-    if (countsChange === undefined && responsesChange === undefined) return;
-    if (countsChange.newValue === undefined) {
-      app.clearAll();
-      return;
-    }
-    if (!document.hasFocus()) {
-      app.loadAll(function () { });
-    }
-  });
-}
 
 export default {
   // el: '#filing-app',
@@ -93,7 +93,7 @@ export default {
       handler() {
         this.saveSettings();
         //this.$nextTick(function () {
-          //vanilla js
+        //vanilla js
         //});
       },
       deep: true,
@@ -114,23 +114,15 @@ export default {
     $.getJSON(
       'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
       function (data) {
-        console.log(this);
         this.countiesContact = data['countyContacts'];
         this.popupHeadline = data.expungeHeadline;
         this.roleCoverLetterText = data['roleText'];
         this.coverLetterContent = data['letter'];
         this.stipDef = data['stipDefinition'];
-        devLog(
-          'adminConfig data has been set in popup.vue at line: ' + getError()
-        );
-        console.log('data', data);
-
-        console.log('popupHeadline', this.popupHeadline);
       }.bind(this)
     );
   },
   mounted() {
-    devLog('App mounted!');
     this.loadAll();
     detectChangesInChromeStorage(this);
 
@@ -138,122 +130,12 @@ export default {
     this.uniqueId = this._uid;
   },
   methods: {
-    saveSettings: function () {
-      // devLog("save settings", this.settings)
-      settingString = JSON.stringify(this.settings);
-      if (document.hasFocus()) {
-        localStorage.setItem('localExpungeVTSettings', settingString);
-      }
-    },
-    saveResponses: function () {
-      devLog(
-        'save responses' + getError()
-      );
-      if (document.hasFocus()) {
-        chrome.storage.local.set({
-          responses: this.responses,
-        });
-      }
-    },
-    saveCounts: function () {
-      devLog('saving counts');
-      if (document.hasFocus()) {
-        chrome.storage.local.set({
-          counts: toRaw(this.saved),
-        });
-      }
-    },
-    loadAll: function (callback) {
-      var self = this;
-      if (callback === undefined) {
-        callback = function () {};
-      }
-      devLog(localStorage.getItem('localExpungeVTSettings'));
-      localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
-      if (
-        localResult !== undefined &&
-        localResult !== '' &&
-        localResult !== null
-      ) {
-        devLog('settings found');
-        this.settings = localResult;
-        devLog(this.settings);
-      } else {
-        devLog('No settings found, saving default settings');
-        this.saveSettings();
-      }
-
-      chrome.storage.local.get(function (result) {
-        //test if we have any data
-        devLog('loading all');
-        devLog(JSON.stringify(result));
-        if (result.counts !== undefined) {
-          devLog(result.counts);
-          self.saved = result.counts;
-        }
-
-        if (result.responses !== undefined) {
-          self.responses = result.responses;
-        }
-
-        callback();
-        //this.$nextTick(function () {
-        //call any vanilla js functions that need to run after vue is all done setting up.
-        //initAfterVue();
-        //});
-      });
-    },
-    newCount: function (event) {
-      this.saved.counts.push({ description: 'New', filingType: '' });
-    },
-    clearAll: function () {
-      chrome.storage.local.remove(['counts', 'responses'], function () {
-        document.location.reload();
-      });
-    },
-    nl2br: function (rawStr) {
-      var breakTag = '<br>';
-      return (rawStr + '').replace(
-        /([^>\r\n]?)(\r\n|\n\r|\r|\n)/g,
-        '$1' + breakTag + '$2'
-      );
-    },
-    openPetitionsPage: function () {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        (tabs) => {
-          let index = tabs[0].index;
-          chrome.tabs.create({
-            url: chrome.runtime.getURL('./filings.html'),
-            index: index + 1,
-          });
-        }
-      );
-    },
     addAndOpenManagePage: function () {
       if (this.saved.counts.length == 0) {
         this.newCount();
         this.saved['defName'] = 'New Petitioner';
       }
-      this.openManagePage();
-    },
-    openManagePage: function (element) {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        (tabs) => {
-          let index = tabs[0].index;
-          chrome.tabs.create({
-            url: chrome.runtime.getURL('./manage-counts.html'),
-            index: index + 1,
-          });
-        }
-      );
+      openManagePage();
     },
     addDocketCounts: function () {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
@@ -266,8 +148,29 @@ export default {
         });
       });
     },
+    confirmClearData: function () {
+      confirmClearData(this);
+    },
+    newCount: function (event) {
+      this.saved.counts.push({ description: 'New', filingType: '' });
+    },
+    nl2br: nl2br,
+    openManagePage: openManagePage,
+    openPetitionsPage: openPetitionsPage,
+    saveSettings: function () {
+      saveSettings(this.settings);
+    },
+    saveResponses: function () {
+      saveResponses(this.responses);
+    },
+    saveCounts: function () {
+      saveCounts(toRaw(this.saved));
+    },
+    loadAll: function (callback) {
+      loadAll(this, callback);
+    },
     loadCaseFile: async function () {
-      var query = { active: true, currentWindow: true };
+      let query = { active: true, currentWindow: true };
       function getTabUrl() {
         return new Promise((resolve, reject) => {
           try {
@@ -299,7 +202,7 @@ export default {
               });
             });
         } else {
-          var goToSettings = confirm(
+          let goToSettings = confirm(
             'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
           );
           if (goToSettings) {
@@ -309,13 +212,6 @@ export default {
           }
         }
       });
-    },
-    confirmClearData: function () {
-      if (
-        confirm('Are you sure you want to clear all data for this petitioner?')
-      ) {
-        this.clearAll();
-      }
     },
     resetSettings: function (element) {
       if (confirm('Are you sure you want to reset setting to the defaults?')) {
@@ -331,34 +227,9 @@ export default {
         };
       }
     },
-    stringAgeInYearsAtDate: function (date, dob) {
-      if (!date) return '';
-      if (!dob) return '';
-      let fromTime = moment(date).diff(moment(dob));
-      let duration = moment.duration(fromTime);
-      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
-    },
-    sinceNow: function (value) {
-      if (!value) return '';
-
-      let fromTime = moment(value).diff(moment(), 'milliseconds');
-      let duration = moment.duration(fromTime);
-      let years = duration.years() / -1;
-      let months = duration.months() / -1;
-      let days = duration.days() / -1;
-      if (years > 0) {
-        var Ys = years == 1 ? years + 'y ' : years + 'y ';
-        var Ms = months == 1 ? months + 'm ' : months + 'm ';
-        return Ys + Ms;
-      } else {
-        if (months > 0) return months == 1 ? months + 'm ' : months + 'm ';
-        else return days == 1 ? days + 'd ' : days + 'd ';
-      }
-    },
-    dateFormatSimple: function (value) {
-      if (!value) return '';
-      return moment(value).format('MM/DD/YYYY');
-    },
+    stringAgeInYearsAtDate: stringAgeInYearsAtDate,
+    sinceNow: sinceNow,
+    dateFormatSimple: dateFormatSimple,
     toCountyCode,
   },
   computed: {
@@ -370,10 +241,7 @@ export default {
         email: this.saved.defEmail,
       };
     },
-    todayDate: function () {
-      date = moment().format('MMMM D[, ]YYYY');
-      return date;
-    },
+    todayDate: todayDate,
   },
 };
 </script>

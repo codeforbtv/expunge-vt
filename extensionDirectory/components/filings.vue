@@ -4,7 +4,6 @@ import moment from 'moment';
 import 'bootstrap';
 import 'bootstrap4-toggle';
 import { nextTick, toRaw } from 'vue';
-import saveAllCountsToHtml from '../saveFile'
 import checkoutOffenseRow from './checkout-offense-row.vue';
 import docketCaption from './docket-caption.vue';
 import filingDatedCity from './filing-dated-city.vue';
@@ -13,34 +12,40 @@ import filingNav from './filing-nav.vue';
 import filingTypeHeading from './filing-type-heading.vue';
 
 import {
+  confirmClearData,
+  confirmDeleteCount,
+  createFilingsFromCounts,
+  csvData,
   countyCodeFromCounty,
+  dateFormatSimple,
+  detectChangesInChromeStorage,
   devLog,
   getError,
+  handleNewDocketNums,
   handlePrintMacro,
   initAfterVue,
   initScrollDetection,
-  setInitialExpandForTextAreas,
   initTextAreaAutoExpand,
   initSmoothScroll,
+  linesBreaksFromArray,
+  loadAll,
+  lowercase,
+  makeFilingObject,
+  nl2br,
+  openManagePage,
+  openPetitionsPage,
+  saveCounts,
+  saveHtml,
+  saveResponses,
+  saveSettings,
+  setInitialExpandForTextAreas,
+  sinceNow,
+  slugify,
+  stringAgeInYearsAtDate,
   toCountyCode,
+  todayDate,
+  uppercase,
 } from '../utils';
-
-const maxCountsOnNoA = 10;
-
-function detectChangesInChromeStorage(app) {
-  chrome.storage.onChanged.addListener(function (changes, namespace) {
-    var countsChange = changes['counts'];
-    var responsesChange = changes['responses']
-    if (countsChange === undefined && responsesChange === undefined) return;
-    if (countsChange.newValue === undefined) {
-      app.clearAll();
-      return;
-    }
-    if (!document.hasFocus()) {
-      app.loadAll(function () { });
-    }
-  });
-}
 
 export default {
   // el: '#filing-app',
@@ -167,77 +172,18 @@ export default {
     });
   },
   methods: {
-    saveSettings: function () {
-      // devLog("save settings", this.settings)
-      settingString = JSON.stringify(this.settings);
-      if (document.hasFocus()) {
-        localStorage.setItem('localExpungeVTSettings', settingString);
-      }
+    saveSettings: function() {
+      saveSettings(this.settings)
     },
-    saveResponses: function () {
-      devLog(
-        'save responses' + getError()
-      );
-      if (document.hasFocus()) {
-        chrome.storage.local.set({
-          responses: this.responses,
-        });
-      }
+    saveResponses: function() {
+      saveResponses(this.responses)
     },
-    saveCounts: function () {
-      devLog('saving counts');
-      if (document.hasFocus()) {
-        chrome.storage.local.set({
-          counts: toRaw(this.saved),
-        });
-      }
+    saveCounts: function() {
+      saveCounts(toRaw(this.saved))
     },
-    handleNewDocketNums: function (sheetNum) {
-      if (sheetNum.toLowerCase().includes('-cr-')) {
-        return sheetNum.split(' ')[0];
-      } else {
-        return sheetNum;
-      }
-    },
+    handleNewDocketNums: handleNewDocketNums,
     loadAll: function (callback) {
-      var self = this;
-      if (callback === undefined) {
-        callback = function () {};
-      }
-      devLog(localStorage.getItem('localExpungeVTSettings'));
-      localResult = JSON.parse(localStorage.getItem('localExpungeVTSettings'));
-      if (
-        localResult !== undefined &&
-        localResult !== '' &&
-        localResult !== null
-      ) {
-        devLog('settings found');
-        this.settings = localResult;
-        devLog(this.settings);
-      } else {
-        devLog('No settings found, saving default settings');
-        this.saveSettings();
-      }
-
-      chrome.storage.local.get(function (result) {
-        //test if we have any data
-        devLog('loading all');
-        devLog(JSON.stringify(result));
-        if (result.counts !== undefined) {
-          devLog(result.counts);
-          self.saved = result.counts;
-        }
-
-        if (result.responses !== undefined) {
-          self.responses = result.responses;
-        }
-
-        callback();
-        //this.$nextTick(function () {
-        //call any vanilla js functions that need to run after vue is all done setting up.
-        //initAfterVue();
-        //});
-      });
+      loadAll(this, callback);
     },
 
     /**
@@ -247,127 +193,7 @@ export default {
      * @param {boolean} groupDockets Indicates whether to consolidate dockets into single petitons
      */
     createFilingsFromCounts: function (counts, groupDockets = true) {
-      // get all counties that have counts associated with them
-      var filingCounties = this.groupByCounty(counts);
-
-      devLog(
-        'there are ' +
-          filingCounties.length +
-          ' counties for ' +
-          counts.length +
-          ' counts'
-      );
-
-      //create an array to hold all county filing objects
-      var groupedFilings = [];
-
-      //iterate through all counties and create the filings
-      for (var county in filingCounties) {
-        var countyName = filingCounties[county];
-
-        //filter all counts to the ones only needed for this county
-        var allEligibleCountsForThisCounty = counts.filter(
-          (count) =>
-            count.county == countyName && this.isFileable(count.filingType)
-        );
-
-        //figure out the filing types needed for this county.
-        var filingsForThisCounty = this.groupByFilingType(
-          allEligibleCountsForThisCounty
-        );
-
-        devLog(
-          'there are ' +
-            filingsForThisCounty.length +
-            ' different filings needed in ' +
-            countyName
-        );
-
-        //if there are no filings needed for this county, move along to the next one.
-        if (filingsForThisCounty.length == 0) continue;
-
-        //create an array to hold all of the filing objects for this county
-        var allFilingsForThisCountyObject = [];
-
-        //add the notice of appearance filing to this county because we have petitions to file
-        //we can only fit a maximum of ~10 docket numbers, so we will create multiple Notices of Appearance to accomodate all docket numbers.
-        var maxDocketsPerNoA = maxCountsOnNoA || 10;
-        var allEligibleCountsForThisCountySegmented =
-          this.groupCountsByMaxDocketNumber(
-            allEligibleCountsForThisCounty,
-            maxDocketsPerNoA
-          );
-
-        //iterate through the filing types needed for this county and push them into the array
-        for (var i in filingsForThisCounty) {
-          var filingType = filingsForThisCounty[i];
-
-          //if the filing is not one we're going to need a petition for, let's skip to the next filing type
-          if (!this.isFileable(filingType)) continue;
-
-          //create the filing object that will be added to the array for this county
-          var filingObject = this.filterAndMakeFilingObject(
-            counts,
-            countyName,
-            filingType
-          );
-
-          //determine if we can use the filling object as is, or if we need to break it into multiple petitions.
-          //this is determined based on the state of the UI checkbox for grouping.
-          if (groupDockets || filingObject.numDocketSheets == 1) {
-            allFilingsForThisCountyObject.push(filingObject);
-            this.createResponseObjectForFiling(filingObject.id);
-          } else {
-            //break the filing object into multiple petitions
-            for (var docketNumIndex in filingObject.docketSheetNums) {
-              var docketSheetNumUnique =
-                filingObject.docketSheetNums[docketNumIndex].num;
-              var brokenOutFilingObject = this.filterAndMakeFilingObject(
-                filingObject.counts,
-                countyName,
-                filingType,
-                docketSheetNumUnique
-              );
-              allFilingsForThisCountyObject.push(brokenOutFilingObject);
-              this.createResponseObjectForFiling(brokenOutFilingObject.id);
-            }
-          }
-        }
-        // insert NOAs into filings
-        const filingsWithNOAs = this.settings.groupNoas
-          ? this.insertNOAsForEachCounty(allFilingsForThisCountyObject)
-          : this.insertNOAsForEachDocket(allFilingsForThisCountyObject);
-
-        //add all filings for this county to the returned filing object.
-        groupedFilings.push({
-          county: countyName,
-          filings: filingsWithNOAs,
-        });
-      }
-      return groupedFilings;
-    },
-
-    /* Used when there are more docket numbers than will fit on a single Notice of Appearance
-     * form. This takes an array[counts], and returns an array[array[counts]]. For example, if
-     * the `max` is 10 dockets, then each inner array would have all the counts belonging to the
-     * next 10 dockets.
-     */
-    groupCountsByMaxDocketNumber: function (counts, maxLength) {
-      var allDocketNums = this.allDocketNumsObject(counts);
-      var numDocketGroups = Math.ceil(allDocketNums.length / maxLength);
-      var docketGroups = [];
-
-      // divide all counts into arrays grouped by the `maxLength` number of dockets
-      for (var i = 0; i < numDocketGroups; i++) {
-        var start = i * maxLength;
-        var end = Math.min(i * maxLength + maxLength, allDocketNums.length);
-        var dockets = allDocketNums.slice(start, end);
-        var docketNums = dockets.map((docket) => docket.num);
-        var countGroup = counts.filter((f) => docketNums.includes(f.docketNum));
-        docketGroups.push(countGroup);
-      }
-
-      return docketGroups;
+      return createFilingsFromCounts(this, counts, groupDockets);
     },
 
     /*
@@ -380,7 +206,7 @@ export default {
       let filingsWithNOAs = [];
 
       // loop over all the filings
-      for (var i = 0; i < filings.length; i++) {
+      for (let i = 0; i < filings.length; i++) {
         const thisFiling = filings[i];
         const currCounty = thisFiling.county;
 
@@ -426,12 +252,12 @@ export default {
       let filingsWithNOAs = [];
 
       // sorted filings by docket
-      var sortedFilings = filings.sort((a, b) =>
+      let sortedFilings = filings.sort((a, b) =>
         a.docketNums[0].num > b.docketNums[0].num ? 1 : -1
       );
 
       // loop over all the sortedFilings
-      for (var i = 0; i < sortedFilings.length; i++) {
+      for (let i = 0; i < sortedFilings.length; i++) {
         const thisFiling = sortedFilings[i];
         const currDocketNum = thisFiling.docketNums[0].string;
 
@@ -487,312 +313,39 @@ export default {
      * inserted into arrays of filings.
      */
     createNOAFiling: function (county, counts) {
-      return this.makeFilingObject(counts, 'NoA', county);
+      return makeFilingObject(counts, 'NoA', county);
     },
     createFeeFiling: function (county, counts) {
-      return this.makeFilingObject(counts, 'feeWaiver', county);
+      return makeFilingObject(counts, 'feeWaiver', county);
     },
     createFeeFilingAffidavit: function (county, counts) {
-      return this.makeFilingObject(counts, 'feeWaiverAffidavit', county);
+      return makeFilingObject(counts, 'feeWaiverAffidavit', county);
     },
     groupIneligibleCounts: function (counts) {
-      var ineligibleCounts = counts.filter((count) => count.filingType == 'X');
+      let ineligibleCounts = counts.filter((count) => count.filingType == 'X');
       return ineligibleCounts;
     },
     groupNoAction: function (counts) {
-      var noActionCounts = counts.filter((count) => count.filingType == '');
+      let noActionCounts = counts.filter((count) => count.filingType == '');
       return noActionCounts;
-    },
-    groupByCounty: function (counts) {
-      var allCounties = counts.map(function (count) {
-        return count.county;
-      });
-      return allCounties.filter((v, i, a) => a.indexOf(v) === i);
-    },
-    groupByFilingType: function (counts) {
-      var allCounts = counts.map(function (count) {
-        return count.filingType;
-      });
-      return allCounts.filter((v, i, a) => a.indexOf(v) === i);
-    },
-    allDocketNumsObject: function (counts) {
-      allDocketNums = counts.map(function (count) {
-        return {
-          num: count.docketNum,
-          county: countyCodeFromCounty(count.county),
-          string: count.docketNum + ' ' + countyCodeFromCounty(count.county),
-        };
-      });
-
-      //filter the docket number object array to make it unique
-      var result = allDocketNums.filter((e, i) => {
-        return (
-          allDocketNums.findIndex((x) => {
-            return x.num == e.num && x.county == e.county;
-          }) == i
-        );
-      });
-
-      return result;
-    },
-    allDocketSheetNumsObject: function (counts) {
-      allDocketSheetNums = counts.map(function (count) {
-        return { num: count.docketSheetNum };
-      });
-
-      //filter the docket number object array to make it unique
-      var result = allDocketSheetNums.filter((e, i) => {
-        return (
-          allDocketSheetNums.findIndex((x) => {
-            return x.num == e.num;
-          }) == i
-        );
-      });
-
-      return result;
-    },
-    isStipulated: function (filingType) {
-      return (
-        filingType == 'StipExC' ||
-        filingType == 'StipExNC' ||
-        filingType == 'StipExNCrim' ||
-        filingType == 'StipSC' ||
-        filingType == 'StipSCAdult' ||
-        filingType == 'StipSDui' ||
-        filingType == 'StipNegOp'
-      );
-    },
-    isEligible: function (filingType) {
-      return filingType != 'X';
-    },
-    isFileable: function (filingType) {
-      return this.isSupported(filingType) && this.isEligible(filingType);
-    },
-    isSupported: function (filingType) {
-      switch (filingType) {
-        case 'NoA':
-        case 'StipExC':
-        case 'ExC':
-        case 'StipExNC':
-        case 'ExNC':
-        case 'StipExNCrim':
-        case 'ExNCrim':
-        case 'StipSC':
-        case 'StipSCAdult':
-        case 'StipSDui':
-        case 'SC':
-        case 'SCAdult':
-        case 'SDui':
-        case 'NegOp':
-        case 'StipNegOp':
-        case 'X':
-          return true;
-        default:
-          return false;
-      }
-    },
-    //Grabs name for header of filing
-    filingNameFromType: function (filingType) {
-      switch (filingType) {
-        case 'NoA':
-          return 'Notice of Appearance';
-        case 'feeWaiver':
-          return 'Motion to Waive Legal Financial Obligations';
-        case 'feeWaiverAffidavit':
-          return "Petitioner's Sworn Statement in Support of Motion to Waive Legal Financial Obligations";
-        case 'StipExC':
-          return 'Stipulated Petition to Expunge Conviction';
-        case 'ExC':
-          return 'Petition to Expunge Conviction';
-        case 'StipExNC':
-          return 'Stipulated Petition to Expunge Non-Conviction';
-        case 'ExNC':
-          return 'Petition to Expunge Non-Conviction';
-        case 'StipExNCrim':
-          return 'Stipulated Petition to Expunge Non-Criminal Conviction';
-        case 'ExNCrim':
-          return 'Petition to Expunge Non-Criminal Conviction';
-        case 'StipSC':
-          return 'Stipulated Petition to Seal Conviction of Minor';
-        case 'SC':
-          return 'Petition to Seal Conviction of Minor';
-        case 'StipSCAdult':
-          return 'Stipulated Petition to Seal Conviction';
-        case 'SCAdult':
-          return 'Petition to Seal Conviction';
-        case 'StipSDui':
-          return 'Stipulated Petition to Seal DUI Conviction';
-        case 'SDui':
-          return 'Petition to Seal DUI Conviction';
-        case 'StipNegOp':
-          return 'Stipulated Petition to Seal Negligent Operation Conviction';
-        case 'NegOp':
-          return 'Petition to Seal Negligent Operation Conviction';
-        case 'X':
-          return 'Ineligible';
-        default:
-          return 'None';
-      }
-    },
-    offenseAbbreviationToFull: function (offenseClass) {
-      switch (offenseClass) {
-        case 'mis':
-          return 'Misdemeanor';
-        case 'fel':
-          return 'Felony';
-        default:
-          return '';
-      }
-    },
-    filterAndMakeFilingObject: function (
-      counts,
-      county,
-      filingType,
-      docketSheetNum = ''
-    ) {
-      var countsOnThisFiling = counts.filter(
-        (count) =>
-          count.county == county &&
-          count.filingType == filingType &&
-          (docketSheetNum == '' || docketSheetNum == count.docketSheetNum)
-      );
-      return this.makeFilingObject(countsOnThisFiling, filingType, county);
-    },
-    /*
-     * Creates a filing object from data provided.
-     * NOTE: will fail without explaination on civil violations b/c this presumes `counts` is a non-empty array
-     */
-    makeFilingObject: function (counts, filingType, county) {
-      var countsOnThisFiling = counts;
-      var numCounts = countsOnThisFiling.length;
-      var docketNums = this.allDocketNumsObject(countsOnThisFiling);
-      var numDockets = docketNums.length;
-      var docketSheetNums = this.allDocketSheetNumsObject(countsOnThisFiling);
-      var numDocketSheets = docketSheetNums.length;
-      var isMultipleCounts = numCounts > 1;
-      console.log('filingType', filingType);
-      console.log('county', county);
-      console.log('docketNums', docketNums);
-
-      var filingId = filingType + '-' + county + '-' + docketNums[0].num;
-
-      return {
-        id: filingId,
-        type: filingType,
-        title: this.filingNameFromType(filingType),
-        county: county,
-        numCounts: numCounts,
-        numDockets: numDockets,
-        numDocketSheets: numDocketSheets,
-        multipleCounts: isMultipleCounts,
-        numCountsString: this.pluralize('Count', numCounts),
-        numDocketsString: this.pluralize('Docket', numDockets),
-        isStipulated: this.isStipulated(filingType),
-        isEligible: this.isEligible(filingType),
-        docketNums: docketNums,
-        docketSheetNums: docketSheetNums,
-        counts: countsOnThisFiling,
-      };
     },
     newCount: function (event) {
       this.saved.counts.push({ description: 'New', filingType: '' });
     },
     confirmDeleteCount: function (event, countId) {
-      event.stopPropagation();
-      if (this.rawCounts.length > 1) {
-        var currentCount = this.rawCounts.filter(
-          (count) => count.uid === countId
-        )[0];
-        if (
-          confirm(
-            `Are you sure that you would like to delete the count \"${currentCount.description}\"?`
-          )
-        ) {
-          this.deleteCount(countId);
-        }
-        return;
-      }
-      if (
-        confirm(
-          'Are you sure that you would like to delete the last count, this will clear all petitioner information.'
-        )
-      ) {
-        this.clearAll();
-      }
+      confirmDeleteCount(this, event, countId);
     },
-    deleteCount: function (countId) {
-      index = this.saved.counts.findIndex((x) => x.uid === countId);
-      Vue.delete(this.saved.counts, index);
-    },
-    clearAll: function () {
-      chrome.storage.local.remove(['counts', 'responses'], function () {
-        document.location.reload();
-      });
-    },
-    nl2br: function (rawStr) {
-      var breakTag = '<br>';
-      return (rawStr + '').replace(
-        /([^>\r\n]?)(\r\n|\n\r|\r|\n)/g,
-        '$1' + breakTag + '$2'
-      );
-    },
-    linesBreaksFromArray: function (array) {
-      var string = '';
-      var delimiter = '\r\n';
-      var i;
-      for (i = 0; i < array.length; i++) {
-        if (i > 0) {
-          string += delimiter;
-        }
-        string += array[i];
-      }
-      return string;
-    },
-    pluralize: function (word, num) {
-      var phrase = num + ' ' + word;
-      if (num > 1) return phrase + 's';
-      return phrase;
-    },
-    slugify: function (string) {
-      return string.replace(/\s+/g, '-').toLowerCase();
-    },
-    openPetitionsPage: function () {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        (tabs) => {
-          let index = tabs[0].index;
-          chrome.tabs.create({
-            url: chrome.runtime.getURL('./filings.html'),
-            index: index + 1,
-          });
-        }
-      );
-    },
+    nl2br: nl2br,
+    linesBreaksFromArray: linesBreaksFromArray,
+    openPetitionsPage: openPetitionsPage,
     addAndOpenManagePage: function () {
       if (this.rawCounts.length == 0) {
         this.newCount();
         this.saved['defName'] = 'New Petitioner';
       }
-      this.openManagePage();
+      openManagePage();
     },
-    openManagePage: function (element) {
-      chrome.tabs.query(
-        {
-          active: true,
-          currentWindow: true,
-        },
-        (tabs) => {
-          let index = tabs[0].index;
-          chrome.tabs.create({
-            url: chrome.runtime.getURL('./manage-counts.html'),
-            index: index + 1,
-          });
-        }
-      );
-    },
+    openManagePage: openManagePage,
     addDocketCounts: function () {
       // TODO: consider using content_scripts instead to avoid loading payload.js every time the
       // 'Add From Page' button is clicked.
@@ -804,80 +357,15 @@ export default {
         });
       });
     },
-    loadCaseFile: async function () {
-      var query = { active: true, currentWindow: true };
-      function getTabUrl() {
-        return new Promise((resolve, reject) => {
-          try {
-            chrome.tabs.query(query, function (tabs) {
-              resolve(tabs[0].url);
-            });
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }
-      let url = await getTabUrl();
-      if (url.split('/')[0] != 'file:') {
-        alert(
-          'The Load Case File function only works for expungeVT files saved on your computer. You may need to right click or ctrl+click (on Mac) on the file to open the file in Chrome. Then follow the instructions on your screen.'
-        );
-        return;
-      }
-
-      chrome.extension.isAllowedFileSchemeAccess(function (isAllowedAccess) {
-        if (isAllowedAccess) {
-          // alert for a quick demonstration, please create your own user-friendly UI
-          chrome.tabs
-            .query({ active: true, currentWindow: true })
-            .then(([tab]) => {
-              chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                files: ['payload.js'],
-              });
-            });
-        } else {
-          var goToSettings = confirm(
-            'You need to grant file permissions to load a case file. Would you like to go to settings?\n\n\n\nIn settings, make sure "Allow access to file URLs" is on.'
-          );
-          if (goToSettings) {
-            chrome.tabs.create({
-              url: 'chrome://extensions/?id=' + chrome.runtime.id,
-            });
-          }
-        }
-      });
-    },
-    confirmClearData: function () {
-      if (
-        confirm('Are you sure you want to clear all data for this petitioner?')
-      ) {
-        this.clearAll();
-      }
-    },
-    resetSettings: function (element) {
-      if (confirm('Are you sure you want to reset setting to the defaults?')) {
-        localStorage.removeItem(['localExpungeVTSettings']);
-        this.settings = {
-          attorney: '',
-          attorneyAddress: '',
-          attorneyPhone: '',
-          footer1: '- Generated by ExpungeVT -',
-          footer2: '- A Code for BTV Project -',
-          role: 'AttyConsult',
-          forVla: false,
-        };
-      }
+    confirmClearData: confirmClearData,
+    resetSettings: function(element) {
+      resetSettings(this, element);
     },
     printDocument: function () {
       window.print();
     },
-    saveHtml: function () {
-      let dataPojo = {
-        saved: this.saved,
-        responses: this.responses,
-      };
-      saveAllCountsToHtml(JSON.stringify(dataPojo));
+    saveHtml: function() {
+      saveHtml(this);
     },
     returnCountyContact: function (cty) {
       allCounties = this.countiesContact;
@@ -940,38 +428,9 @@ export default {
         return false;
       }
     },
-    stringAgeInYearsAtDate: function (date, dob) {
-      console.log('date', date);
-      console.log('dob', dob);
-
-      if (!date) return '';
-      if (!dob) return '';
-      let fromTime = moment(date).diff(moment(dob));
-      let duration = moment.duration(fromTime);
-      console.log('duration', duration);
-      return (duration.asDays() / 365.25).toFixed(0) + ' yo';
-    },
-    sinceNow: function (value) {
-      if (!value) return '';
-
-      let fromTime = moment(value).diff(moment(), 'milliseconds');
-      let duration = moment.duration(fromTime);
-      let years = duration.years() / -1;
-      let months = duration.months() / -1;
-      let days = duration.days() / -1;
-      if (years > 0) {
-        var Ys = years == 1 ? years + 'y ' : years + 'y ';
-        var Ms = months == 1 ? months + 'm ' : months + 'm ';
-        return Ys + Ms;
-      } else {
-        if (months > 0) return months == 1 ? months + 'm ' : months + 'm ';
-        else return days == 1 ? days + 'd ' : days + 'd ';
-      }
-    },
-    dateFormatSimple: function (value) {
-      if (!value) return '';
-      return moment(value).format('MM/DD/YYYY');
-    },
+    stringAgeInYearsAtDate: stringAgeInYearsAtDate,
+    sinceNow: sinceNow,
+    dateFormatSimple: dateFormatSimple,
     toCountyCode,
     /** Takes an array of filings and figures out how many there are after omitting the NOAs
      * @param array   An array of filings
@@ -1019,7 +478,7 @@ export default {
 
     /* "Filings" include the Notice of Appearance (NoA) forms */
     filings: function () {
-      var shouldGroupCounts =
+      let shouldGroupCounts =
         this.settings.groupCounts !== undefined
           ? this.settings.groupCounts
           : true;
@@ -1106,55 +565,17 @@ export default {
       }, []);
       return uniqueDockets.length;
     },
-    csvFilename: function () {
-      var date = new Date();
-      return this.slugify(
-        'filings for ' +
-          this.petitioner.name +
-          ' ' +
-          date.toDateString() +
-          '.csv'
-      );
-    },
     csvData: function () {
-      return this.rawCounts.map(function (count) {
-        return {
-          Petitioner_Name: this.petitioner['name'],
-          Petitioner_DOB: this.petitioner.dob,
-          Petitioner_Address: this.petitioner.addressString,
-          Petitioner_Phone: this.responses.phone,
-          County: count.county,
-          Docket_Sheet_Number: count.docketSheetNum,
-          Count_Docket_Number: count.docketNum,
-          Filing_Type: this.filingNameFromType(count.filingType),
-          Count_Description: count.description,
-          Count_Statute_Title: count.titleNum,
-          Count_Statute_Section: count.sectionNum,
-          Offense_Class: this.offenseAbbreviationToFull(count.offenseClass),
-          Offense_Disposition: count.offenseDisposition,
-          Offense_Disposition_Date: count.dispositionDate,
-        };
-      });
+      csvData(this);
     },
-    todayDate: function () {
-      date = moment().format('MMMM D[, ]YYYY');
-      return date;
-    },
+    todayDate: todayDate,
     rawCounts: function () {
       return toRaw(this.saved.counts);
     },
   },
   filters: {
-    uppercase: function (value) {
-      if (!value) return '';
-      value = value.toString();
-      return value.charAt(0).toUpperCase() + value.slice(1);
-    },
-    lowercase: function (value) {
-      if (!value) return '';
-      value = value.toString();
-      return value.charAt(0).toLowerCase() + value.slice(1);
-    },
+    uppercase: uppercase,
+    lowercase: lowercase
   },
 };
 </script>
@@ -1817,7 +1238,6 @@ export default {
                         class="filing-body"
                         v-if="filing.type == 'feeWaiver'"
                       >
-                        <p class="indent">
                             <p class="indent">
                               NOW COMES {{petitioner.name}} (DOB:
                               {{dateFormatSimple(petitioner.dob)}}),
@@ -1840,7 +1260,6 @@ export default {
                                 >suspend the fines </span
                               >associated with the above-captioned case for the
                               reasons set forth herein.
-                            </p>
                             <ol>
                               <li
                                 v-if="returnSurcharge(filing.id)>0"
