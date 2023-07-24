@@ -16,7 +16,7 @@ export default {
     },
     dateFormatSimple: function (value) {
       if (!value) return "";
-      return moment(value).format("MM/DD/YYYY");
+      return dayjs(value).format("MM/DD/YYYY");
     },
     toCountyCode: function (value) {
       if (!value) return "";

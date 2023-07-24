@@ -1,7 +1,7 @@
 filingNav
 <script>
 import $ from 'jquery';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import Gumshoe from 'gumshoejs';
 import SmoothScroll from 'smooth-scroll';
 import 'bootstrap';
@@ -20,6 +20,7 @@ import {
   handlePrintMacro,
   initAfterVue,
   loadAll,
+  maxDate,
   nl2br,
   saveCounts,
   saveResponses,
@@ -114,7 +115,6 @@ export default {
     $.getJSON(
       'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
       function (data) {
-        console.log(this);
         this.countiesContact = data['countyContacts'];
         this.popupHeadline = data['expungeHeadline'];
         this.roleCoverLetterText = data['roleText'];
@@ -229,6 +229,7 @@ export default {
         email: this.saved.defEmail,
       };
     },
+    maxDate: maxDate,
     /* Checks the computed `filings` property to see how many unique dockets there are */
     numDockets: function () {
       const dockets = this.filings
@@ -247,7 +248,7 @@ export default {
       return uniqueDockets.length;
     },
     todayDate: function () {
-      date = moment().format('MMMM D[, ]YYYY');
+      date = dayjs().format('MMMM D[, ]YYYY');
       return date;
     },
   },
@@ -361,6 +362,7 @@ export default {
                 type="date"
                 v-model="group.dispositionDate"
                 placeholder="Disposition Date"
+                :max="maxDate"
             /></label>
           </div>
 
@@ -444,6 +446,7 @@ export default {
                 type="date"
                 v-model="group.allegedOffenseDate"
                 placeholder="Offense Date"
+                :max="maxDate"
               />
             </label>
 
@@ -454,6 +457,7 @@ export default {
                 type="date"
                 v-model="group.arrestCitationDate"
                 placeholder="Arrest Citation Date"
+                :max="maxDate"
               />
             </label>
           </div>

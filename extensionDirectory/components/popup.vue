@@ -12,6 +12,7 @@ import {
   devLog,
   getError,
   loadAll,
+  maxDate,
   nl2br,
   openManagePage,
   saveCounts,
@@ -241,6 +242,7 @@ export default {
         email: this.saved.defEmail,
       };
     },
+    maxDate: maxDate,
     todayDate: todayDate,
   },
 };
@@ -362,6 +364,7 @@ export default {
           <p class="pet-label">Name:</p>
           <input
             type="text"
+            id="petitionerName"
             class="form-control form-control-sm"
             v-model="saved.defName"
           />
@@ -371,7 +374,9 @@ export default {
           <input
             class="form-control form-control-sm"
             type="date"
+            id="petitionerDOB"
             v-model="saved.defDOB"
+            :max="maxDate"
           />
         </div>
         <div class="pet-item">
@@ -387,6 +392,7 @@ export default {
           <input
             type="text"
             class="form-control form-control-sm"
+            id="petitionerEmail"
             v-model="saved.defEmail"
           />
         </div>
@@ -545,6 +551,8 @@ export default {
               <div class="col-4">
                 Offense Date:<br />
                 <span v-if="!count.allegedOffenseDate">&nbsp;Not Entered</span>
+                <span v-else-if="saved.defDOB.length === 0"
+                >{{ dateFormatSimple(count.allegedOffenseDate) }}</span>
                 <span v-else
                   >{{ dateFormatSimple(count.allegedOffenseDate) }} ({{
                     stringAgeInYearsAtDate(
@@ -557,6 +565,8 @@ export default {
               <div class="col-4">
                 Arrest/Citation Date:<br />
                 <span v-if="!count.arrestCitationDate">&nbsp;Not Entered</span>
+                <span v-else-if="saved.defDOB.length === 0"
+                >{{ dateFormatSimple(count.arrestCitationDate) }}</span>
                 <span v-else
                   >{{ dateFormatSimple(count.arrestCitationDate) }} ({{
                     stringAgeInYearsAtDate(
@@ -569,6 +579,8 @@ export default {
               <div class="col-4">
                 Disposition Date:<br />
                 <span v-if="!count.dispositionDate">&nbsp;Pending</span>
+                <span v-else-if="saved.defDOB.length === 0"
+                >{{ dateFormatSimple(count.dispositionDate) }}</span>
                 <span v-else
                   >{{ dateFormatSimple(count.dispositionDate) }} ({{
                     stringAgeInYearsAtDate(count.dispositionDate, saved.defDOB)

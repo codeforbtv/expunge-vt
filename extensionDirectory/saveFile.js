@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 function saveAllCountsToHtml(savedData) {
   
@@ -13,10 +13,9 @@ function saveAllCountsToHtml(savedData) {
     defInitials += n[0]
   })
 
-  let now = moment().format('YYYY-MM-DD');
+  let now = dayjs().format('YYYY-MM-DD');
   let obfuscatedSavedData = Base64.encode(savedData);
   let fileName = now + '-' + defInitials;
-  console.log(fileName)
   let htmlString = `
   <html>
     <head>

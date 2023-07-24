@@ -1,6 +1,6 @@
 <script>
 import $ from 'jquery';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import 'bootstrap';
 import 'bootstrap4-toggle';
 import { nextTick, toRaw } from 'vue';
@@ -31,6 +31,7 @@ import {
   loadAll,
   lowercase,
   makeFilingObject,
+  maxDate,
   nl2br,
   openManagePage,
   openPetitionsPage,
@@ -212,11 +213,11 @@ export default {
 
         // when the county changes, insert a NOA
         if (lastCounty != currCounty) {
-          const counts = filings
+          const docketCounts = filings
             .filter((f) => f.county == currCounty)
             .map((f) => f.counts)
             .flat();
-          const noa = this.createNOAFiling(currCounty, counts);
+          const noa = this.createNOAFiling(currCounty, docketCounts);
           filingsWithNOAs.push(noa);
 
           if (this.responses[noa.id + '-feeForm'] === undefined) {
@@ -398,15 +399,15 @@ export default {
       return filings.filter((f) => f.type == 'feeWaiver').length;
     },
     getNextNotaryDate: function () {
-      let currentDate = moment();
-      let janThisYear = moment(currentDate.format('YYYY') + '-01-31');
+      let currentDate = dayjs();
+      let janThisYear = dayjs(currentDate.format('YYYY') + '-01-31');
 
       if (currentDate.isBefore(janThisYear) && isOdd(currentDate)) {
         return janThisYear.format('MMMM DD, YYYY');
       } else if (!isOdd(currentDate)) {
-        return moment(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
+        return dayjs(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
       } else if (currentDate.isAfter(janThisYear) && isOdd(currentDate)) {
-        return moment(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
+        return dayjs(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
       }
       function isOdd(num) {
         let numInt = parseInt(num.format('YYYY'));
@@ -475,7 +476,6 @@ export default {
         email: this.saved.defEmail,
       };
     },
-
     /* "Filings" include the Notice of Appearance (NoA) forms */
     filings: function () {
       let shouldGroupCounts =
@@ -484,6 +484,7 @@ export default {
           : true;
       return this.createFilingsFromCounts(this.rawCounts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
     },
+    maxDate: maxDate,
     numCountsToExpungeOrSeal: function () {
       return this.rawCounts.filter((count) => count.filingType !== 'X').length;
     },
@@ -607,6 +608,7 @@ export default {
                 <span class="modal-title">Attorney / Preparer Name:</span>
                 <input
                   class="no-print"
+                  id="attorneyName"
                   v-model="settings['attorney']"
                   placeholder="Attorney Name"
                 />
@@ -623,6 +625,7 @@ export default {
                 <span class="modal-title">Phone:</span>
                 <input
                   class="no-print"
+                  id="attorneyPhone"
                   v-model="settings['attorneyPhone']"
                   placeholder="Attorney Phone Number"
                 />
@@ -1400,6 +1403,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1495,6 +1499,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1579,6 +1584,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1657,6 +1663,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1742,6 +1749,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1819,6 +1827,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
@@ -1903,6 +1912,7 @@ export default {
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">

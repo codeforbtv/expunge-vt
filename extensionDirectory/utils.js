@@ -1,8 +1,12 @@
 import Gumshoe from 'gumshoejs';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import SmoothScroll from 'smooth-scroll';
+import { toRaw } from 'vue';
 
 import saveAllCountsToHtml from 'saveFile';
+
+let duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 const maxCountsOnNoA = 10;
 
@@ -314,7 +318,7 @@ function filterAndMakeFilingObject(
 
 export function dateFormatSimple(value) {
   if (!value) return '';
-  return moment(value).format('MM/DD/YYYY');
+  return dayjs(value).format('MM/DD/YYYY');
 }
 
 export function deleteCount(vueApp, countId) {
@@ -332,7 +336,7 @@ export function detectChangesInChromeStorage(app) {
       clearAll();
       return;
     }
-    if (!document.hasFocus()) {
+    if (!document.hasFocus() || toRaw(app.saved.counts).length === 0 && Object.keys(toRaw(app.responses)).length === 0) {
       app.loadAll(function () {});
     }
   });
@@ -364,15 +368,15 @@ export function getError() {
 }
 
 export function getNextNotaryDate() {
-  let currentDate = moment();
-  let janThisYear = moment(currentDate.format('YYYY') + '-01-31');
+  let currentDate = dayjs();
+  let janThisYear = dayjs(currentDate.format('YYYY') + '-01-31');
 
   if (currentDate.isBefore(janThisYear) && isOdd(currentDate)) {
     return janThisYear.format('MMMM DD, YYYY');
   } else if (!isOdd(currentDate)) {
-    return moment(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
+    return dayjs(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
   } else if (currentDate.isAfter(janThisYear) && isOdd(currentDate)) {
-    return moment(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
+    return dayjs(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
   }
   function isOdd(num) {
     let numInt = parseInt(num.format('YYYY'));
@@ -613,6 +617,11 @@ export function makeFilingObject(counts, filingType, county) {
   };
 }
 
+export function maxDate() {
+  let date = dayjs().format("YYYY-MM-DD");
+  return date;
+}
+
 function offenseAbbreviationToFull(offenseClass) {
   switch (offenseClass) {
     case 'mis':
@@ -731,8 +740,8 @@ export function setInitialExpandForTextAreas() {
 export function sinceNow(value) {
   if (!value) return '';
 
-  let fromTime = moment(value).diff(moment(), 'milliseconds');
-  let duration = moment.duration(fromTime);
+  let fromTime = dayjs(value).diff(dayjs(), 'milliseconds');
+  let duration = dayjs.duration(fromTime);
   let years = duration.years() / -1;
   let months = duration.months() / -1;
   let days = duration.days() / -1;
@@ -753,8 +762,8 @@ export function slugify(string) {
 export function stringAgeInYearsAtDate(date, dob) {
   if (!date) return '';
   if (!dob) return '';
-  let fromTime = moment(date).diff(moment(dob));
-  let duration = moment.duration(fromTime);
+  let fromTime = dayjs(date).diff(dayjs(dob));
+  let duration = dayjs.duration(fromTime);
   return (duration.asDays() / 365.25).toFixed(0) + ' yo';
 }
 
@@ -764,7 +773,7 @@ export function toCountyCode(value) {
 }
 
 export function todayDate() {
-  date = moment().format('MMMM D[, ]YYYY');
+  date = dayjs().format('MMMM D[, ]YYYY');
   return date;
 }
 
