@@ -2,6 +2,7 @@ import './popup.css';
 import $ from 'jquery';
 import dayjs from 'dayjs';
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
 import PopupApp from './components/popup.vue';
 
@@ -335,10 +336,7 @@ function getOdysseyCountInfo(docket, docketUrl) {
     const countyTitle = docket.find('#roa-header div').get();
     county = countyTitle[0].textContent.trim().replace(' Unit', '');
     docketSheetNum = docketNum + ' ' + countyCodeFromCounty(county);
-    console.log('county', county);
   }
-  console.log('docketlog', docketNum, county);
-
   // parse each offense
   let offenseArray = [];
   caseOffenseTable.find(' tbody > tr').each(function (i) {
@@ -712,4 +710,7 @@ let Base64 = {
 };
 
 //Vue app
-let app = createApp(PopupApp).mount('#filing-app');
+const app = createApp(PopupApp)
+const pinia = createPinia()
+app.use(pinia)
+app.mount('#filing-app');
