@@ -1,3 +1,5 @@
+
+import hash from 'object-hash';
 import Gumshoe from 'gumshoejs';
 import dayjs from 'dayjs';
 import SmoothScroll from 'smooth-scroll';
@@ -326,7 +328,7 @@ export function deleteCount(vueApp, countId) {
   vueApp.saved.counts.splice(index, 1);
 }
 
-export function detectChangesInChromeStorage(app) {
+export function detectChangesInChromeStorage(app, isChromeExtensionPopup) {
   chrome.storage.onChanged.addListener(function (changes, namespace) {
     let countsChange = changes['counts'];
     let responsesChange = changes['responses'];
@@ -336,8 +338,18 @@ export function detectChangesInChromeStorage(app) {
       clearAll();
       return;
     }
-    if (!document.hasFocus() || toRaw(app.saved.counts).length === 0 && Object.keys(toRaw(app.responses)).length === 0) {
-      app.loadAll(function () {});
+    if (!document.hasFocus() ) {
+      app.loadAll();
+    } else if (isChromeExtensionPopup && countsChange !== undefined) {
+      if (countsChange.oldValue !== undefined) {
+          let newDigest = hash(countsChange.newValue.counts);
+          let oldDigest = hash(countsChange.oldValue.counts);
+          if (newDigest !== oldDigest) {
+            app.loadAll();
+          }
+        return;
+      }
+      app.loadAll();
     }
   });
 }
