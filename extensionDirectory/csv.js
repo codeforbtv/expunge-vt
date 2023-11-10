@@ -1,5 +1,5 @@
 function convertArrayOfObjectsToCSV(args) {
-  var result, ctr, keys, columnDelimiter, lineDelimiter, contentQuoting, data;
+  let result, ctr, keys, columnDelimiter, lineDelimiter, contentQuoting, data;
 
   data = args.data || null;
   if (data == null || !data.length) {
@@ -32,14 +32,14 @@ function convertArrayOfObjectsToCSV(args) {
 }
 
 function downloadCSV(args) {
-  var data_array = args.data_array;
-  var csv = convertArrayOfObjectsToCSV({
+  let data_array = args.data_array;
+  let csv = convertArrayOfObjectsToCSV({
     data: data_array,
   });
   if (csv == null) return;
 
-  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  var url = URL.createObjectURL(blob);
+  let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  let url = URL.createObjectURL(blob);
   chrome.downloads.download({
     url: url,
     filename: args.filename,

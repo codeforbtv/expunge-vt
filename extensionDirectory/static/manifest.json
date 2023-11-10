@@ -1,6 +1,6 @@
 {
   "name": "ExpungeVT!",
-  "version": "5.1",
+  "version": "5.1.1",
   "description": "A New Manifest",
   "permissions": [
     "activeTab",

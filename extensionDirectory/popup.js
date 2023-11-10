@@ -1,7 +1,8 @@
 import './popup.css';
 import $ from 'jquery';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
 import PopupApp from './components/popup.vue';
 
@@ -125,13 +126,13 @@ function appendDataWithConfirmation(newData, oldData) {
     return oldData;
   }
 
-  var returnData = oldData;
-  var newCounts = newData.counts;
-  var totalNumMatchingExistingCounts = 0;
+  let returnData = oldData;
+  let newCounts = newData.counts;
+  let totalNumMatchingExistingCounts = 0;
   for (count in newCounts) {
-    var currentCount = newCounts[count];
+    let currentCount = newCounts[count];
     devLog(currentCount.uid);
-    var numMatchingExistingCounts = oldData.counts.filter(
+    let numMatchingExistingCounts = oldData.counts.filter(
       (count) => count.uid === currentCount.uid
     ).length;
     if (numMatchingExistingCounts == 0) {
@@ -149,8 +150,8 @@ function appendDataWithConfirmation(newData, oldData) {
   return returnData;
 
   function isSamePetitioner() {
-    var oldName = oldData['defName'];
-    var newName = newData['defName'];
+    let oldName = oldData['defName'];
+    let newName = newData['defName'];
     if (oldName != newName) {
       return confirm(
         `"The name on the counts you are trying to add is ${newName}, which is not the same as ${oldName}. Are you sure you want to continue?`
@@ -203,7 +204,7 @@ class PetitionerCount {
     // guid is a globally unique string
     this.guid = guid; // eg: "3abef45f-187d-b0e4-9e2c-969c158acded"
 
-    // a variety of docket info
+    // a letiety of docket info
     this.docketSheetNum = docketSheetNum; // eg: "1899-5-12 Cncr"
     this.docketCounty = docketCounty; // eg: "Cncr"
     this.docketNum = docketNum; // eg: "1899-5-12"
@@ -336,10 +337,7 @@ function getOdysseyCountInfo(docket, docketUrl) {
     const countyTitle = docket.find('#roa-header div').get();
     county = countyTitle[0].textContent.trim().replace(' Unit', '');
     docketSheetNum = docketNum + ' ' + countyCodeFromCounty(county);
-    console.log('county', county);
   }
-  console.log('docketlog', docketNum, county);
-
   // parse each offense
   let offenseArray = [];
   caseOffenseTable.find(' tbody > tr').each(function (i) {
@@ -515,7 +513,7 @@ function devLog(data) {
  * @param {string} date A date in the format 'MM/DD/YYYY'
  */
 function formatDate(date) {
-  return moment(date, 'MM/DD/YYYY').format('YYYY-MM-DD');
+  return dayjs(date, 'MM/DD/YYYY').format('YYYY-MM-DD');
 }
 
 /**
@@ -523,7 +521,7 @@ function formatDate(date) {
  * @param {string} offenseDisposition The text of the disposition decision
  */
 function isDismissed(offenseDisposition) {
-  var dispositionNormalized = offenseDisposition.toLowerCase().trim();
+  let dispositionNormalized = offenseDisposition.toLowerCase().trim();
   if (dispositionNormalized.toLowerCase().substr(0, 12) === 'dismissed by') {
     return true;
   } else {
@@ -539,7 +537,7 @@ function isFelOrMisd(element) {
 }
 
 function nthIndex(str, subStr, n) {
-  var L = str.length,
+  let L = str.length,
     i = -1;
   while (n-- && i++ < L) {
     i = str.indexOf(subStr, i);
@@ -613,13 +611,13 @@ function guid() {
   );
 }
 
-var Base64 = {
+let Base64 = {
   _keyStr:
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef' + 'ghijklmnopqrstuvwxyz0123456789+/=',
   encode: function (e) {
-    var t = '';
-    var n, r, i, s, o, u, a;
-    var f = 0;
+    let t = '';
+    let n, r, i, s, o, u, a;
+    let f = 0;
     e = Base64._utf8_encode(e);
     while (f < e.length) {
       n = e.charCodeAt(f++);
@@ -644,10 +642,10 @@ var Base64 = {
     return t;
   },
   decode: function (e) {
-    var t = '';
-    var n, r, i;
-    var s, o, u, a;
-    var f = 0;
+    let t = '';
+    let n, r, i;
+    let s, o, u, a;
+    let f = 0;
     e = e.replace(/[^A-Za-z0-9\+\/\=]/g, '');
     while (f < e.length) {
       s = this._keyStr.indexOf(e.charAt(f++));
@@ -670,9 +668,9 @@ var Base64 = {
   },
   _utf8_encode: function (e) {
     e = e.replace(/\r\n/g, '\n');
-    var t = '';
-    for (var n = 0; n < e.length; n++) {
-      var r = e.charCodeAt(n);
+    let t = '';
+    for (let n = 0; n < e.length; n++) {
+      let r = e.charCodeAt(n);
       if (r < 128) {
         t += String.fromCharCode(r);
       } else if (r > 127 && r < 2048) {
@@ -687,9 +685,9 @@ var Base64 = {
     return t;
   },
   _utf8_decode: function (e) {
-    var t = '';
-    var n = 0;
-    var r = (c1 = c2 = 0);
+    let t = '';
+    let n = 0;
+    let r = (c1 = c2 = 0);
     while (n < e.length) {
       r = e.charCodeAt(n);
       if (r < 128) {
@@ -713,4 +711,7 @@ var Base64 = {
 };
 
 //Vue app
-var app = createApp(PopupApp).mount('#filing-app');
+const app = createApp(PopupApp)
+const pinia = createPinia()
+app.use(pinia)
+app.mount('#filing-app');
