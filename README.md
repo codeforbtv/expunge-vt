@@ -32,7 +32,7 @@ But equally important are the things it **does not** do:
 
 This tool was originally developed exclusively for use by VLA in their clincs in 2018. But as volunteer attorneys use the tool in clincs, they have started using it in their own practices as well.
 
-- **Anyone with data access...** The extension can only be used by people who already have access to state criminal databases - the extension does not grant any data access itself. But the extension will work for anyone who has access to criminal dockets through [VT Courts Online](https://secure.vermont.gov/vtcdas/user) or [Vermont Judiciary Public Portal](https://publicportal.courts.vt.gov/Portal).
+- **Anyone with data access...** The extension can only be used by people who already have access to state criminal databases - the extension does not grant any data access itself. But the extension will work for anyone who has access to criminal dockets through [VT Courts Online](https://secure.vermont.gov/vtcdas/user) or [Vermont Judiciary Public Portal](https://portal.vtcourts.gov/Portal).
 
 - **... but primarily attorneys.** Although anyone with data access can use this tool to generate petitions, they will need to be reviewed (and possibly corrected or modified) by an attorney familiar with expungement statutues. There are a lot of intracasies in expunging & sealing records and conflicts and inaccuracies in the official records that require expert review.
 

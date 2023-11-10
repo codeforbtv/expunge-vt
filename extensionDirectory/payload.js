@@ -16,6 +16,8 @@ switch (docketData.domain) {
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
   case 'publicportal.courts.vt.gov':
 
+  case 'portal.vtcourts.gov':
+
   // demo site used to test extension (see readme or codeforbtv.github.io/expunge-vt/)
   case 'htmlpreview.github.io': {
     docketData.rawDocket = document.getElementById('roa-content').innerHTML;

@@ -449,7 +449,7 @@ export default {
       id="vtCourtsOnlineA"
       class="title-page__link"
       target="_blank"
-      href="https://publicportal.courts.vt.gov/Portal"
+      href="https://portal.vtcourts.gov/Portal"
     >
       <p id="vtCourtsOnline">
         <b

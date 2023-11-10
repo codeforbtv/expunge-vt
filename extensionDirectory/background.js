@@ -22,6 +22,10 @@ chrome.runtime.onInstalled.addListener(function () {
             pageUrl: { hostContains: 'publicportal.courts.vt.gov' },
           }),
           new chrome.declarativeContent.PageStateMatcher({
+            // Odyssey site
+            pageUrl: { hostContains: 'portal.vtcourts.gov' },
+          }),
+          new chrome.declarativeContent.PageStateMatcher({
             // Odyssey logout confirmation page
             pageUrl: { hostContains: 'odysseyidentityprovider.tylerhost.net' },
           }),

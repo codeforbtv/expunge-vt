@@ -55,6 +55,7 @@ function initListeners() {
 
     switch (rawDocketData.domain) {
       // ODYSSEY
+      case 'portal.vtcourts.gov':
       case 'publicportal.courts.vt.gov': {
         parsedData = getOdysseyPetitionerInfo(rawDocketData);
         setParsedCounts();
