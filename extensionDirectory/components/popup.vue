@@ -247,7 +247,7 @@ export default {
       />
     </div>
     <div class="popup-edition-wrap">
-      <p class="popup-edition">ExpungeVT 5.0 - A New Manifest</p>
+      <p class="popup-edition">ExpungeVT 5.1.2 - A New Manifest</p>
     </div>
     <div class="inset text-center button-div">
       <button

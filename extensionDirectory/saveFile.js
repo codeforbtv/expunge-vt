@@ -85,10 +85,6 @@ function saveAllCountsToHtml(savedData) {
         width: 100px;
       }
     </style>
-
-    <script id="script">
-    </script>
-    <script src="https://kit.fontawesome.com/ac322eed98.js" crossorigin="anonymous"></script>
   </html>`;
 
   var blob = new Blob([htmlString], { type: 'text/html' });

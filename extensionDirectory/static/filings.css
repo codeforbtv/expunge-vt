@@ -245,9 +245,6 @@ p.document-meta-data__body {
 .filing-header__half {
   width: 50%;
 }
-.filing-header__court {
-  margin-bottom: 0.5rem;
-}
 
 .docket-number__label {
   opacity: 0;
@@ -599,10 +596,9 @@ p.filing-dated-city {
   }
 
   .all-filings {
-    width: 93%;
+    width: 100vw;
     border-left: 0.01in solid #000;
     border-right: 0.01in solid #000;
-    margin-left: 15%;
   }
   .extra-pages {
     box-sizing: border-box;
@@ -772,7 +768,6 @@ p.filing-dated-city {
   display: flex;
   flex-direction: column;
   width: 300px;
-  margin: 20px auto 0 auto;
   border: 1px solid black;
   padding: 5px;
 }
