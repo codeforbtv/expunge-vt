@@ -4,9 +4,9 @@ window.jQuery = jQuery;
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import Filings from './components/filings.vue';
+import ManageCounts from './components/manage-counts.vue';
 
-const app = createApp(Filings);
+const app = createApp(ManageCounts);
 const pinia = createPinia();
 app.use(pinia);
 app.mount('#filing-app');

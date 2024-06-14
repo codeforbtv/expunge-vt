@@ -1,5 +1,8 @@
 <script>
-import moment from 'moment';
+import dayjs from 'dayjs';
+
+var duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 
 export default {
   props: ["count", "dob"],
@@ -7,8 +10,8 @@ export default {
     decimalAgeInYears: function (value) {
       if (!value) return "";
       if (!this.dob) return "";
-      let fromTime = moment(value).diff(moment(this.dob));
-      let duration = moment.duration(fromTime);
+      let fromTime = dayjs(value).diff(dayjs(this.dob));
+      let duration = dayjs.duration(fromTime);
       return (duration.asDays() / 365.25).toFixed(2);
     },
     dispositionTrimmer: function (dispo) {

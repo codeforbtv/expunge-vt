@@ -1,19 +1,571 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Petitions</title>
+<script>
+import $ from 'jquery';
+import dayjs from 'dayjs';
+import 'bootstrap';
+import 'bootstrap4-toggle';
+import { nextTick, toRaw } from 'vue';
+import checkoutOffenseRow from './checkout-offense-row.vue';
+import docketCaption from './docket-caption.vue';
+import filingDatedCity from './filing-dated-city.vue';
+import filingFooter from './filing-footer.vue';
+import filingNav from './filing-nav.vue';
+import filingTypeHeading from './filing-type-heading.vue';
+import { storeToRefs } from 'pinia';
 
-    <link href="index.css" rel="stylesheet" />
+import {
+  confirmClearData,
+  confirmDeleteCount,
+  createFilingsFromCounts,
+  csvData,
+  countyCodeFromCounty,
+  dateFormatSimple,
+  detectChangesInChromeStorage,
+  devLog,
+  getError,
+  handleNewDocketNums,
+  handlePrintMacro,
+  initAfterVue,
+  initScrollDetection,
+  initTextAreaAutoExpand,
+  initSmoothScroll,
+  linesBreaksFromArray,
+  loadAll,
+  lowercase,
+  makeFilingObject,
+  maxDate,
+  nl2br,
+  openManagePage,
+  openPetitionsPage,
+  saveCounts,
+  saveHtml,
+  saveResponses,
+  saveSettings,
+  setInitialExpandForTextAreas,
+  sinceNow,
+  slugify,
+  stringAgeInYearsAtDate,
+  toCountyCode,
+  todayDate,
+  uppercase,
+} from '../utils';
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" integrity="sha512-L7MWcK7FNPcwNqnLdZq86lTHYLdQqZaz5YcAgE+5cnGmlw8JT03QB2+oxL100UeB6RlzZLUxCGSS4/++mNZdxw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  </head>
+import { useDataStore } from '../store.mjs';
 
-  <body id="filing-page">
-    <!-- Begin Vue App -->
+export default {
+  // el: '#filing-app',
+  components: {
+    checkoutOffenseRow,
+    docketCaption,
+    filingDatedCity,
+    filingFooter,
+    filingNav,
+    filingTypeHeading,
+  },
+  data() {
+    return {
+      settings,
+      saved,
+      responses,
+      fees,
+      fines,
+      countiesContact,
+      popupHeadline,
+      roleCoverLetterText,
+      coverLetterContent,
+      stipDef,
+    } = storeToRefs(useDataStore());
+  },
+  watch: {
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "NoAs" checkbox IS checked when "Petitions" checkbox is checked
+    groupCounts: {
+      handler(value) {
+        if (value) {
+          this.settings.groupNoas = true;
+        }
+      },
+    },
+    // Affects "consolidation" checkboxes in filings page header
+    // This watch ensures that "Petitions" checkbox IS NOT checked when unchecking "NoAs" checkbox
+    groupNoas: {
+      handler(value) {
+        if (!value) {
+          this.settings.groupCounts = false;
+        }
+      },
+    },
+    responses: {
+      handler() {
+        this.saveResponses();
+      },
+      deep: true,
+    },
+    settings: {
+      handler() {
+        this.saveSettings();
+        //this.$nextTick(function () {
+        //vanilla js
+        //});
+      },
+      deep: true,
+    },
+    saved: {
+      handler() {
+        devLog('counts updated - line:' + getError());
+        this.saveCounts();
+        //this.$nextTick(function () {
+        //call any vanilla js functions after update.
+        //initAfterFilingRefresh();
+        //});
+      },
+      deep: true,
+    },
+  },
+  beforeCreate() {
+    $.getJSON(
+      'https://raw.githubusercontent.com/codeforbtv/expungeVT-admin/master/config/adminConfig.json',
+      function (data) {
+        this.countiesContact = data['countyContacts'];
+        this.popupHeadline = data['expungeHeadline'];
+        this.roleCoverLetterText = data['roleText'];
+        this.coverLetterContent = data['letter'];
+        this.stipDef = data['stipDefinition'];
+        devLog(
+          'adminConfig data has been set in filings.vue at line: ' + getError()
+        );
+        devLog(data);
+      }.bind(this)
+    );
+  },
+  mounted() {
+    devLog('App mounted!');
+    this.loadAll();
+    detectChangesInChromeStorage(this, false);
+    handlePrintMacro(this);
+    initAfterVue();
+    //This is to make sure dynamically created table are unique across tab in order to avoid errors
+    this.uniqueId = this._uid;
+  },
+  updated() {
+    nextTick(function () {
+      // call any vanilla js functions that need to run after vue is all done setting up.
+      initScrollDetection();
+      setInitialExpandForTextAreas();
+      initTextAreaAutoExpand();
+      initSmoothScroll();
+    });
+  },
+  methods: {
+    saveSettings: function() {
+      saveSettings(this.settings)
+    },
+    saveResponses: function() {
+      saveResponses(this.responses)
+    },
+    saveCounts: function() {
+      saveCounts(toRaw(this.saved))
+    },
+    handleNewDocketNums: handleNewDocketNums,
+    loadAll: function (callback) {
+      loadAll(this, callback);
+    },
 
-    <div id="filing-app">
-      <!-- Modal -->
-      <div
+    /**
+     * Creates the petition filings (including NOAs) from collected counts
+     *
+     * @param {Object} counts Count objects used to generate petitons
+     * @param {boolean} groupDockets Indicates whether to consolidate dockets into single petitons
+     */
+    createFilingsFromCounts: function (counts, groupDockets = true) {
+      return createFilingsFromCounts(this, counts, groupDockets);
+    },
+
+    /*
+     * Inserts an NOA each time the county changes in the array of filings.
+     * @param {object} filings      An array of filing objects that needs some NOAs added to it
+     * @param {string} countyName   The name of the county is needed by the fn() that creates the NOA
+     */
+    insertNOAsForEachCounty: function (filings) {
+      let lastCounty = '';
+      let filingsWithNOAs = [];
+
+      // loop over all the filings
+      for (let i = 0; i < filings.length; i++) {
+        const thisFiling = filings[i];
+        const currCounty = thisFiling.county;
+
+        // when the county changes, insert a NOA
+        if (lastCounty != currCounty) {
+          const docketCounts = filings
+            .filter((f) => f.county == currCounty)
+            .map((f) => f.counts)
+            .flat();
+          const noa = this.createNOAFiling(currCounty, docketCounts);
+          filingsWithNOAs.push(noa);
+
+          if (this.responses[noa.id + '-feeForm'] === undefined) {
+            this.responses[noa.id + '-feeForm'] = false;
+          } else if (this.responses[noa.id + '-feeForm']) {
+            const feeFiling = this.createFeeFiling(
+              thisFiling.county,
+              docketCounts
+            );
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(
+              thisFiling.county,
+              docketCounts
+            );
+            filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+          }
+
+          lastCounty = currCounty;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
+    /*
+     * Inserts an NOA each time the docket changes in the array of filings.
+     * @param {object[]} filings      An array of filing objects that needs some NOAs added to it
+     */
+    insertNOAsForEachDocket: function (filings) {
+      let lastDocketNum = '';
+      let filingsWithNOAs = [];
+
+      // sorted filings by docket
+      let sortedFilings = filings.sort((a, b) =>
+        a.docketNums[0].num > b.docketNums[0].num ? 1 : -1
+      );
+
+      // loop over all the sortedFilings
+      for (let i = 0; i < sortedFilings.length; i++) {
+        const thisFiling = sortedFilings[i];
+        const currDocketNum = thisFiling.docketNums[0].string;
+
+        // Conditionally insert a NOA at the beginning of each new string of docket petitions
+        if (lastDocketNum != currDocketNum) {
+          const docketCounts = sortedFilings
+            .map(function (f) {
+              if (
+                f.docketSheetNums.filter((n) => n.num == currDocketNum).length >
+                0
+              ) {
+                return f.counts;
+              } else {
+                return [];
+              }
+            })
+            .flat();
+          const noa = this.createNOAFiling(thisFiling.county, docketCounts);
+          filingsWithNOAs.push(noa);
+
+          if (this.responses[noa.id + '-feeForm'] === undefined) {
+            this.responses[noa.id + '-feeForm'] = false;
+          } else if (this.responses[noa.id + '-feeForm']) {
+            const feeFiling = this.createFeeFiling(
+              thisFiling.county,
+              docketCounts
+            );
+            const feeFilingAffidavit = this.createFeeFilingAffidavit(
+              thisFiling.county,
+              docketCounts
+            );
+            filingsWithNOAs.push(feeFiling);
+            filingsWithNOAs.push(feeFilingAffidavit);
+          }
+
+          lastDocketNum = currDocketNum;
+        }
+
+        // always copy over the filings to new array
+        filingsWithNOAs.push(thisFiling);
+      }
+      return filingsWithNOAs;
+    },
+
+    createResponseObjectForFiling: function (id) {
+      if (this.responses[id] === undefined) {
+        this.responses[id] = '';
+      }
+    },
+
+    /*
+     * Helper function to make a "Notice of Appearance" object that can be
+     * inserted into arrays of filings.
+     */
+    createNOAFiling: function (county, counts) {
+      return makeFilingObject(counts, 'NoA', county);
+    },
+    createFeeFiling: function (county, counts) {
+      return makeFilingObject(counts, 'feeWaiver', county);
+    },
+    createFeeFilingAffidavit: function (county, counts) {
+      return makeFilingObject(counts, 'feeWaiverAffidavit', county);
+    },
+    groupIneligibleCounts: function (counts) {
+      let ineligibleCounts = counts.filter((count) => count.filingType == 'X');
+      return ineligibleCounts;
+    },
+    groupNoAction: function (counts) {
+      let noActionCounts = counts.filter((count) => count.filingType == '');
+      return noActionCounts;
+    },
+    newCount: function (event) {
+      this.saved.counts.push({ description: 'New', filingType: '' });
+    },
+    confirmDeleteCount: function (event, countId) {
+      confirmDeleteCount(this, event, countId);
+    },
+    nl2br: nl2br,
+    linesBreaksFromArray: linesBreaksFromArray,
+    openPetitionsPage: openPetitionsPage,
+    addAndOpenManagePage: function () {
+      if (this.rawCounts.length == 0) {
+        this.newCount();
+        this.saved['defName'] = 'New Petitioner';
+      }
+      openManagePage();
+    },
+    openManagePage: openManagePage,
+    addDocketCounts: function () {
+      // TODO: consider using content_scripts instead to avoid loading payload.js every time the
+      // 'Add From Page' button is clicked.
+      // see: https://stackoverflow.com/a/42989406/263900
+      chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['payload.js'],
+        });
+      });
+    },
+    confirmClearData: confirmClearData,
+    resetSettings: function(element) {
+      resetSettings(this, element);
+    },
+    printDocument: function () {
+      window.print();
+    },
+    saveHtml: function() {
+      saveHtml(this);
+    },
+    returnCountyContact: function (cty) {
+      allCounties = this.countiesContact;
+      devLog('Number: ' + allCounties[cty]);
+      return allCounties[cty];
+    },
+    proSeFromRole: function (preparerRole) {
+      if (preparerRole == 'AttyAppear') {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    checkDocketMatch: function (longDocket, shortDocket, county) {
+      if (!longDocket) return false;
+      let concatDocket = shortDocket + ' ' + countyCodeFromCounty(county);
+
+      if (concatDocket !== longDocket) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    getFeeWaiverStatusFromFiling: function (filingId) {
+      docket =
+        'NoA-' + filingId.substring(filingId.indexOf('-') + 1) + '-feeForm';
+      return this.responses[docket];
+    },
+    numOfFeeWaiversInGroup: function (filings) {
+      return filings.filter((f) => f.type == 'feeWaiver').length;
+    },
+    getNextNotaryDate: function () {
+      let currentDate = dayjs();
+      let janThisYear = dayjs(currentDate.format('YYYY') + '-01-31');
+
+      if (currentDate.isBefore(janThisYear) && isOdd(currentDate)) {
+        return janThisYear.format('MMMM DD, YYYY');
+      } else if (!isOdd(currentDate)) {
+        return dayjs(janThisYear).add(1, 'years').format('MMMM DD, YYYY');
+      } else if (currentDate.isAfter(janThisYear) && isOdd(currentDate)) {
+        return dayjs(janThisYear).add(2, 'years').format('MMMM DD, YYYY');
+      }
+      function isOdd(num) {
+        let numInt = parseInt(num.format('YYYY'));
+        return numInt % 2;
+      }
+    },
+    notarizableFilings: function (filings) {
+      let affidavitCount = 0;
+      filings.forEach((county) => {
+        county.filings.forEach((filing) => {
+          if (filing.type === 'feeWaiverAffidavit') {
+            affidavitCount++;
+          }
+        });
+      });
+      if (affidavitCount > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    stringAgeInYearsAtDate: stringAgeInYearsAtDate,
+    sinceNow: sinceNow,
+    dateFormatSimple: dateFormatSimple,
+    toCountyCode,
+    /** Takes an array of filings and figures out how many there are after omitting the NOAs
+     * @param array   An array of filings
+     * @return int    The number of filings that are not NOAs
+     */
+    numWithoutNOAs: function (filings) {
+      return filings.filter((f) => {
+        if (
+          f.type == 'NoA' ||
+          f.type == 'feeWaiver' ||
+          f.type == 'feeWaiverAffidavit'
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      }).length;
+    },
+    returnFine: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
+      let fine = parseFloat(this.responses[docket + '-fine']).toFixed(2);
+      return fine;
+    },
+    returnSurcharge: function (fileId) {
+      //TODO Handle returning number of filings and fee waivers
+      fileId = fileId.replace('Affidavit', '');
+      docket = 'NoA-' + fileId.substring(fileId.indexOf('-') + 1);
+      let surcharge = parseFloat(this.responses[docket + '-surcharge']).toFixed(
+        2
+      );
+      return surcharge;
+    },
+  },
+  computed: {
+    petitioner: function () {
+      return {
+        name: this.saved.defName,
+        dob: this.saved.defDOB,
+        address: this.nl2br(this.saved.defAddress),
+        email: this.saved.defEmail,
+      };
+    },
+    /* "Filings" include the Notice of Appearance (NoA) forms */
+    filings: function () {
+      let shouldGroupCounts =
+        this.settings.groupCounts !== undefined
+          ? this.settings.groupCounts
+          : true;
+      return this.createFilingsFromCounts(this.rawCounts, shouldGroupCounts); //counts, groupCountsFromMultipleDockets=true
+    },
+    maxDate: maxDate,
+    numCountsToExpungeOrSeal: function () {
+      return this.rawCounts.filter((count) => count.filingType !== 'X').length;
+    },
+    numCountsNoAction: function () {
+      return this.rawCounts.filter((count) => count.filingType === 'X').length;
+    },
+    ineligible: function () {
+      return this.groupIneligibleCounts(this.rawCounts);
+    },
+    noAction: function () {
+      return this.groupNoAction(this.rawCounts);
+    },
+    numCountsIneligible: function () {
+      return this.ineligible.length;
+    },
+    numCountsStipulated: function () {
+      let stipCount = 0;
+      this.rawCounts.forEach((element) => {
+        if (element.filingType.includes('Stip')) {
+          stipCount++;
+        }
+      });
+      return stipCount;
+    },
+    countsExpungedNC: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'ExNC' || count.filingType === 'StipExNC'
+      );
+    },
+    countsExpungedC: function () {
+      return this.rawCounts.filter(
+        (count) => count.filingType === 'ExC' || count.filingType === 'StipExC'
+      );
+    },
+    countsExpungedNCrim: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'ExNCrim' || count.filingType === 'StipExNCrim'
+      );
+    },
+    countsSealC: function () {
+      return this.rawCounts.filter(
+        (count) => count.filingType === 'SC' || count.filingType === 'StipSC'
+      );
+    },
+    countsSealCAdult: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'SCAdult' || count.filingType === 'StipSCAdult'
+      );
+    },
+    countsSealDui: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'SDui' || count.filingType === 'StipSDui'
+      );
+    },
+    countsSealNegOp: function () {
+      return this.rawCounts.filter(
+        (count) =>
+          count.filingType === 'NegOp' || count.filingType === 'StipNegOp'
+      );
+    },
+    /* Checks the computed `filings` property to see how many unique dockets there are */
+    numDockets: function () {
+      const dockets = this.filings
+        .map((f) =>
+          f.filings
+            .map((f2) => f2.docketNums.map((d) => d.string).flat())
+            .flat()
+        )
+        .flat();
+      const uniqueDockets = dockets.reduce((acc, n) => {
+        if (!acc.includes(n)) {
+          acc.push(n);
+        }
+        return acc;
+      }, []);
+      return uniqueDockets.length;
+    },
+    csvData: function () {
+      csvData(this);
+    },
+    todayDate: todayDate,
+    rawCounts: function () {
+      return toRaw(this.saved.counts);
+    },
+  },
+  filters: {
+    uppercase: uppercase,
+    lowercase: lowercase
+  },
+};
+</script>
+
+<template>
+    <div
         class="modal fade"
         id="exampleModal"
         tabindex="-1"
@@ -39,6 +591,7 @@
                 <span class="modal-title">Attorney / Preparer Name:</span>
                 <input
                   class="no-print"
+                  id="attorneyName"
                   v-model="settings['attorney']"
                   placeholder="Attorney Name"
                 />
@@ -55,6 +608,7 @@
                 <span class="modal-title">Phone:</span>
                 <input
                   class="no-print"
+                  id="attorneyPhone"
                   v-model="settings['attorneyPhone']"
                   placeholder="Attorney Phone Number"
                 />
@@ -64,9 +618,8 @@
                   <label class="card-header__select roleSelect">
                     <span class="modal-title">Preparer Role:</span>
                     <select
-                      class="form-control form-control-sm"
+                      class="form-control form-control-sm selectpicker"
                       v-model="settings.role"
-                      class="selectpicker"
                     >
                       <option value="AttyConsult">
                         Attorney: Consult only with no appearance
@@ -131,11 +684,11 @@
       </div>
 
       <!-- If there are filings to dispalay... -->
-      <template v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
+      <div v-if="(numCountsToExpungeOrSeal + numCountsNoAction) > 0">
         <!-- Page header & page actions -->
-        <div v-if="petitioner.name" class="header-bar-wrapper no-print">
+        <div class="header-bar-wrapper no-print">
           <div class="header-bar">
-            <h1>Filings for {{petitioner.name}}</h1>
+            <h1 v-if="petitioner.name" >Filings for {{petitioner.name}}</h1>
             <div class="header-bar__controls">
               <div v-if="numDockets >= 1 && proSeFromRole(settings.role)">
                 <span
@@ -181,7 +734,7 @@
           </div>
         </div>
 
-        <filing-nav v-bind:filings="filings"></filing-nav>
+        <filing-nav v-bind="{'filings':filings, 'settings':settings}"></filing-nav>
 
         <!-- Cover letter & checkout sheet wrapper -->
         <table class="extra-pages">
@@ -273,7 +826,7 @@
                             v-bind:id="group.county"
                           >
                             <li>
-                              {{group.filings | numWithoutNOAs}}
+                              {{numWithoutNOAs(group.filings)}}
                               <span v-if="group.filings.length > 2"
                                 >petitions</span
                               ><span v-else>petition</span> for {{group.county}}
@@ -359,7 +912,7 @@
                           >
                             {{petitioner.name}}
                             <br />
-                            (DOB: {{petitioner.dob | dateFormatSimple}})
+                            (DOB: {{dateFormatSimple(petitioner.dob)}})
                             <br />
                             <span
                               v-if="responses['phone'] !=''"
@@ -392,13 +945,12 @@
                               >
                                 CONVICTION petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedC.length > 0"
                                 v-bind:key="countsExpungedC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -406,13 +958,12 @@
                               >
                                 NON-CONVICTION petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedNC.length > 0"
                                 v-bind:key="countsExpungedNC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedNC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -420,27 +971,38 @@
                               >
                                 NON-CRIME petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsExpungedNCrim.length > 0"
                                 v-bind:key="countsExpungedNCrim + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsExpungedNCrim"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
                                 v-if="countsSealC.length > 0"
                               >
-                                SEALED petitions drafted:
+                                SEALED petitions drafted for offenses from under age of 25:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsSealC.length > 0"
                                 v-bind:key="countsSealC + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsSealC"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
+                              <th
+                                scope="col"
+                                colspan="3"
+                                v-if="countsSealCAdult.length > 0"
+                              >
+                                SEALED petitions drafted for offenses from age 25 or over:
+                              </th>
+                              <checkout-offense-row
+                                v-if="countsSealCAdult.length > 0"
+                                v-bind:key="countsSealCAdult + uniqueId + idx"
+                                v-for="(filing, idx) in countsSealCAdult"
+                                v-bind:filing="filing"
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -448,13 +1010,25 @@
                               >
                                 SEALED DUI petitions drafted:
                               </th>
-                              <tr
+                              <checkout-offense-row
                                 v-if="countsSealDui.length > 0"
                                 v-bind:key="countsSealDui + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in countsSealDui"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
+                              <th
+                                scope="col"
+                                colspan="3"
+                                v-if="countsSealNegOp.length > 0"
+                              >
+                                SEALED Negligent Operation petitions drafted:
+                              </th>
+                              <checkout-offense-row
+                                v-if="countsSealNegOp.length > 0"
+                                v-bind:key="countsSealNegOp + uniqueId + idx"
+                                v-for="(filing, idx) in countsSealNegOp"
+                                v-bind:filing="filing"
+                              ></checkout-offense-row>
                               <th
                                 scope="col"
                                 colspan="3"
@@ -462,13 +1036,12 @@
                               >
                                 NO ACTION TAKEN:
                               </th>
-                              <tr
-                                v-if="ineligible.length > 0"
+                              <checkout-offense-row
+                                v-if="this.numCountsIneligible > 0"
                                 v-bind:key="ineligible + uniqueId + idx"
-                                is="checkout-offense-row"
                                 v-for="(filing, idx) in ineligible"
                                 v-bind:filing="filing"
-                              ></tr>
+                              ></checkout-offense-row>
                             </tbody>
                           </table>
                         </dl>
@@ -480,11 +1053,11 @@
               </td>
             </tr>
           </tbody>
-          <tfoot class="footer-space">
+          <!-- <tfoot class="footer-space">
             <tr>
               <td>&nbsp;</td>
             </tr>
-          </tfoot>
+          </tfoot> -->
         </table>
         <!-- Cover letter & checkout sheet wrapper -->
 
@@ -529,13 +1102,14 @@
                             </p>
 
                             <p
-                              v-for="docketNum in filing.docketNums"
+                              v-for="(docketNum, index) in filing.docketNums"
+                              :key="index"
                               class="docket-number__numbers"
                             >
                               <span class="docket-number__label"
                                 >Docket No.&nbsp;</span
                               ><span class="docket-number__number"
-                                >{{docketNum.string}}</span
+                                >{{handleNewDocketNums(docketNum.string)}}</span
                               >
                             </p>
                           </div>
@@ -620,29 +1194,28 @@
 
                       <!-- Notice of Appearance -->
                       <div class="filing-body" v-if="filing.type == 'NoA'">
-                        <p class="indent">
-                          <template v-if="proSeFromRole(settings.role)">
-                            NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
-                            | dateFormatSimple}}), appearing
-                            <span class="italic">pro se</span>, and hereby
-                            enters this notice of appearance in the above
-                            captioned action.
-                            <span
-                              class="email-test"
-                              v-if="settings.emailConsent"
-                              ><br /><br />By signing this notice of appearance
-                              below, I hereby agree to the acceptance of all
-                              electronic filings at the following email address:
-                              <b>{{petitioner.email}}</b>.</span
-                            >
-                          </template>
-                          <template v-else>
-                            NOW COMES <span>{{settings['attorney']}}</span>, by
-                            and on behalf of {{petitioner.name}} (DOB:
-                            {{petitioner.dob | dateFormatSimple}}), and hereby
-                            enters this notice of appearance in the above
-                            captioned action.
-                          </template>
+                      
+                        <p class="indent" v-if="proSeFromRole(settings.role)">
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}), appearing
+                          <span class="italic">pro se</span>, and hereby
+                          enters this notice of appearance in the above
+                          captioned action.
+                          <span
+                            class="email-test"
+                            v-if="settings.emailConsent"
+                            ><br /><br />By signing this notice of appearance
+                            below, I hereby agree to the acceptance of all
+                            electronic filings at the following email address:
+                            <b>{{petitioner.email}}</b>.</span
+                          >
+                          </p>
+                        <p class="indent" v-else>
+                          NOW COMES <span>{{settings['attorney']}}</span>, by
+                          and on behalf of {{petitioner.name}} (DOB:
+                          {{dateFormatSimple(petitioner.dob)}}), and hereby
+                          enters this notice of appearance in the above
+                          captioned action.
                         </p>
                       </div>
                       <!-- Fee Waiver -->
@@ -651,34 +1224,31 @@
                         class="filing-body"
                         v-if="filing.type == 'feeWaiver'"
                       >
-                        <p class="indent">
-                          <template>
                             <p class="indent">
                               NOW COMES {{petitioner.name}} (DOB:
-                              {{petitioner.dob | dateFormatSimple}}),
-                              <template v-if="proSeFromRole(settings.role)"
+                              {{dateFormatSimple(petitioner.dob)}}),
+                              <span v-if="proSeFromRole(settings.role)"
                                 >appearing <span class="italic">pro se</span>
-                              </template>
-                              <template v-else>
+                            </span>
+                              <span v-else>
                                 by and through counsel,
-                                <span>{{settings['attorney']}}</span> </template
+                                <span>{{settings['attorney']}}</span> </span
                               >, and hereby moves the Court to
                               <span
-                              v-if="$options.filters.returnSurcharge(filing.id)>0"
+                              v-if="returnSurcharge(filing.id)>0"
                                 >waive surcharges </span
                               ><span
-                                v-if="$options.filters.returnFine(filing.id)>0 && $options.filters.returnSurcharge(filing.id)>0"
+                                v-if="returnFine(filing.id)>0 && returnSurcharge(filing.id)>0"
                                 >and
                               </span>
                               <span
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                                v-if="returnFine(filing.id)>0"
                                 >suspend the fines </span
                               >associated with the above-captioned case for the
                               reasons set forth herein.
-                            </p>
                             <ol>
                               <li
-                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                v-if="returnSurcharge(filing.id)>0"
                               >
                                 Pursuant to 13 V.S.A. &#167; 7282(b), surcharges
                                 can be waived in an expungement or sealing
@@ -686,7 +1256,7 @@
                                 inability to pay."
                               </li>
                               <li
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                                v-if="returnFine(filing.id)>0"
                               >
                                 Pursuant to 13 V.S.A &#167; 7178 "[a] Superior
                                 judge, in his or her discretion, may suspend all
@@ -694,17 +1264,16 @@
                                 respondent."
                               </li>
                               <li
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                                v-if="returnFine(filing.id)>0"
                               >
                                 At the time of conviction, the court fined
-                                Petitioner ${{ filing.id | returnFine }}.
+                                Petitioner ${{returnFine(filing.id)}}.
                               </li>
                               <li
-                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                v-if="returnSurcharge(filing.id)>0"
                               >
                                 At the time of conviction, the court assessed
-                                Petitioner a surcharge of ${{ filing.id |
-                                returnSurcharge }}.
+                                Petitioner a surcharge of ${{returnSurcharge(filing.id)}}.
                               </li>
                               <li>
                                 Petitioner has contemporaneously filed petition
@@ -726,7 +1295,6 @@
                                 be barred due to economic status.
                               </li>
                             </ol>
-                          </template>
                         </p>
                       </div>
                       <!-- Fee waiver affidavit -->
@@ -736,7 +1304,6 @@
                         v-if="filing.type == 'feeWaiverAffidavit' && !responses[filing.id +'-feeForm']"
                       >
                         <p class="indent">
-                          <template>
                             {{petitioner.name}}, being duly sworn, deposes and
                             says under oath:
                             <ol>
@@ -745,16 +1312,16 @@
                                 criminal record in the above referenced matter.
                               </li>
                               <li
-                                v-if="$options.filters.returnFine(filing.id)>0"
+                                v-if="returnFine(filing.id)>0"
                               >
-                                I have outstanding fines totaling ${{ filing.id
-                                | returnFine }}.
+                                I have outstanding fines totaling ${{ 
+                                returnFine(filing.id) }}.
                               </li>
                               <li
-                                v-if="$options.filters.returnSurcharge(filing.id)>0"
+                                v-if="returnSurcharge(filing.id)>0"
                               >
                                 I have outstanding surcharges totaling ${{
-                                filing.id | returnSurcharge }}.
+                                returnSurcharge(filing.id) }}.
                               </li>
                               <li>
                                 I do not have the means to pay this legal
@@ -770,7 +1337,6 @@
                                 record.
                               </li>
                             </ol>
-                          </template>
                         </p>
                       </div>
                       <!-- (Stipulated) Petiton To Expunge Conviction -->
@@ -779,14 +1345,14 @@
                         v-if="filing.type == 'ExC' || filing.type == 'StipExC'"
                       >
                         <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob |
-                          dateFormatSimple}}),
-                          <template v-if="proSeFromRole(settings.role)"
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
                             >appearing <span class="italic">pro se</span>
-                          </template>
-                          <template v-else>
+                          </span>
+                          <span v-else>
                             by and through counsel,
-                            <span>{{settings['attorney']}}</span> </template
+                            <span>{{settings['attorney']}}</span> </span
                           >, and hereby moves the Court to expunge the record of
                           the above-captioned conviction<span
                             v-if="filing.multipleCounts"
@@ -813,19 +1379,20 @@
                             >
                               <td class="count-item__date">
                                 <span class="no-visible"
-                                  >{{count.dispositionDate |
-                                  dateFormatSimple}}</span
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
                                 >
                                 <input
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
                                 <span class="no-visible"
                                   >{{count.description}} ({{count.docketNum}}
-                                  {{count.county | toCountyCode}})</span
+                                  {{toCountyCode(count.county)}})</span
                                 >
                                 <textarea
                                   rows="1"
@@ -834,8 +1401,8 @@
                                 ></textarea>
                               </td>
                               <td class="no-print">
-                                {{count.docketNum}} {{count.county |
-                                toCountyCode}}
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
                               </td>
                             </tr>
                           </tbody>
@@ -872,14 +1439,14 @@
                         v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'"
                       >
                         <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob |
-                          dateFormatSimple}}),
-                          <template v-if="proSeFromRole(settings.role)"
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
                             >appearing <span class="italic">pro se</span>
-                          </template>
-                          <template v-else>
+                          </span>
+                          <span v-else>
                             by and through counsel,
-                            <span>{{settings['attorney']}}</span> </template
+                            <span>{{settings['attorney']}}</span> </span
                           >, and hereby moves the Court to expunge the record of
                           the following charge<span v-if="filing.multipleCounts"
                             >s</span
@@ -908,19 +1475,20 @@
                             >
                               <td class="count-item__date">
                                 <span class="no-visible"
-                                  >{{count.dispositionDate |
-                                  dateFormatSimple}}</span
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
                                 >
                                 <input
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
                                 <span class="no-visible"
                                   >{{count.description}} ({{count.docketNum}}
-                                  {{count.county | toCountyCode}})</span
+                                  {{toCountyCode(count.county)}})</span
                                 >
                                 <textarea
                                   rows="1"
@@ -929,8 +1497,8 @@
                                 ></textarea>
                               </td>
                               <td class="no-print">
-                                {{count.docketNum}} {{count.county |
-                                toCountyCode}}
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
                               </td>
                             </tr>
                           </tbody>
@@ -959,14 +1527,14 @@
                         v-if="filing.type == 'ExNCrim' || filing.type == 'StipExNCrim'"
                       >
                         <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob |
-                          dateFormatSimple}}),
-                          <template v-if="proSeFromRole(settings.role)"
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
                             >appearing <span class="italic">pro se</span>
-                          </template>
-                          <template v-else>
+                          </span>
+                          <span v-else>
                             by and through counsel,
-                            <span>{{settings['attorney']}}</span> </template
+                            <span>{{settings['attorney']}}</span> </span
                           >, and hereby moves the Court to expunge the record of
                           the following
                           <span v-if="filing.multipleCounts">charges</span
@@ -992,19 +1560,20 @@
                             >
                               <td class="count-item__date">
                                 <span class="no-visible"
-                                  >{{count.dispositionDate |
-                                  dateFormatSimple}}</span
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
                                 >
                                 <input
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
                                 <span class="no-visible"
                                   >{{count.description}} ({{count.docketNum}}
-                                  {{count.county | toCountyCode}})</span
+                                  {{toCountyCode(count.county)}})</span
                                 >
                                 <textarea
                                   rows="1"
@@ -1013,8 +1582,8 @@
                                 ></textarea>
                               </td>
                               <td class="no-print">
-                                {{count.docketNum}} {{count.county |
-                                toCountyCode}}
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
                               </td>
                             </tr>
                           </tbody>
@@ -1033,24 +1602,24 @@
                         </p>
                       </div>
 
-                      <!-- (Stipulated) Petiton To Seal Conviction -->
+                      <!--Petiton To Seal Conviction Minor-->
                       <div
                         class="filing-body"
                         v-if="filing.type == 'SC' || filing.type == 'StipSC'"
                       >
                         <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob |
-                          dateFormatSimple}}),
-                          <template v-if="proSeFromRole(settings.role)"
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
                             >appearing <span class="italic">pro se</span>
-                          </template>
-                          <template v-else>
+                          </span>
+                          <span v-else>
                             by and through counsel,
-                            <span>{{settings['attorney']}}</span> </template
+                            <span>{{settings['attorney']}}</span> </span
                           >, and hereby moves the Court to seal the record of
                           the above-captioned conviction
                           <span v-if="filing.multipleCounts">s</span> pursuant
-                          to 33 V.S.A. &sect; 5119(g).
+                          to <span v-if="2==2">33 V.S.A. &sect; 5119(g)</span><span v-else>13 V.S.A. 7602</span>.
                         </p>
                         <p>
                           1. Petitioner was convicted of the following
@@ -1070,19 +1639,20 @@
                             >
                               <td class="count-item__date">
                                 <span class="no-visible"
-                                  >{{count.dispositionDate |
-                                  dateFormatSimple}}</span
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
                                 >
                                 <input
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
                                 <span class="no-visible"
                                   >{{count.description}} ({{count.docketNum}}
-                                  {{count.county | toCountyCode}})</span
+                                  {{toCountyCode(count.county)}})</span
                                 >
                                 <textarea
                                   rows="1"
@@ -1091,8 +1661,8 @@
                                 ></textarea>
                               </td>
                               <td class="no-print">
-                                {{count.docketNum}} {{count.county |
-                                toCountyCode}}
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
                               </td>
                             </tr>
                           </tbody>
@@ -1117,6 +1687,85 @@
                         </p>
                       </div>
 
+
+                      <!--Petiton To Seal Conviction ADULT-->
+                      <div
+                        class="filing-body"
+                        v-if="filing.type == 'SCAdult' || filing.type == 'StipSCAdult'"
+                      >
+                        <p class="indent">
+                          NOW COMES {{petitioner.name}} (DOB: {{
+                          dateFormatSimple(petitioner.dob)}}),
+                          <span v-if="proSeFromRole(settings.role)"
+                            >appearing <span class="italic">pro se</span>
+                          </span>
+                          <span v-else>
+                            by and through counsel,
+                            <span>{{settings['attorney']}}</span> </span
+                          >, and hereby moves the Court to seal the record of
+                          the above-captioned conviction
+                          <span v-if="filing.multipleCounts">s</span> pursuant
+                          to 13 V.S.A. &sect; 7602.
+                        </p>
+                        <p>
+                          1. Petitioner was convicted of the following
+                          crime<span v-if="filing.multipleCounts">s</span>:
+                        </p>
+                        <table class="count-table">
+                          <thead class="count-table__header">
+                            <th valign="middle" scope="col">Conviction Date</th>
+                            <th valign="middle" colspan="2" scope="col">
+                              Offense Description
+                            </th>
+                          </thead>
+                          <tbody class="count-table__body">
+                            <tr
+                              class="count-item"
+                              v-for="count in filing.counts"
+                            >
+                              <td class="count-item__date">
+                                <span class="no-visible"
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
+                                >
+                                <input
+                                  type="date"
+                                  class="no-print"
+                                  v-model="count.dispositionDate"
+                                  :max="maxDate"
+                                />
+                              </td>
+                              <td class="count-item__description">
+                                <span class="no-visible"
+                                  >{{count.description}} ({{count.docketNum}}
+                                  {{toCountyCode(count.county)}})</span
+                                >
+                                <textarea
+                                  rows="1"
+                                  class="no-print count-item__textarea"
+                                  v-model="count.description"
+                                ></textarea>
+                              </td>
+                              <td class="no-print">
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p>
+                          2. The qualifying crime<span v-if="filing.multipleCounts">s were</span><span v-else> was</span> committed after the Petition reached the age of 19.
+                        </p>
+
+                        <p>
+                          3. All restitution ordered here has been paid in full.
+                        </p>
+                        <p>
+                          4. Sealing this record serves the interests of
+                          justice, as
+                        </p>
+                      </div>
+
                       <!-- (Stipulated) Petiton To Seal DUI Conviction -->
                       <div
                         class="filing-body"
@@ -1125,12 +1774,12 @@
                         <p class="indent">
                           NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
                           }}),
-                          <template v-if="proSeFromRole(settings.role)"
+                          <span v-if="proSeFromRole(settings.role)"
                             >appearing <span class="italic">pro se</span>
-                          </template>
-                          <template v-else>
+                        </span>
+                          <span v-else>
                             by and through counsel,
-                            <span>{{settings['attorney']}}</span> </template
+                            <span>{{settings['attorney']}}</span> </span
                           >, and hereby moves the Court to seal the record of
                           the above-captioned conviction
                           <span v-if="filing.multipleCounts">s</span> pursuant
@@ -1154,19 +1803,20 @@
                             >
                               <td class="count-item__date">
                                 <span class="no-visible"
-                                  >{{count.dispositionDate |
-                                  dateFormatSimple}}</span
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
                                 >
                                 <input
                                   type="date"
                                   class="no-print"
                                   v-model="count.dispositionDate"
+                                  :max="maxDate"
                                 />
                               </td>
                               <td class="count-item__description">
                                 <span class="no-visible"
                                   >{{count.description}} ({{count.docketNum}}
-                                  {{count.county | toCountyCode}})</span
+                                  {{toCountyCode(count.county)}})</span
                                 >
                                 <textarea
                                   rows="1"
@@ -1175,8 +1825,93 @@
                                 ></textarea>
                               </td>
                               <td class="no-print">
-                                {{count.docketNum}} {{count.county |
-                                toCountyCode}}
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p>
+                          2. At least 10 years have elapsed since the date
+                          petitioner successfully completed their sentence.
+                        </p>
+
+                        <p>
+                          3. This conviction is the only violation of 23 V.S.A.
+                          &sect; 1201 that petitioner has on their record, and
+                          petitioner has not been convicted of any new crime
+                          since they were convicted of this offense.
+                        </p>
+                        <p>
+                          4. All restitution ordered here has been paid in full.
+                        </p>
+                        <p>
+                          5. Sealing this record serves the interests of
+                          justice, as
+                        </p>
+                      </div>
+
+                      <!-- (Stipulated) Petiton To Seal Negligent Operation Conviction -->
+                      <div
+                        class="filing-body"
+                        v-if="filing.type == 'NegOp' || filing.type == 'StipNegOp'"
+                      >
+                        <p class="indent">
+                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
+                          }}),
+                          <span v-if="proSeFromRole(settings.role)"
+                            >appearing <span class="italic">pro se</span>
+                        </span>
+                          <span v-else>
+                            by and through counsel,
+                            <span>{{settings['attorney']}}</span> </span
+                          >, and hereby moves the Court to seal the record of
+                          the above-captioned conviction
+                          <span v-if="filing.multipleCounts">s</span> pursuant
+                          to 13 V.S.A. &sect; 7602(a)(1)(C).
+                        </p>
+                        <p>
+                          1. Petitioner was convicted of the following
+                          crime<span v-if="filing.multipleCounts">s</span>:
+                        </p>
+                        <table class="count-table">
+                          <thead class="count-table__header">
+                            <th valign="middle" scope="col">Conviction Date</th>
+                            <th valign="middle" colspan="2" scope="col">
+                              Offense Description
+                            </th>
+                          </thead>
+                          <tbody class="count-table__body">
+                            <tr
+                              class="count-item"
+                              v-for="count in filing.counts"
+                            >
+                              <td class="count-item__date">
+                                <span class="no-visible"
+                                  >{{
+                                  dateFormatSimple(count.dispositionDate)}}</span
+                                >
+                                <input
+                                  type="date"
+                                  class="no-print"
+                                  v-model="count.dispositionDate"
+                                  :max="maxDate"
+                                />
+                              </td>
+                              <td class="count-item__description">
+                                <span class="no-visible"
+                                  >{{count.description}} ({{count.docketNum}}
+                                  {{toCountyCode(count.county)}})</span
+                                >
+                                <textarea
+                                  rows="1"
+                                  class="no-print count-item__textarea"
+                                  v-model="count.description"
+                                ></textarea>
+                              </td>
+                              <td class="no-print">
+                                {{count.docketNum}} {{
+                                toCountyCode(count.county)}}
                               </td>
                             </tr>
                           </tbody>
@@ -1203,7 +1938,7 @@
 
                       <!-- End Unique Portion of Filings -->
 
-                      <template
+                      <div
                         v-if="filing.type != 'NoA' && filing.type != 'feeWaiver'"
                       >
                         <div class="filing-body__response">
@@ -1217,10 +1952,10 @@
                             placeholder="Type here..."
                           ></textarea>
                         </div>
-                      </template>
+                      </div>
 
                       <!-- Begin generic footer -->
-                      <template
+                      <div
                         v-if="filing.type != 'NoA' && filing.type != 'feeWaiverAffidavit'"
                       >
                         <div class="filing-closing">
@@ -1229,7 +1964,7 @@
                           </p>
                           <div class="filing-closing__signature-area">
                             <div class="filing-closing__signature-box">
-                              <template v-if="proSeFromRole(settings.role)">
+                              <div v-if="proSeFromRole(settings.role)">
                                 <p class="filing-closing__name">
                                   {{petitioner.name}}, Petitioner
                                 </p>
@@ -1237,8 +1972,8 @@
                                   class="filing-closing__petitioner-address"
                                   v-html="petitioner.address"
                                 ></p>
-                              </template>
-                              <template v-else>
+                              </div>
+                              <div v-else>
                                 <p class="filing-closing__name">
                                   <span>{{settings['attorney']}}</span>
                                 </p>
@@ -1247,7 +1982,7 @@
                                   class="filing-closing__petitioner-address"
                                   v-html="nl2br(settings['attorneyAddress'])"
                                 ></p>
-                              </template>
+                              </div>
                             </div>
                             <div class="filing-closing__date-box">
                               <p>Date</p>
@@ -1259,9 +1994,8 @@
                             v-bind:stipulated="filing.isStipulated"
                           ></filing-footer>
                         </div>
-                      </template>
-                      <template v-if="filing.type == 'NoA'">
-                        <div class="filing-closing">
+                      </div>
+                        <div class="filing-closing" v-if="filing.type == 'NoA'">
                           <filing-dated-city
                             v-if="!proSeFromRole(settings.role)"
                           ></filing-dated-city>
@@ -1269,7 +2003,7 @@
                             class="filing-closing__signature-area filing-closing--align-right"
                           >
                             <div class="filing-closing__signature-box">
-                              <template v-if="proSeFromRole(settings.role)">
+                              <div v-if="proSeFromRole(settings.role)">
                                 <p class="filing-closing__name">
                                   {{petitioner.name}}, Petitioner
                                 </p>
@@ -1295,8 +2029,8 @@
                                     />
                                   </p>
                                 </div>
-                              </template>
-                              <template v-else>
+                              </div>
+                              <div v-else>
                                 <p class="filing-closing__name">
                                   <span>{{settings['attorney']}}</span>
                                 </p>
@@ -1311,7 +2045,7 @@
                                     v-html="nl2br(settings['attorney']+'\n'+settings['attorneyAddress']+'\n'+settings['attorneyPhone'])"
                                   ></p>
                                 </div>
-                              </template>
+                              </div>
                             </div>
                             <div
                               v-if="proSeFromRole(settings.role)"
@@ -1321,8 +2055,7 @@
                             </div>
                           </div>
                         </div>
-                      </template>
-                      <template v-if="filing.type == 'feeWaiverAffidavit'">
+                      <div v-if="filing.type == 'feeWaiverAffidavit'">
                         <div class="filing-closing">
                           I declare that the above statement is true and
                           accurate to the best of my knowledge and belief. I
@@ -1335,7 +2068,6 @@
                             class="filing-closing__signature-area filing-closing--align-right"
                           >
                             <div class="filing-closing__signature-box">
-                              <template>
                                 <p class="filing-closing__name">
                                   {{petitioner.name}}, Petitioner
                                 </p>
@@ -1343,7 +2075,6 @@
                                   class="filing-closing__petitioner-address"
                                   v-html="petitioner.address"
                                 ></p>
-                              </template>
                             </div>
                             <div
                               v-if="proSeFromRole(settings.role)"
@@ -1353,8 +2084,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="filing-closing">
-                          <template v-if="settings.affidavitRequired">
+                        <div class="filing-closing" v-if="settings.affidavitRequired">
                             <div class="notary-block">
                               <br />
                               <p>STATE OF VERMONT</p>
@@ -1375,9 +2105,8 @@
                                 My Commission Expires {{getNextNotaryDate()}}.
                               </p>
                             </div>
-                          </template>
                         </div>
-                      </template>
+                      </div>
                       <!-- End generic footer -->
                     </div>
                   </article>
@@ -1387,13 +2116,13 @@
               </td>
             </tr>
           </tbody>
-          <tfoot class="footer-space">
+          <!-- <tfoot class="footer-space">
             <tr>
               <td>
                 <p class="footer-space__vertical-spacer">&nbsp;</p>
               </td>
             </tr>
-          </tfoot>
+          </tfoot> -->
         </table>
         <!-- End petition wrapper -->
 
@@ -1405,10 +2134,10 @@
           <p class="footer__company">{{settings['footer1']}}</p>
           <p class="footer__phone">{{settings['footer2']}}</p>
         </div>
-      </template>
+      </div>
 
       <!-- else show default "no filings" display -->
-      <template v-else>
+      <div v-else>
         <div class="no-filings">
           <p>
             There are no filings to prepare.
@@ -1434,10 +2163,5 @@
             </button>
           </p>
         </div>
-      </template>
-    </div>
-    <!-- End Vue App -->
-
-    <script id="script" src="index.js"></script>
-  </body>
-</html>
+      </div>
+</template>

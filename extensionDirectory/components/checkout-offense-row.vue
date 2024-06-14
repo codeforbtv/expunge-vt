@@ -1,4 +1,6 @@
 <script>
+import { countyCodeFromCounty } from '../utils';
+
 export default {
   methods: {
     isStipulated: function (filingType) {
@@ -7,12 +9,14 @@ export default {
         filingType == "StipExNC" ||
         filingType == "StipExNCrim" ||
         filingType == "StipSC" ||
-        filingType == "StipSDui"
+        filingType == "StipSCAdult" ||
+        filingType == "StipSDui" ||
+        filingType == "StipNegOp"
       );
     },
     dateFormatSimple: function (value) {
       if (!value) return "";
-      return moment(value).format("MM/DD/YYYY");
+      return dayjs(value).format("MM/DD/YYYY");
     },
     toCountyCode: function (value) {
       if (!value) return "";

@@ -30,7 +30,7 @@ if (docketData.url.startsWith('file')) {
   if (title === 'ExpungeVT Case Record') {
     docketData.domain = 'expungeVtRecord';
   } else {
-    var answer = window.confirm(
+    let answer = window.confirm(
       'This does not look like a case file. Are you sure you want to proceed?'
     );
     if (answer) {
