@@ -641,6 +641,13 @@ export default {
                     <span class="modal-title">VLA Logo & Footer:</span>
                     <input type="checkbox" v-model="settings.forVla" />
                   </label>
+                    <span class="modal-title">Alternative Logo URL:</span>
+                    <input
+                        class="no-print"
+                        id="altLogoUrl"
+                        v-model="settings['logoUrl']"
+                        placeholder=""
+                    />
                 </p>
               </label>
               <div class="custom-footer-block" v-if="!settings.forVla">
@@ -766,7 +773,12 @@ export default {
                         <div class="title petition__title"></div>
                         <div class="from-block">
                           <img
-                            v-if="settings.forVla"
+                            v-if="settings.logoUrl"
+                            class="custom-logo"
+                            :src="settings.logoUrl"
+                          />
+                          <img
+                            v-else-if="settings.forVla"
                             class="vla-logo"
                             src="images/VLA_logo-200-97px.png"
                           />
