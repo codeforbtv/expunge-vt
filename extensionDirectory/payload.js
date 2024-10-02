@@ -16,6 +16,8 @@ switch (docketData.domain) {
   // new VT Judiciary Public Portal (aka Odyssey, aka Tyler Technologies)
   case 'publicportal.courts.vt.gov':
 
+  case 'portal.vtcourts.gov':
+
   // demo site used to test extension (see readme or codeforbtv.github.io/expunge-vt/)
   case 'htmlpreview.github.io': {
     docketData.rawDocket = document.getElementById('roa-content').innerHTML;
@@ -30,7 +32,7 @@ if (docketData.url.startsWith('file')) {
   if (title === 'ExpungeVT Case Record') {
     docketData.domain = 'expungeVtRecord';
   } else {
-    var answer = window.confirm(
+    let answer = window.confirm(
       'This does not look like a case file. Are you sure you want to proceed?'
     );
     if (answer) {

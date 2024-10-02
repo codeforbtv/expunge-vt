@@ -1,4 +1,4 @@
-/* Helpers */
+/* Helpers ----------------*/
 
 .indent {
   text-indent: 2em;
@@ -245,9 +245,6 @@ p.document-meta-data__body {
 .filing-header__half {
   width: 50%;
 }
-.filing-header__court {
-  margin-bottom: 0.5rem;
-}
 
 .docket-number__label {
   opacity: 0;
@@ -318,6 +315,12 @@ p.document-meta-data__body {
 .generic-logo {
   width: 8.5%;
   height: 8.5%;
+  margin-right: 35px;
+}
+
+.custom-logo {
+  width: 15%;
+  height: 15%;
   margin-right: 35px;
 }
 
@@ -579,13 +582,16 @@ p.filing-dated-city {
     display: none !important;
   }
   .page {
-    page-break-after: always !important;
+    page-break-after: always;
     position: relative;
     overflow: visible;
     background: #fff;
     margin: 0;
     padding-left: 0.25in;
     padding-right: 0.25in;
+  }
+  .page:last-child {
+    page-break-after: avoid !important; 
   }
   .count-table + p {
     padding-top: 0.5rem;
@@ -596,17 +602,15 @@ p.filing-dated-city {
   }
 
   .all-filings {
-    width: 93%;
+    width: 100vw;
     border-left: 0.01in solid #000;
     border-right: 0.01in solid #000;
-    margin-left: 15%;
   }
   .extra-pages {
     box-sizing: border-box;
     width: 100%;
     margin-left: 0.75in;
     margin-right: 0.75in;
-    page-break-after: always;
   }
 
   .footer-space__vertical-spacer {
@@ -672,6 +676,16 @@ p.filing-dated-city {
     line-height: 1.2em;
     font-family: 'Times New Roman', Times, serif;
   }
+  
+  .extra-pages:not(table:only-of-type) {
+    page-break-after: always;
+  }
+  
+  table:only-of-type .page:last-child,
+  .all-filings section:last-child .page:nth-last-child(2) {
+    page-break-after: avoid !important;
+    height: 99vh;
+  }
 }
 
 /* cover letter */
@@ -691,6 +705,7 @@ p.filing-dated-city {
 /*manage-counts page*/
 .edit-count {
   border: 1px solid #ddd;
+  background: #afcef0;
   padding: 30px;
   border-radius: 5px;
   position: relative;
@@ -759,7 +774,6 @@ p.filing-dated-city {
   display: flex;
   flex-direction: column;
   width: 300px;
-  margin: 20px auto 0 auto;
   border: 1px solid black;
   padding: 5px;
 }

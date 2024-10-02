@@ -6,7 +6,7 @@
     "type": "Chrome Browser Extension", 
     "homepage": "https://codeforbtv.github.io/expunge-vt/", 
     "repository": "https://github.com/codeforbtv/expunge-vt", 
-    "thumbnail": "https://codeforbtv.github.io/expunge-vt/extensionDirectory/images/icon_128.png", 
+    "thumbnail": "https://codeforbtv.github.io/expunge-vt/extensionDirectory/images/icon_128x.png", 
     "geography": [
         "Vermont"
     ], 

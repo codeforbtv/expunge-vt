@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 function saveAllCountsToHtml(savedData) {
   
@@ -13,10 +13,9 @@ function saveAllCountsToHtml(savedData) {
     defInitials += n[0]
   })
 
-  let now = moment().format('YYYY-MM-DD');
+  let now = dayjs().format('YYYY-MM-DD');
   let obfuscatedSavedData = Base64.encode(savedData);
   let fileName = now + '-' + defInitials;
-  console.log(fileName)
   let htmlString = `
   <html>
     <head>
@@ -86,10 +85,6 @@ function saveAllCountsToHtml(savedData) {
         width: 100px;
       }
     </style>
-
-    <script id="script">
-    </script>
-    <script src="https://kit.fontawesome.com/ac322eed98.js" crossorigin="anonymous"></script>
   </html>`;
 
   var blob = new Blob([htmlString], { type: 'text/html' });
@@ -198,3 +193,5 @@ var Base64 = {
     return t;
   },
 };
+
+export default saveAllCountsToHtml
