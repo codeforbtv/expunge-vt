@@ -62,7 +62,7 @@ export default {
     filingTypeHeading,
   },
   data() {
-    return {
+    return ({
       settings,
       saved,
       responses,
@@ -73,7 +73,7 @@ export default {
       roleCoverLetterText,
       coverLetterContent,
       stipDef,
-    } = storeToRefs(useDataStore());
+    } = storeToRefs(useDataStore()));
   },
   watch: {
     // Affects "consolidation" checkboxes in filings page header
@@ -156,14 +156,14 @@ export default {
     });
   },
   methods: {
-    saveSettings: function() {
-      saveSettings(this.settings)
+    saveSettings: function () {
+      saveSettings(this.settings);
     },
-    saveResponses: function() {
-      saveResponses(this.responses)
+    saveResponses: function () {
+      saveResponses(this.responses);
     },
-    saveCounts: function() {
-      saveCounts(toRaw(this.saved))
+    saveCounts: function () {
+      saveCounts(toRaw(this.saved));
     },
     handleNewDocketNums: handleNewDocketNums,
     loadAll: function (callback) {
@@ -342,13 +342,13 @@ export default {
       });
     },
     confirmClearData: confirmClearData,
-    resetSettings: function(element) {
+    resetSettings: function (element) {
       resetSettings(this, element);
     },
     printDocument: function () {
       window.print();
     },
-    saveHtml: function() {
+    saveHtml: function () {
       saveHtml(this);
     },
     returnCountyContact: function (cty) {
@@ -559,7 +559,7 @@ export default {
   },
   filters: {
     uppercase: uppercase,
-    lowercase: lowercase
+    lowercase: lowercase,
   },
 };
 </script>
@@ -640,6 +640,14 @@ export default {
                   <label class="modal-vla-check">
                     <span class="modal-title">VLA Logo & Footer:</span>
                     <input type="checkbox" v-model="settings.forVla" />
+                  </label>
+                  <label class="modal-vla-check">
+                    <span class="modal-title">Alaternative Logo URL:</span>
+                    <input
+                        class="no-print footer__input"
+                        v-model="settings['altLogo']"
+                        placeholder=""
+                    />
                   </label>
                 </p>
               </label>
