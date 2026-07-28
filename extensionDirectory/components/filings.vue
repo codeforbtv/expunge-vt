@@ -1097,11 +1097,9 @@ export default {
                             <p>Superior Court</p>
                             <p>{{filing.county}} Unit</p>
                           </div>
-                          <docket-caption
-                            v-bind:name="petitioner.name"
-                          ></docket-caption>
                         </div>
                         <div class="filing-header__half text-right">
+          
                           <div
                             class="filing-header__docket-number docket-number"
                           >
@@ -1115,12 +1113,14 @@ export default {
                               class="docket-number__numbers"
                             >
                               <span class="docket-number__label"
-                                >Docket No.&nbsp;</span
+                                >Case No.&nbsp;</span
                               ><span class="docket-number__number"
                                 >{{handleNewDocketNums(docketNum.string)}}</span
                               >
                             </p>
                           </div>
+          
+
                           <div
                             v-if="filing.type == 'NoA'"
                             class="no-print fee-check-box"
@@ -1194,6 +1194,10 @@ export default {
                           </div>
                         </div>
                       </div>
+                      <docket-caption
+        v-bind:name="petitioner.name"
+        :dob="petitioner.dob"
+      ></docket-caption>
 
                       <h1 class="filing-title">{{filing.title}}</h1>
                       <!-- End generic petition heading info -->

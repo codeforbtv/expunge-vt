@@ -231,7 +231,7 @@ p.document-meta-data__body {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: stretch;
-  margin-bottom: 2rem;
+  margin-bottom: .5rem;
 }
 
 .filing-header__title {
@@ -240,6 +240,7 @@ p.document-meta-data__body {
   width: 100%;
   margin-top: 0.25rem;
   margin-bottom: 0.2rem;
+  font-weight: 600;
 }
 
 .filing-header__half {
@@ -247,6 +248,7 @@ p.document-meta-data__body {
 }
 
 .docket-number__label {
+  font-weight: 600;
   opacity: 0;
 }
 .docket-number__numbers:nth-of-type(2) .docket-number__label {
@@ -254,12 +256,10 @@ p.document-meta-data__body {
 }
 .docket-caption {
   display: flex;
-  border-right: 1px solid black;
+  border: 2px solid black;
 }
 .docket-caption__names {
   width: 100%;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
 }
 .docket-caption__label {
   font-style: italic;
@@ -287,6 +287,7 @@ p.document-meta-data__body {
 .page .filing-title {
   margin:auto;
   max-width: 500px;
+  margin-top: .5rem;
 }
 
 .page .filing-title,

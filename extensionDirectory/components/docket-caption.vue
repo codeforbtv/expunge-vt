@@ -1,18 +1,16 @@
 <script>
 export default {
-  props: ["name"],
+  props: ["name", "dob"],
 };
 </script>
 
 <template>
-  <div class="docket-caption"> 
-      <div class="docket-caption__names">
-        <p class="">STATE OF VERMONT,</p>
-        <p><i>Respondent</i></p>
-        <p>v.</p>
-        <p class="docket-caption__party">{{name}},</p>
-        <p class="docket-caption__label">Petitioner</p>
-        </div>
-      </div>
+  <div class="docket-caption">
+    <div class="docket-caption__names">
+      <p class="docket-caption__party"><span class="docket-caption-label">In RE:</span> {{ name }}</p>
+    </div>
+    <div class="docket-caption__names">
+      <p class="docket-caption__party">DOB {{ dob }}</p>
+    </div>
+  </div>
 </template>
-
