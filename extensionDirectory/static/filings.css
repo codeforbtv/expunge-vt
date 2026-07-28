@@ -319,6 +319,12 @@ p.document-meta-data__body {
   margin-right: 35px;
 }
 
+.custom-logo {
+  width: 15%;
+  height: 15%;
+  margin-right: 35px;
+}
+
 .vla-logo {
   width: auto;
   height: 8.5%;
