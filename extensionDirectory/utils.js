@@ -785,6 +785,14 @@ export function toCountyCode(value) {
   return countyCodeFromCounty(value);
 }
 
+export function proSeFromRole(preparerRole) {
+  if (preparerRole == 'AttyAppear') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 export function todayDate() {
   date = dayjs().format('MMMM D[, ]YYYY');
   return date;

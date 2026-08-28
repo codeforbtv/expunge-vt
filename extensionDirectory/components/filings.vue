@@ -10,6 +10,16 @@ import filingDatedCity from './filing-dated-city.vue';
 import filingFooter from './filing-footer.vue';
 import filingNav from './filing-nav.vue';
 import filingTypeHeading from './filing-type-heading.vue';
+import noaBody from './filings/noa-body.vue';
+import feeWaiverBody from './filings/fee-waiver-body.vue';
+import feeWaiverAffidavitBody from './filings/fee-waiver-affidavit-body.vue';
+import expungeConvictionBody from './filings/expunge-conviction-body.vue';
+import expungeNonConvictionBody from './filings/expunge-non-conviction-body.vue';
+import expungeNonCrimeBody from './filings/expunge-non-crime-body.vue';
+import sealConvictionMinorBody from './filings/seal-conviction-minor-body.vue';
+import sealConvictionAdultBody from './filings/seal-conviction-adult-body.vue';
+import sealDuiBody from './filings/seal-dui-body.vue';
+import sealNegopBody from './filings/seal-negop-body.vue';
 import { storeToRefs } from 'pinia';
 
 import {
@@ -36,6 +46,7 @@ import {
   nl2br,
   openManagePage,
   openPetitionsPage,
+  proSeFromRole,
   saveCounts,
   saveHtml,
   saveResponses,
@@ -60,6 +71,16 @@ export default {
     filingFooter,
     filingNav,
     filingTypeHeading,
+    noaBody,
+    feeWaiverBody,
+    feeWaiverAffidavitBody,
+    expungeConvictionBody,
+    expungeNonConvictionBody,
+    expungeNonCrimeBody,
+    sealConvictionMinorBody,
+    sealConvictionAdultBody,
+    sealDuiBody,
+    sealNegopBody,
   },
   data() {
     return ({
@@ -356,13 +377,7 @@ export default {
       devLog('Number: ' + allCounties[cty]);
       return allCounties[cty];
     },
-    proSeFromRole: function (preparerRole) {
-      if (preparerRole == 'AttyAppear') {
-        return false;
-      } else {
-        return true;
-      }
-    },
+    proSeFromRole,
     checkDocketMatch: function (longDocket, shortDocket, county) {
       if (!longDocket) return false;
       let concatDocket = shortDocket + ' ' + countyCodeFromCounty(county);
@@ -1210,748 +1225,74 @@ export default {
                       <!-- Begin Unique Portion of Filings -->
 
                       <!-- Notice of Appearance -->
-                      <div class="filing-body" v-if="filing.type == 'NoA'">
-                      
-                        <p class="indent" v-if="proSeFromRole(settings.role)">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}), appearing
-                          <span class="italic">pro se</span>, and hereby
-                          enters this notice of appearance in the above
-                          captioned action.
-                          <span
-                            class="email-test"
-                            v-if="settings.emailConsent"
-                            ><br /><br />By signing this notice of appearance
-                            below, I hereby agree to the acceptance of all
-                            electronic filings at the following email address:
-                            <b>{{petitioner.email}}</b>.</span
-                          >
-                          </p>
-                        <p class="indent" v-else>
-                          NOW COMES <span>{{settings['attorney']}}</span>, by
-                          and on behalf of {{petitioner.name}} (DOB:
-                          {{dateFormatSimple(petitioner.dob)}}), and hereby
-                          enters this notice of appearance in the above
-                          captioned action.
-                        </p>
-                      </div>
+                      <noa-body
+                        v-if="filing.type == 'NoA'"
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></noa-body>
+
                       <!-- Fee Waiver -->
-                      <div
-                        v-bind:id="filing.id"
-                        class="filing-body"
+                      <fee-waiver-body
                         v-if="filing.type == 'feeWaiver'"
-                      >
-                            <p class="indent">
-                              NOW COMES {{petitioner.name}} (DOB:
-                              {{dateFormatSimple(petitioner.dob)}}),
-                              <span v-if="proSeFromRole(settings.role)"
-                                >appearing <span class="italic">pro se</span>
-                            </span>
-                              <span v-else>
-                                by and through counsel,
-                                <span>{{settings['attorney']}}</span> </span
-                              >, and hereby moves the Court to
-                              <span
-                              v-if="returnSurcharge(filing.id)>0"
-                                >waive surcharges </span
-                              ><span
-                                v-if="returnFine(filing.id)>0 && returnSurcharge(filing.id)>0"
-                                >and
-                              </span>
-                              <span
-                                v-if="returnFine(filing.id)>0"
-                                >suspend the fines </span
-                              >associated with the above-captioned case for the
-                              reasons set forth herein.
-                            <ol>
-                              <li
-                                v-if="returnSurcharge(filing.id)>0"
-                              >
-                                Pursuant to 13 V.S.A. &#167; 7282(b), surcharges
-                                can be waived in an expungement or sealing
-                                proceeding "where the petitioner demonstrates an
-                                inability to pay."
-                              </li>
-                              <li
-                                v-if="returnFine(filing.id)>0"
-                              >
-                                Pursuant to 13 V.S.A &#167; 7178 "[a] Superior
-                                judge, in his or her discretion, may suspend all
-                                or any part of the fine assessed against a
-                                respondent."
-                              </li>
-                              <li
-                                v-if="returnFine(filing.id)>0"
-                              >
-                                At the time of conviction, the court fined
-                                Petitioner ${{returnFine(filing.id)}}.
-                              </li>
-                              <li
-                                v-if="returnSurcharge(filing.id)>0"
-                              >
-                                At the time of conviction, the court assessed
-                                Petitioner a surcharge of ${{returnSurcharge(filing.id)}}.
-                              </li>
-                              <li>
-                                Petitioner has contemporaneously filed petition
-                                for record clearance.
-                              </li>
-                              <li>
-                                But for these legal financial obligations,
-                                petitioner is eligible for relief.
-                              </li>
-                              <li>
-                                Petitioner is unable to pay these legal
-                                financial obligations.
-                              </li>
-                              <li>
-                                Waiver of legal financial obligations would
-                                further the interests of justice for the reasons
-                                set forth in the attached sworn statement and
-                                because the relief petitioner seeks should not
-                                be barred due to economic status.
-                              </li>
-                            </ol>
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></fee-waiver-body>
+
                       <!-- Fee waiver affidavit -->
-                      <div
-                        class="filing-body"
-                        v-bind:id="filing.id"
+                      <fee-waiver-affidavit-body
                         v-if="filing.type == 'feeWaiverAffidavit' && !responses[filing.id +'-feeForm']"
-                      >
-                        <p class="indent">
-                            {{petitioner.name}}, being duly sworn, deposes and
-                            says under oath:
-                            <ol>
-                              <li>
-                                I am petitioning the Court to clear my Vermont
-                                criminal record in the above referenced matter.
-                              </li>
-                              <li
-                                v-if="returnFine(filing.id)>0"
-                              >
-                                I have outstanding fines totaling ${{ 
-                                returnFine(filing.id) }}.
-                              </li>
-                              <li
-                                v-if="returnSurcharge(filing.id)>0"
-                              >
-                                I have outstanding surcharges totaling ${{
-                                returnSurcharge(filing.id) }}.
-                              </li>
-                              <li>
-                                I do not have the means to pay this legal
-                                financial debt without substantial hardship.
-                              </li>
-                              <li>
-                                This debt is the sole remaining barrier to the
-                                relief sought in this matter.
-                              </li>
-                              <li>
-                                I respectfully ask the court to waive this
-                                financial obligation so that I may clear my
-                                record.
-                              </li>
-                            </ol>
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></fee-waiver-affidavit-body>
+
                       <!-- (Stipulated) Petiton To Expunge Conviction -->
-                      <div
-                        class="filing-body"
+                      <expunge-conviction-body
                         v-if="filing.type == 'ExC' || filing.type == 'StipExC'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                          </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to expunge the record of
-                          the above-captioned conviction<span
-                            v-if="filing.multipleCounts"
-                            >s</span
-                          >
-                          pursuant to 13 V.S.A. &sect; 7602.
-                        </p>
-
-                        <p>
-                          1. Petitioner was convicted of the following
-                          crime<span v-if="filing.multipleCounts">s</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th valign="middle" colspan="2" scope="col">
-                              Offense Description
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        <p>
-                          2. <span v-if="filing.multipleCounts">These are</span
-                          ><span v-else>This is a</span> qualifying crime<span
-                            v-if="filing.multipleCounts"
-                            >s</span
-                          >
-                          pursuant to 13 V.S.A. &sect; 7601(4).
-                        </p>
-                        <p>
-                          <span v-if="!filing.isStipulated"
-                            >3. Petitioner completed the terms and conditions of
-                            their sentence over 5 years ago, and paid all
-                            restitution owed.</span
-                          >
-                        </p>
-                        <p>
-                          <span v-if="!filing.isStipulated">4.</span
-                          ><span v-else>3. </span> Expunging all record of
-                          <span v-if="filing.multipleCounts"
-                            >these convictions</span
-                          ><span v-else>this conviction</span> is in the
-                          interests of justice because:
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></expunge-conviction-body>
 
                       <!-- (Stipulated) Petiton To Expunge Non Conviction -->
-                      <div
-                        class="filing-body"
+                      <expunge-non-conviction-body
                         v-if="filing.type == 'ExNC' || filing.type == 'StipExNC'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                          </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to expunge the record of
-                          the following charge<span v-if="filing.multipleCounts"
-                            >s</span
-                          >
-                          pursuant to 13 V.S.A. &sect; 7603.
-                        </p>
-                        <p>
-                          1. Petitioner was charged but never convicted of the
-                          following crime<span v-if="filing.multipleCounts"
-                            >s</span
-                          >:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">
-                              Date of Dismissal
-                            </th>
-                            <th colspan="2" valign="middle" scope="col">
-                              Charge<span v-if="filing.multipleCounts">s</span>
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        <p>
-                          2.
-                          <span v-if="filing.multipleCounts"
-                            >All dismissed charges</span
-                          ><span v-else>This charge is</span> eligible for
-                          expungement pursuant to 13 V.S.A. &sect; 7603.
-                        </p>
-
-                        <p>
-                          3. Expunging all record of
-                          <span v-if="filing.multipleCounts"
-                            >these dismissed charges</span
-                          ><span v-else>this dismissed charge</span> serves the
-                          interests of justice, as
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></expunge-non-conviction-body>
 
                       <!-- (Stipulated) Petiton To Expunge Non-Crime -->
-                      <div
-                        class="filing-body"
+                      <expunge-non-crime-body
                         v-if="filing.type == 'ExNCrim' || filing.type == 'StipExNCrim'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                          </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to expunge the record of
-                          the following
-                          <span v-if="filing.multipleCounts">charges</span
-                          ><span v-else>charge</span> pursuant to 13 V.S.A.
-                          &sect; 7602(a)(1)(B).
-                        </p>
-                        <p>
-                          1. Petitioner was convicted of the following
-                          <span v-if="filing.multipleCounts">crimes</span
-                          ><span v-else>crime</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th colspan="2" valign="middle" scope="col">
-                              Charge<span v-if="filing.multipleCounts">s</span>
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-
-                        <p>
-                          2. The underlying conduct of
-                          <span v-if="filing.multipleCounts"
-                            >these offenses</span
-                          ><span v-else>this offense</span> is no longer
-                          prohibited by law or designated as a criminal offense.
-                        </p>
-                        <p>
-                          3. Expunging all record of this conviction serves the
-                          interests of justice.
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></expunge-non-crime-body>
 
                       <!--Petiton To Seal Conviction Minor-->
-                      <div
-                        class="filing-body"
+                      <seal-conviction-minor-body
                         v-if="filing.type == 'SC' || filing.type == 'StipSC'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                          </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to seal the record of
-                          the above-captioned conviction
-                          <span v-if="filing.multipleCounts">s</span> pursuant
-                          to <span v-if="2==2">33 V.S.A. &sect; 5119(g)</span><span v-else>13 V.S.A. 7602</span>.
-                        </p>
-                        <p>
-                          1. Petitioner was convicted of the following
-                          crime<span v-if="filing.multipleCounts">s</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th valign="middle" colspan="2" scope="col">
-                              Offense Description
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p>
-                          2. Petitioner was under 25 when the crime<span
-                            v-if="filing.multipleCounts"
-                            >s were</span
-                          ><span v-else> was</span> committed.
-                        </p>
-
-                        <p>
-                          3. Petitioner was not later convicted of a listed
-                          crime, pursuant to 13 V.S.A. &sect; 5301(7), within
-                          the last 10 years, nor is petitioner currently being
-                          charged of such an offense.
-                        </p>
-                        <p>
-                          4. Petitioner believes the court will find that they
-                          have been rehabilitated, as evidenced by the
-                          following:
-                        </p>
-                      </div>
-
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></seal-conviction-minor-body>
 
                       <!--Petiton To Seal Conviction ADULT-->
-                      <div
-                        class="filing-body"
+                      <seal-conviction-adult-body
                         v-if="filing.type == 'SCAdult' || filing.type == 'StipSCAdult'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{
-                          dateFormatSimple(petitioner.dob)}}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                          </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to seal the record of
-                          the above-captioned conviction
-                          <span v-if="filing.multipleCounts">s</span> pursuant
-                          to 13 V.S.A. &sect; 7602.
-                        </p>
-                        <p>
-                          1. Petitioner was convicted of the following
-                          crime<span v-if="filing.multipleCounts">s</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th valign="middle" colspan="2" scope="col">
-                              Offense Description
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p>
-                          2. The qualifying crime<span v-if="filing.multipleCounts">s were</span><span v-else> was</span> committed after the Petition reached the age of 19.
-                        </p>
-
-                        <p>
-                          3. All restitution ordered here has been paid in full.
-                        </p>
-                        <p>
-                          4. Sealing this record serves the interests of
-                          justice, as
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></seal-conviction-adult-body>
 
                       <!-- (Stipulated) Petiton To Seal DUI Conviction -->
-                      <div
-                        class="filing-body"
+                      <seal-dui-body
                         v-if="filing.type == 'SDui' || filing.type == 'StipSDui'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
-                          }}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                        </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to seal the record of
-                          the above-captioned conviction
-                          <span v-if="filing.multipleCounts">s</span> pursuant
-                          to 13 V.S.A. &sect; 7602(a)(1)(C).
-                        </p>
-                        <p>
-                          1. Petitioner was convicted of the following
-                          crime<span v-if="filing.multipleCounts">s</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th valign="middle" colspan="2" scope="col">
-                              Offense Description
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p>
-                          2. At least 10 years have elapsed since the date
-                          petitioner successfully completed their sentence.
-                        </p>
-
-                        <p>
-                          3. This conviction is the only violation of 23 V.S.A.
-                          &sect; 1201 that petitioner has on their record, and
-                          petitioner has not been convicted of any new crime
-                          since they were convicted of this offense.
-                        </p>
-                        <p>
-                          4. All restitution ordered here has been paid in full.
-                        </p>
-                        <p>
-                          5. Sealing this record serves the interests of
-                          justice, as
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></seal-dui-body>
 
                       <!-- (Stipulated) Petiton To Seal Negligent Operation Conviction -->
-                      <div
-                        class="filing-body"
+                      <seal-negop-body
                         v-if="filing.type == 'NegOp' || filing.type == 'StipNegOp'"
-                      >
-                        <p class="indent">
-                          NOW COMES {{petitioner.name}} (DOB: {{petitioner.dob
-                          }}),
-                          <span v-if="proSeFromRole(settings.role)"
-                            >appearing <span class="italic">pro se</span>
-                        </span>
-                          <span v-else>
-                            by and through counsel,
-                            <span>{{settings['attorney']}}</span> </span
-                          >, and hereby moves the Court to seal the record of
-                          the above-captioned conviction
-                          <span v-if="filing.multipleCounts">s</span> pursuant
-                          to 13 V.S.A. &sect; 7602(a)(1)(C).
-                        </p>
-                        <p>
-                          1. Petitioner was convicted of the following
-                          crime<span v-if="filing.multipleCounts">s</span>:
-                        </p>
-                        <table class="count-table">
-                          <thead class="count-table__header">
-                            <th valign="middle" scope="col">Conviction Date</th>
-                            <th valign="middle" colspan="2" scope="col">
-                              Offense Description
-                            </th>
-                          </thead>
-                          <tbody class="count-table__body">
-                            <tr
-                              class="count-item"
-                              v-for="count in filing.counts"
-                            >
-                              <td class="count-item__date">
-                                <span class="no-visible"
-                                  >{{
-                                  dateFormatSimple(count.dispositionDate)}}</span
-                                >
-                                <input
-                                  type="date"
-                                  class="no-print"
-                                  v-model="count.dispositionDate"
-                                  :max="maxDate"
-                                />
-                              </td>
-                              <td class="count-item__description">
-                                <span class="no-visible"
-                                  >{{count.description}} ({{count.docketNum}}
-                                  {{toCountyCode(count.county)}})</span
-                                >
-                                <textarea
-                                  rows="1"
-                                  class="no-print count-item__textarea"
-                                  v-model="count.description"
-                                ></textarea>
-                              </td>
-                              <td class="no-print">
-                                {{count.docketNum}} {{
-                                toCountyCode(count.county)}}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <p>
-                          2. At least 10 years have elapsed since the date
-                          petitioner successfully completed their sentence.
-                        </p>
-
-                        <p>
-                          3. This conviction is the only violation of 23 V.S.A.
-                          &sect; 1201 that petitioner has on their record, and
-                          petitioner has not been convicted of any new crime
-                          since they were convicted of this offense.
-                        </p>
-                        <p>
-                          4. All restitution ordered here has been paid in full.
-                        </p>
-                        <p>
-                          5. Sealing this record serves the interests of
-                          justice, as
-                        </p>
-                      </div>
+                        :filing="filing"
+                        :petitioner="petitioner"
+                      ></seal-negop-body>
 
                       <!-- End Unique Portion of Filings -->
 
